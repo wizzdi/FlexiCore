@@ -1,0 +1,3 @@
+
+uuid=${project.groupId}.${project.artifactId}
+version=${project.version}

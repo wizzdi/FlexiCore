@@ -1,0 +1,34 @@
+thorntail:
+  context:
+    path: FlexiCore
+  logging:
+    pattern-formatters:
+      LOG_FORMATTER:
+        pattern: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n "
+    periodic-rotating-file-handlers:
+      FILE:
+        file:
+          path: server.log
+        suffix: .yyyy-MM-dd
+        named-formatter: LOG_FORMATTER
+    root-logger:
+      handlers:
+        - FILE
+    loggers:
+      org.jboss.weld.Interceptor:
+        level: ERROR
+      com.arjuna:
+        level: WARN
+      org.jboss.jca.core.connectionmanager.listener:
+        level: WARN
+  datasources:
+    data-sources:
+      flexicoreDS:
+        driver-name: postgresql
+        connection-url: jdbc:postgresql://localhost:5432/flexicore
+        user-name: flexicore
+        password: flexicore
+        valid-connection-checker-class-name: org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker
+        validate-on-match: true
+        background-validation: false
+        exception-sorter-class-name: org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter

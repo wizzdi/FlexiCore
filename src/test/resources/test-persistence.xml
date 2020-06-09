@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence version="2.1"
+			 xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="
+        http://xmlns.jcp.org/xml/ns/persistence
+        http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+
+	<persistence-unit name="primary" transaction-type="JTA">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<!-- <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+ 		-->
+
+		<jta-data-source>java:jboss/datasources/flexicoreDS</jta-data-source>
+		<!-- <jta-data-source>java:jboss/datasources/flexicoreDSMYSQL</jta-data-source> -->
+		<class>com.flexicore.converters.OffsetDateTimeConverter</class>
+		<class>com.flexicore.model.Baseclass</class>
+		<class>com.flexicore.model.Baselink</class>
+		<class>com.flexicore.model.Category</class>
+		<class>com.flexicore.model.CategoryToBaseClass</class>
+		<class>com.flexicore.model.CategoryToClazz</class>
+		<class>com.flexicore.model.Clazz</class>
+		<class>com.flexicore.model.ClazzLink</class>
+		<class>com.flexicore.model.DocumentationTag</class>
+		<class>com.flexicore.model.FileResource</class>
+		<class>com.flexicore.model.FileResourceBundle</class>
+		<class>com.flexicore.model.FileType</class>
+		<class>com.flexicore.model.ImageMetaData</class>
+		<class>com.flexicore.model.KeyWord</class>
+		<class>com.flexicore.model.KeyWordToBaseclass</class>
+		<class>com.flexicore.model.MediaToBundle</class>
+		<class>com.flexicore.model.Metadata</class>
+		<class>com.flexicore.model.Operation</class>
+		<class>com.flexicore.model.OperationCategory</class>
+		<class>com.flexicore.model.OperationToClazz</class>
+		<class>com.flexicore.model.Property</class>
+		<class>com.flexicore.model.PropertyToBaseclass</class>
+		<class>com.flexicore.model.PropertyToClazz</class>
+		<class>com.flexicore.model.PropertyType</class>
+		<class>com.flexicore.model.Role</class>
+		<class>com.flexicore.model.RoleToBaseclass</class>
+		<class>com.flexicore.model.RoleToUser</class>
+		<class>com.flexicore.model.SecurityLink</class>
+		<class>com.flexicore.model.FlexiCoreServer</class>
+		<class>com.flexicore.model.FlexiCoreServerToBaseclass</class>
+		<class>com.flexicore.model.TemplateMetaData</class>
+		<class>com.flexicore.model.Tenant</class>
+		<class>com.flexicore.model.TenantToBaseClassPremission</class>
+		<class>com.flexicore.model.TenantToUser</class>
+		<class>com.flexicore.model.User</class>
+		<class>com.flexicore.model.UserToBaseClass</class>
+		<class>com.flexicore.model.View</class>
+		<class>com.flexicore.model.ViewToClazz</class>
+		<class>com.flexicore.model.resource.Resource</class>
+		<class>com.flexicore.model.resource.ResourceConsumption</class>
+		<class>com.flexicore.model.resource.ResourceToResourceConsumption</class>
+		<class>com.flexicore.model.media.Video</class>
+		<class>com.flexicore.model.media.Media</class>
+		<class>com.flexicore.model.media.Image</class>
+		<class>com.flexicore.model.licensing.LicenseRequest</class>
+		<class>com.flexicore.model.licensing.LicensingEntity</class>
+		<class>com.flexicore.model.licensing.LicensingFeature</class>
+		<class>com.flexicore.model.licensing.LicensingProduct</class>
+		<class>com.flexicore.model.licensing.RequestToProduct</class>
+		<class>com.flexicore.model.licensing.RequestToFeature</class>
+		<class>com.flexicore.model.licensing.RequestToLicenseEntity</class>
+		<class>com.flexicore.model.SettingsMetadata</class>
+		<class>com.flexicore.model.Settings</class>
+		<class>com.flexicore.model.SettingsMetadata</class>
+		<class>com.flexicore.model.PropertyToSettingsMetadata</class>
+		<class>com.flexicore.model.TimedLink</class>
+		<class>com.flexicore.model.ui.plugins.UIPlugin</class>
+		<class>com.flexicore.model.ui.plugins.UIInterface</class>
+		<class>com.flexicore.model.ui.plugins.UIPluginToUIInterface</class>
+		<class>com.flexicore.model.ui.UIContainer</class>
+		<class>com.flexicore.model.ui.UIComponent</class>
+		<class>com.flexicore.model.ui.plugins.UIPluginToFileResource</class>
+		<class>com.flexicore.model.PermissionGroup</class>
+		<class>com.flexicore.model.PermissionGroupToBaseclass</class>
+		<class>com.flexicore.model.SecurityWildcard</class>
+		<class>com.flexicore.model.FilteringInformationHolder</class>
+		<class>com.flexicore.model.SortParameter</class>
+		<class>com.flexicore.model.CategoryIdFiltering</class>
+		<class>com.flexicore.model.BaseclassLongFiltering</class>
+		<class>com.flexicore.model.dynamic.ExecutionParametersHolder</class>
+		<class>com.flexicore.model.dynamic.DynamicInvoker</class>
+		<class>com.flexicore.model.tree.Tree</class>
+		<class>com.flexicore.model.tree.TreeNode</class>
+		<class>com.flexicore.model.TenantIdFiltering</class>
+		<class>com.flexicore.model.tree.TreeNodeToUser</class>
+		<class>com.flexicore.model.FlexiCoreServer</class>
+		<class>com.flexicore.model.CurrentDatabaseTenant</class>
+		<class>com.flexicore.model.ClazzIdFiltering</class>
+		<class>com.flexicore.model.dynamic.DynamicExecution</class>
+		<class>com.flexicore.model.dynamic.ServiceCanonicalName</class>
+
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+
+			<property name="eclipselink.target-database" value="PostgreSQL" />
+			<!-- <property name="eclipselink.target-database" value="MySQL" /> -->
+			<property
+					name="javax.persistence.schema-generation.create-database-schemas"
+					value="true" />
+			<property name="eclipselink.ddl-generation.output-mode"
+					  value="database" />
+			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
+			<property name="eclipselink.logging.level" value="FINE" />
+			<property name="eclipselink.logging.level.sql" value="FINE"/>
+			<property name="eclipselink.logging.parameters" value="true" />
+			<property name="eclipselink.exclude-eclipselink-orm" value="true"/>
+			<property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
+			<property name="eclipselink.jdbc.batch-writing.size" value="1000"/>
+
+
+
+		</properties>
+
+		<!-- 		<properties>
+                        <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+                    <property name="hibernate.show_sql" value="true" />
+                    <property name="hibernate.format_sql" value="true" />
+                    <property name="hibernate.hbm2ddl.auto" value="update"/>
+                    <property name="hibernate.archive.autodetection" value="class"/>
+
+                </properties> -->
+	</persistence-unit>
+
+	<persistence-unit name="flexicoreNoSQL" transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<!--
+                <class>com.flexicore.converters.OffsetDateTimeConverter</class>
+        -->
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+		<properties>
+			<!--<property name="eclipselink.canonicalmodel.subpackage" value="two"/>-->
+			<property name="eclipselink.ddl-generation" value="none" />
+
+			<property name="eclipselink.target-database"
+					  value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
+			<property name="eclipselink.nosql.connection-spec"
+					  value="org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec"/>
+			<property name="eclipselink.nosql.property.mongo.port" value="27017"/>
+			<property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
+			<property name="eclipselink.nosql.property.mongo.db" value="flexicoreNoSQL"/>
+			<property name="eclipselink.logging.level" value="FINEST"/>
+			<property name="eclipselink.persistence-context.flush-mode" value="commit" />
+		</properties>
+	</persistence-unit>
+
+</persistence>

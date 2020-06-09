@@ -1,0 +1,23 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright (C) FlexiCore, Inc - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+   Written by Avishay Ben Natan And Asaf Ben Natan, October 2015
+-->
+
+<job id="genericJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://www.oracle.com/webfolder/technetwork/jsc/xml/ns/javaee/jobXML_1_0.xsd">
+	<step id="Analyze">
+		<properties>
+			<property name="javax.transaction.global.timeout" value="43200" />
+			<property name="org.jberet.transaction.timeout.collector" value="43200" />
+		</properties>
+		<chunk item-count="1">
+			<reader ref="JobReader" />
+			<processor ref="JobProcessor" />
+			<writer ref="JobWriter" />
+		</chunk>
+	</step>
+</job> 
