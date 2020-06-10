@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
@@ -18,7 +19,7 @@ import java.util.Collections;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = FlexiCoreApplication.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Profile("test")
+@ActiveProfiles("test")
 public class AuthenticationNewRESTServiceTest {
 
     @Autowired
