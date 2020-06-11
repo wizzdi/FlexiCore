@@ -64,7 +64,7 @@ public class Initializator  {
     }
 
 
-    private static final boolean FLEXICORE_LICENSE = true;
+    private static final boolean FLEXICORE_LICENSE = false;
 
     /**
      * this is called by the container upon init.
