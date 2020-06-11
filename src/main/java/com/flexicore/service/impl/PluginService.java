@@ -16,7 +16,6 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.Job;
 import com.flexicore.model.ModuleManifest;
 import com.flexicore.model.PluginRequirement;
-import com.flexicore.runningentities.PluginLoader;
 import com.flexicore.utils.FlexiCore;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -200,9 +199,9 @@ public class PluginService implements com.flexicore.service.PluginService {
             String uuid=properties.getProperty("uuid","unknown"+UUID.randomUUID());
             String version=properties.getProperty("version","unknown"+UUID.randomUUID());
 
-            HashSet<String> provides= jarFile.stream().filter(f -> PluginLoader.isClassProvided(f.getName().replaceAll("/", "."), basicProvides)).map(f -> StringUtils.removeEnd(f.getName().replaceAll("/", "."), ".class")).collect(Collectors.toCollection(HashSet::new));
+         /*   HashSet<String> provides= jarFile.stream().filter(f -> PluginLoader.isClassProvided(f.getName().replaceAll("/", "."), basicProvides)).map(f -> StringUtils.removeEnd(f.getName().replaceAll("/", "."), ".class")).collect(Collectors.toCollection(HashSet::new));
             moduleManifest.set(uuid,version,jar.getAbsolutePath(),originalPath,requires, provides,pluginType);
-
+*/
 
         } catch (IOException e) {
             logger.log(Level.SEVERE,"unable to get dependencies",e);
@@ -221,10 +220,6 @@ public class PluginService implements com.flexicore.service.PluginService {
     }
 
 
-    public boolean addJarToClassPath(File file, boolean force) throws IOException {
-        return pluginRepository.addJarToClassPath(file, force);
-
-    }
 
 
     public <T extends Plugin> Class<T> isPlugin(Class<?> c) {

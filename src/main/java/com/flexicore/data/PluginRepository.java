@@ -11,7 +11,6 @@ import com.flexicore.annotations.InheritedComponent;
 import com.flexicore.data.jsoncontainers.PluginType;
 import com.flexicore.interfaces.Plugin;
 import com.flexicore.model.ModuleManifest;
-import com.flexicore.runningentities.PluginLoader;
 import com.flexicore.utils.FlexiCore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -260,84 +259,6 @@ public class PluginRepository {
         }
     }
 
-
-    public boolean addJarToClassPath(File file, boolean force) throws IOException {
-        JarFile jar = new JarFile(file);
-        Enumeration<JarEntry> entries = jar.entries();
-        JarEntry entry;
-        File classPath = new File(FlexiCore.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        File classAtClassPath;
-        boolean classPathUpdated = false;
-        Map<String, Set<String>> classNameToPersistenceUnitName = new HashMap<>();
-        ModuleManifest moduleManifest = PluginLoader.getDependencies(file, logger, PluginType.Model);
-
-
-        while (entries.hasMoreElements()) {
-            entry = entries.nextElement();
-            if (entry.getName().endsWith("persistence.xml")) {
-                try (InputStream is = jar.getInputStream(entry)) {
-                    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                    Document doc = dBuilder.parse(is);
-                    Element d = doc.getDocumentElement();
-                    NodeList l = d.getElementsByTagName("persistence-unit");
-                    for (int i = 0; i < l.getLength(); i++) {
-                        Node n = l.item(i);
-                        String persistenceUnitName = l.item(i).getAttributes().getNamedItem("name").getNodeValue();
-                        NodeList classes = ((Element) n).getElementsByTagName("class");
-
-                        for (int j = 0; j < classes.getLength(); j++) {
-                            String className = classes.item(j).getFirstChild().getNodeValue();
-                            Set<String> persistenceUnitsForClass = classNameToPersistenceUnitName.computeIfAbsent(persistenceUnitName, f -> new HashSet<>());
-                            persistenceUnitsForClass.add(className);
-                        }
-
-                    }
-                } catch (ParserConfigurationException | SAXException e) {
-                    logger.log(Level.SEVERE, "unabele to parse persistence.xml from jar: " + file);
-                }
-
-
-            }
-
-            if (entry.getName().endsWith(".class")) {
-                classAtClassPath = new File(classPath + "/" + entry.getName());
-                if (force || !classAtClassPath.exists()) {
-                    copyJarEntry(entry, jar, classAtClassPath);
-                    classPathUpdated = true;
-
-
-                }
-				/*
-				else{
-					String currentHash=fileResourceService.generateMD5(classAtClassPath);
-					String newHash=fileResourceService.generateMD5(jar.getInputStream(entry));
-					if(!currentHash.equals(newHash)){
-						copyJarEntry(entry,jar,classAtClassPath);
-						classPathUpdated=true;
-					}
-				}
-				*/
-            }
-        }
-        jar.close();
-        try {
-            if (!classNameToPersistenceUnitName.isEmpty()) {
-                for (Entry<String, Set<String>> persistenceUnitToClasses : classNameToPersistenceUnitName.entrySet()) {
-                    addClassToPersistenceXml(persistenceUnitToClasses.getValue(), persistenceUnitToClasses.getKey());
-                }
-
-            }
-
-        } catch (ParserConfigurationException | SAXException | TransformerException e) {
-            logger.log(Level.SEVERE, "unable to update persistence.xml", e);
-        }
-        if (classPathUpdated && moduleManifest != null) {
-            updateLoadedModelsFolder(moduleManifest);
-        }
-        return classPathUpdated;
-
-    }
 
     public void loadModelListing() {
         File classPath = new File(FlexiCore.class.getProtectionDomain().getCodeSource().getLocation().getPath());

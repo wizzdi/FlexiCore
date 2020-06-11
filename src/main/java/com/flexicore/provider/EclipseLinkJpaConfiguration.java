@@ -45,6 +45,9 @@ public class EclipseLinkJpaConfiguration extends JpaBaseConfiguration {
 
     private Logger logger=LoggerFactory.getLogger(EclipseLinkJpaConfiguration.class);
 
+    @Value("${eclipselink.ddl-generation}")
+    private String ddlGeneration;
+
 
     protected EclipseLinkJpaConfiguration(DataSource dataSource, JpaProperties properties, ObjectProvider<JtaTransactionManager> jtaTransactionManager) {
         super(dataSource, properties, jtaTransactionManager);
@@ -97,7 +100,7 @@ public class EclipseLinkJpaConfiguration extends JpaBaseConfiguration {
         props.put("eclipselink.weaving", "false");
         props.put("javax.persistence.schema-generation.create-database-schemas", "true");
         props.put("eclipselink.ddl-generation.output-mode", "database");
-        props.put("eclipselink.ddl-generation", "create-or-extend-tables");
+        props.put("eclipselink.ddl-generation", ddlGeneration);
         props.put("eclipselink.logging.level", "FINE");
         props.put("eclipselink.logging.level.sql", "FINE");
         props.put("eclipselink.logging.parameters", "true");

@@ -13,18 +13,14 @@ import com.flexicore.model.Tenant;
 import com.flexicore.request.CategoryFilter;
 import com.flexicore.request.ClazzFilter;
 import com.flexicore.request.TenantFilter;
-import com.flexicore.runningentities.PluginLoader;
 import com.flexicore.service.BaseclassService;
 import com.flexicore.service.impl.ClassScannerService;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;

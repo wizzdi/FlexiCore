@@ -11,7 +11,6 @@ import com.flexicore.interfaces.RestServicePlugin;
 import com.flexicore.interfaces.dynamic.InvokerInfo;
 import com.flexicore.rest.JaxRsActivator;
 import com.flexicore.runningentities.FilesCleaner;
-import com.flexicore.runningentities.PluginCleaner;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.ClassScannerService;
 import com.flexicore.service.impl.LicenseEnforcer;
@@ -46,8 +45,7 @@ public class PluginInit {
     private static final Comparator<PluginWrapper> PLUGIN_COMPARATOR_FOR_REST = Comparator.comparing(f -> f.getDescriptor().getVersion());
     @Autowired
     private LicenseEnforcer licenseEnforcer;
-    @Autowired
-    private PluginCleaner pluginCleaner;
+
 
     @Autowired
     private PluginManager pluginManager;
@@ -71,7 +69,6 @@ public class PluginInit {
      */
     private void initThreads() {
         initPluginLoader();
-        initPluginCleaner();
         initFilesCleaner();
         licenseEnforcer.onStart();
 
@@ -82,14 +79,6 @@ public class PluginInit {
         new Thread(filesCleaner).start();
     }
 
-
-    /**
-     * starts the Cleaner , uses TTL for removing instances no longer needed.
-     */
-    private void initPluginCleaner() {
-        new Thread(pluginCleaner).start();
-
-    }
 
     /**
      * Starts the plug-in loader, uses a constant for its path
