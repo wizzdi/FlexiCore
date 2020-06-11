@@ -22,20 +22,6 @@
  */
 package com.flexicore.service.impl;
 
-import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import javax.mail.MessagingException;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotAuthorizedException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -44,7 +30,10 @@ import com.flexicore.data.BaselinkRepository;
 import com.flexicore.data.TenantRepository;
 import com.flexicore.data.UserRepository;
 import com.flexicore.data.jsoncontainers.*;
-import com.flexicore.exceptions.*;
+import com.flexicore.exceptions.BadRequestCustomException;
+import com.flexicore.exceptions.CheckYourCredentialsException;
+import com.flexicore.exceptions.UserCannotBeRegisteredException;
+import com.flexicore.exceptions.UserNotFoundException;
 import com.flexicore.model.*;
 import com.flexicore.request.*;
 import com.flexicore.response.*;
@@ -53,14 +42,29 @@ import com.flexicore.service.TokenService;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.lambdaworks.crypto.SCryptUtil;
-import io.joshworks.restclient.http.HttpResponse;
 import io.joshworks.restclient.http.MediaType;
 import io.joshworks.restclient.http.RestClient;
 import io.joshworks.restclient.http.mapper.ObjectMapper;
 import io.joshworks.restclient.http.mapper.ObjectMappers;
-import io.jsonwebtoken.Claims;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotAuthorizedException;
+import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Primary
 @Component
@@ -192,19 +196,19 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
     public boolean updateTenantToUserNoMerge(TenantToUserCreate tenantToUserCreate, TenantToUser tenantToUser) {
-        boolean update = baseclassService.updateBaseclassNoMerge(tenantToUserCreate,tenantToUser);
+        boolean update = baseclassService.updateBaseclassNoMerge(tenantToUserCreate, tenantToUser);
         if (tenantToUserCreate.isDefaultTenant() != null && tenantToUserCreate.isDefaultTenant() != tenantToUser.isDefualtTennant()) {
             tenantToUser.setDefualtTennant(tenantToUserCreate.isDefaultTenant());
             update = true;
         }
-        if(tenantToUserCreate.getTenant()!=null && (tenantToUser.getLeftside()==null || !tenantToUserCreate.getTenant().getId().equals(tenantToUser.getLeftside().getId()))){
+        if (tenantToUserCreate.getTenant() != null && (tenantToUser.getLeftside() == null || !tenantToUserCreate.getTenant().getId().equals(tenantToUser.getLeftside().getId()))) {
             tenantToUser.setLeftside(tenantToUserCreate.getTenant());
-            update=true;
+            update = true;
         }
 
-        if(tenantToUserCreate.getUser()!=null && (tenantToUser.getRightside()==null || !tenantToUserCreate.getUser().getId().equals(tenantToUser.getRightside().getId()))){
+        if (tenantToUserCreate.getUser() != null && (tenantToUser.getRightside() == null || !tenantToUserCreate.getUser().getId().equals(tenantToUser.getRightside().getId()))) {
             tenantToUser.setUser(tenantToUserCreate.getUser());
-            update=true;
+            update = true;
         }
         return update;
     }
@@ -496,6 +500,20 @@ public class UserService implements com.flexicore.service.UserService {
         return user.getDefaultTenant();
     }
 
+    @Value("${flexicore.loginBlacklistRetentionMs:600000}")
+    private long loginBlacklistReturntionMs;
+    @Value("${flexicore.loginFailedAttempts:-1}")
+    private int loginFailedAttempts;
+
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public Cache<String, AtomicInteger> loginBlacklistCache(){
+        return CacheBuilder.newBuilder().expireAfterWrite(loginBlacklistReturntionMs,TimeUnit.MILLISECONDS).build();
+    }
+
+    @Autowired
+    private Cache<String, AtomicInteger> loginBlacklistCache;
+
     /**
      * log into the system, if user!=null will not search for it.
      *
@@ -508,7 +526,23 @@ public class UserService implements com.flexicore.service.UserService {
     @Override
     public RunningUser login(AuthenticationRequestHolder bundle, User user)
             throws UserNotFoundException, CheckYourCredentialsException {
-        user = authenticate(bundle, user);
+        boolean ok = false;
+        AtomicInteger failedAttempts=null;
+        if(loginFailedAttempts>0 ){
+            failedAttempts = loginBlacklistCache.asMap().computeIfAbsent(bundle.getIp(), f -> new AtomicInteger(0));
+            int failedAttemptsCounter= failedAttempts.get();
+            if(failedAttemptsCounter >loginFailedAttempts ){
+                throw new BadRequestCustomException("Too Many Failed Login Attempts", LoginErrors.TOO_MANY_FAILED_ATTEMPTS.getCode());
+            }
+        }
+        try {
+            user = authenticate(bundle, user);
+            ok = true;
+        } finally {
+            if (loginFailedAttempts > 0&&!ok&&failedAttempts!=null) {
+                failedAttempts.incrementAndGet();
+            }
+        }
         return registerUserIntoSystem(user);
 
     }
@@ -600,8 +634,6 @@ public class UserService implements com.flexicore.service.UserService {
 
         return running;
     }
-
-
 
 
     @Override
@@ -825,14 +857,14 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
     public boolean updateRoleToUserNoMerge(RoleToUserCreate roleToUserCreate, RoleToUser roleToUser) {
-        boolean update=baseclassService.updateBaseclassNoMerge(roleToUserCreate,roleToUser);
-        if(roleToUserCreate.getRole()!=null && (roleToUser.getLeftside()==null || !roleToUserCreate.getRole().getId().equals(roleToUser.getLeftside().getId()))){
+        boolean update = baseclassService.updateBaseclassNoMerge(roleToUserCreate, roleToUser);
+        if (roleToUserCreate.getRole() != null && (roleToUser.getLeftside() == null || !roleToUserCreate.getRole().getId().equals(roleToUser.getLeftside().getId()))) {
             roleToUser.setRole(roleToUserCreate.getRole());
-            update=true;
+            update = true;
         }
-        if(roleToUserCreate.getUser()!=null && (roleToUser.getRightside()==null || !roleToUserCreate.getUser().getId().equals(roleToUser.getRightside().getId()))){
+        if (roleToUserCreate.getUser() != null && (roleToUser.getRightside() == null || !roleToUserCreate.getUser().getId().equals(roleToUser.getRightside().getId()))) {
             roleToUser.setUser(roleToUserCreate.getUser());
-            update=true;
+            update = true;
         }
         return update;
     }
@@ -927,7 +959,7 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
     public List<RoleToUser> listAllRoleToUsers(RoleToUserFilter roleToUserFilter, SecurityContext securityContext) {
-        return userrepository.listAllRoleToUsers(roleToUserFilter,securityContext);
+        return userrepository.listAllRoleToUsers(roleToUserFilter, securityContext);
 
     }
 }

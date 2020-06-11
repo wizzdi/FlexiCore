@@ -12,7 +12,7 @@ import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.exceptions.CheckYourCredentialsException;
 import com.flexicore.exceptions.UserNotFoundException;
-import com.flexicore.rest.interfaces.IAuthenticationRESTService;
+import com.flexicore.interfaces.RESTService;
 import com.flexicore.security.AuthenticationBundle;
 import com.flexicore.security.AuthenticationRequestHolder;
 import com.flexicore.security.RunningUser;
@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.enterprise.context.RequestScoped;
-import org.springframework.stereotype.Component;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 @OperationsInside
 @Tag(name = "Authentication")
 @Path("/authentication")
-public class AuthenticationRESTService implements IAuthenticationRESTService {
+public class AuthenticationRESTService implements RESTService {
     private Logger log = Logger.getLogger(getClass().getCanonicalName());
     @Autowired
     private UserService userservice;
@@ -55,7 +55,6 @@ public class AuthenticationRESTService implements IAuthenticationRESTService {
      * @param bundle
      * @return
      */
-    @Override
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -63,7 +62,12 @@ public class AuthenticationRESTService implements IAuthenticationRESTService {
     @Operation(summary = "Sign-in(login)", description = "Sign-in into the system, pass an initialized instance of AuthenticationRequestHolder, sign-in name and password are stored there")
     @Audit(auditType = "Login")
     public AuthenticationBundle login(@HeaderParam("authenticationkey") String authenticationkey,
+                                      @Context HttpServletRequest req,
                                       AuthenticationRequestHolder bundle) {
+        String remoteIp = getRemoteIp(req);
+        if (remoteIp != null) {
+            bundle.setIp(remoteIp);
+        }
         RunningUser runninguser = null;
 
         try {
@@ -87,13 +91,20 @@ public class AuthenticationRESTService implements IAuthenticationRESTService {
 
     }
 
+    private String getRemoteIp(HttpServletRequest req) {
+        String ip = req.getRemoteAddr();
+        try {
+            ip = req.getHeader("X-Forwarded-For").split(",")[0];
+        } catch (Exception ignored) {
+        }
+        return ip;
+    }
 
 
     /**
      * @param authenticationkey
      * @return
      */
-    @Override
     @POST
     @Path("/logout")
     @Consumes(MediaType.APPLICATION_JSON)
