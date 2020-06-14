@@ -1,4 +1,6 @@
 
+[![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore)](https://jenkins.wizzdi.com/job/FlexiCore/)
+
 https://www.wizzdi.com - Company web site 
 [Wizzdi Software Systems](https://www.wizzdi.com)
 
