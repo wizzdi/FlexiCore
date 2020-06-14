@@ -1,4 +1,10 @@
 
+https:www.wizzdi.com - Company web site 
+[Wizzdi Software Systems](https://www.wizzdi.com)
+
+contact information: 
+info@wizzdi.com 
+
 <!-- wp:heading {"level":3} -->
 <h3>Introduction</h3>
 <!-- /wp:heading -->
