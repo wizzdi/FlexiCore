@@ -1,5 +1,5 @@
 
-https:www.wizzdi.com - Company web site 
+https://www.wizzdi.com - Company web site 
 [Wizzdi Software Systems](https://www.wizzdi.com)
 
 contact information: 
