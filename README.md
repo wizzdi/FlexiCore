@@ -1,5 +1,4 @@
 [![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore)](https://jenkins.wizzdi.com/job/FlexiCore/)
-[![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore)](https://jenkins.wizzdi.com/job/FlexiCore/)
 <!-- wp:image {"id":1517,"sizeSlug":"large"} -->
 <figure class="wp-block-image size-large"><img src="https://wizzdi.com/wp-content/uploads/2020/06/flxicore.image_-1.png" alt="" class="wp-image-1517"/></figure>
 <!-- /wp:image -->
