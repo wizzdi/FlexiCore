@@ -22,7 +22,9 @@
 <p>The image above shows a typical deployed Flexicore based server using Spring boot, Flexicore itself is not changed when a back-end is built. The back-end full domain model, business logic, services, API are all hosted in plugins.</p>
 <!-- /wp:paragraph -->
 
-
+<!-- wp:heading {"level":3} -->
+<h3>Flexicore unique plugin system</h3>
+<!-- /wp:heading -->
 
 <!-- wp:block {"ref":1400} /-->
 
