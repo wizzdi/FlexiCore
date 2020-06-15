@@ -1,7 +1,7 @@
 <!-- wp:image {"id":1517,"sizeSlug":"large"} -->
 <figure class="wp-block-image size-large"><img src="https://wizzdi.com/wp-content/uploads/2020/06/flxicore.image_-1.png" alt="" class="wp-image-1517"/></figure>
 <!-- /wp:image -->
-https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore)](https://jenkins.wizzdi.com/job/FlexiCore/)
+
 <!-- wp:heading {"level":3} -->
 <h3>Introduction</h3>
 <!-- /wp:heading -->
