@@ -1,15 +1,132 @@
-[![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore)](https://jenkins.wizzdi.com/job/FlexiCore/)
+<a href="https://jenkins.wizzdi.com/job/FlexiCore/"><img src="https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore" alt="Build Status"></a>
 
 <!-- wp:image {"id":1517,"sizeSlug":"large"} -->
 <figure class="wp-block-image size-large"><img src="https://wizzdi.com/wp-content/uploads/2020/06/flxicore.image_-1.png" alt="" class="wp-image-1517"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
+<h3>Getting started</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Maven Dependency for plugins:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>  
+  &lt;properties>
+        &lt;flexicore-api.version>4.0.0-spring&lt;/flexicore-api.version>
+        &lt;pf4j-spring.version>0.6.0-SNAPSHOT&lt;/pf4j-spring.version>
+       ...
+    &lt;/properties>
+    &lt;dependencyManagement>
+        &lt;dependencies>
+           ...
+            &lt;dependency>
+                &lt;groupId>org.springframework.boot&lt;/groupId>
+                &lt;artifactId>spring-boot-dependencies&lt;/artifactId>
+                &lt;version>2.1.6.RELEASE&lt;/version>
+                &lt;type>pom&lt;/type>
+                &lt;scope>import&lt;/scope>
+            &lt;/dependency>
+        &lt;/dependencies>
+    &lt;/dependencyManagement>
+ &lt;dependency>
+            &lt;groupId>com.wizzdi&lt;/groupId>
+            &lt;artifactId>flexicore-api&lt;/artifactId>
+            &lt;version>{LATEST-FLEXICORE-API-VERSION}&lt;/version>
+   &lt;/dependency>
+
+&lt;dependencies>
+...
+    &lt;dependency>
+            &lt;groupId>com.flexicore&lt;/groupId>
+            &lt;artifactId>flexicore-api&lt;/artifactId>
+            &lt;version>${flexicore-api.version}&lt;/version>
+            &lt;scope>provided&lt;/scope>
+        &lt;/dependency>
+        &lt;dependency>
+            &lt;groupId>org.pf4j&lt;/groupId>
+            &lt;artifactId>pf4j-spring&lt;/artifactId>
+            &lt;version>${pf4j-spring.version}&lt;/version>
+            &lt;scope>provided&lt;/scope>
+        &lt;/dependency>
+    &lt;/dependencies>
+
+
+   &lt;plugins>
+...
+            &lt;plugin>
+                &lt;artifactId>maven-compiler-plugin&lt;/artifactId>
+                &lt;version>3.8.1&lt;/version>
+            &lt;/plugin>
+            &lt;plugin>
+                &lt;artifactId>maven-shade-plugin&lt;/artifactId>
+                &lt;version>3.2.1&lt;/version>
+                &lt;executions>
+                    &lt;execution>
+                        &lt;phase>package&lt;/phase>
+                        &lt;goals>
+                            &lt;goal>shade&lt;/goal>
+                        &lt;/goals>
+                        &lt;configuration>
+                            &lt;minimizeJar>false&lt;/minimizeJar>
+                            &lt;createDependencyReducedPom>true&lt;/createDependencyReducedPom>
+                            &lt;dependencyReducedPomLocation>${java.io.tmpdir}/dependency-reduced-pom.xml
+                            &lt;/dependencyReducedPomLocation>
+                            &lt;transformers>
+                                &lt;transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    &lt;resource>META-INF/cxf/bus-extensions.txt&lt;/resource>
+                                &lt;/transformer>
+                                &lt;transformerimplementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    &lt;manifestEntries>
+           &lt;!--check https://github.com/pf4j/pf4j-spring for more info-->
+
+                                        &lt;Plugin-Id>${artifactId}&lt;/Plugin-Id>
+                                        &lt;Plugin-Version>${version}&lt;/Plugin-Version>
+
+                                    &lt;/manifestEntries>
+                                &lt;/transformer>
+                            &lt;/transformers>
+                        &lt;/configuration>
+                    &lt;/execution>
+                &lt;/executions>
+            &lt;/plugin>
+        &lt;/plugins>
+    &lt;/build></code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>compiling a FlexiCore-exec jar from repo</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>mvn package</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>running the FlexiCore-exec.jar</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>java -jar FlexiCore-exec.jar</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Spring Configuration Properties</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><tbody><tr><td>Property name</td><td>Description</td><td>Default Value</td></tr><tr><td>flexicore.entities</td><td>Path to entities folder</td><td>/home/flexicore/entities</td></tr><tr><td>flexicore.plugins</td><td>Path to plugins folder</td><td>/home/flexicore/plugins</td></tr><tr><td>flexicore.externalStaticMapping</td><td>mapping for static contents</td><td>/**</td></tr><tr><td>flexicore.externalStatic</td><td>static content location</td><td>/home/flexicore/ui/</td></tr><tr><td>flexicore.loginFailedAttempts</td><td>failed logging attempts till blacklisting ip (-1 to disable login blacklist)</td><td>-1</td></tr><tr><td>flexicore.loginBlacklistRetentionMs</td><td>time to keep ip in blacklist , only if flexicore.loginFailedAttempts is enabled</td><td>600000</td></tr><tr><td>spring.datasource.url</td><td>Postgresql connection string</td><td>jdbc:postgresql://localhost:5432/flexicore</td></tr><tr><td>spring.datasource.username</td><td>username to access database</td><td>flexicore</td></tr><tr><td>spring.datasource.password</td><td>password to access database</td><td>flexicore</td></tr><tr><td>spring.data.mongodb.uri</td><td>mongodb connection string</td><td>mongodb://localhost:27018/flexicoreNoSQL</td></tr><tr><td>spring.data.mongodb.port</td><td>mongodb port</td><td>27017</td></tr><tr><td>spring.data.mongodb.host</td><td>mongodb host</td><td>localhost</td></tr><tr><td>spring.data.mongodb.database</td><td>mongodb database</td><td>flexicoreNoSQL</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:heading {"level":3} -->
 <h3>Introduction</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p><strong>Flexicore adds to Spring Boot or to Java EE web application a very flexible and powerful plugins support</strong>,<strong> robust access control,</strong> <strong>and an additional set of services many applications require.</strong><br><strong> Learn more on Flexicore in Wizzdi web site</strong>:<br><a href="http://www.wizzdi.com"></a><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com">https://www.wizzdi.com</a></a></p>
+<p><strong>Flexicore adds to Spring Boot or to Java EE web application a very flexible and powerful plugins support</strong>,<strong> robust access control,</strong> <strong>and an additional set of services many applications require.</strong><br><strong> Learn more on Flexicore in Wizzdi web site</strong>:<br><a href="http://www.wizzdi.com"></a><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com">https://www.wizzdi.com</a></a></a></a></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -99,6 +216,30 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":4} -->
+<h4>Prerequisites</h4>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":5} -->
+<h5>development </h5>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul><li>Flexicore plugins are built using Maven or a suitable IDE capable of using Maven such as IntelliJ, Eclipse, or Netbeans, a reference to Flexicore-API needed, till this is available on Maven central, you can clone and install locally.</li><li>Other dependencies may apply based on requirements.</li><li>Examples repository is available:<a href="https://github.com/wizzdi/FlexiCore-Examples">https://github.com/wizzdi/FlexiCore-Examples</a></li></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading {"level":5} -->
+<h5>Run time</h5>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul><li>Java 11 JDK installed, this is a prerequisite for Spring. Java 8 is not frequently tested and may work.</li><li>running Flexicore server (Spring boot Jar), this can be obtained from Wizzdi or from Maven central, can also be built from this repository.</li><li>Spring boot jars can run as service in Linux and Windows, this is beyond the scope of this document.</li><li>Flexicore itself requires a PostgreSQL relational database and MongoDB installed. </li><li>See above the required properties for accessing the databases, note that the relational database must exist in the defined name as well as the role on PostgresSQL. <br><br><br></li></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading {"level":3} -->
+<h3> </h3>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} -->
 <h4>Are Flexicore based Systems currently in Production?</h4>
 <!-- /wp:heading -->
 
@@ -134,7 +275,7 @@
 <ul><li>Design back-end systems of any size and shape.</li><li>Optionally implement back-end systems from scratch in a matter of days with full accountability for performance and compliance.</li><li>Deploy the implemented systems for you on the cloud in unbeatable price-performance. Dev-ops services included.</li><li>Implement user interfaces for the above using Google Flutter, Angular (Typescript), Java, and Swift.</li><li>Design and implement distributed systems based on Flexicore and Wizzdi database synchronization plugin.</li><li>Design and implement embedded systems if these are associated with Flexicore based systems.<br><br></li></ul>
 <!-- /wp:list -->
 
-<p><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com">https://www.wizzdi.com</a> - Company web site<br><a href="https://www.wizzdi.com">Wizzdi Software Systems</a></p>
+<p><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com">https://www.wizzdi.com</a> - Company web site<br><a href="https://www.wizzdi.com">Wizzdi Software Systems</a></p>
 <p>contact information:<br>info@wizzdi.com</p>
 
 <!-- wp:paragraph -->
