@@ -45,8 +45,6 @@ import java.util.logging.Logger;
 public class Resources {
 
 
-    @Autowired
-    private PluginService pluginService;
 
     @Bean
     public Logger produceLog() {

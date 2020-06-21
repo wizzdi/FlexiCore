@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>4.0.1-spring</version>
+    <version>4.0.7</version>
 
     <name>FlexiCore: WAR Module</name>
 
@@ -332,7 +332,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-api</artifactId>
-            <version>4.0.1-spring</version>
+            <version>4.0.7</version>
         </dependency>
 
         <dependency>
