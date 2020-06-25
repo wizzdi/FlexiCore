@@ -119,7 +119,7 @@
 <!-- wp:code -->
 <pre class="wp-block-code"><code>java -jar FlexiCore-exec.jar</code></pre>
 <!-- /wp:code -->
-
+<p>It is assumed that PostgreSQL was installed, a database (empty) created matching the defined name below and a user (role) was created matching the defined<br> username and password. <br></p>
 <!-- wp:paragraph -->
 <p>Spring Configuration Properties</p>
 <!-- /wp:paragraph -->
