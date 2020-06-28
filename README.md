@@ -119,8 +119,8 @@
 <!-- wp:code -->
 <pre class="wp-block-code"><code>java -jar FlexiCore-exec.jar</code></pre>
 <!-- /wp:code -->
-<p>It is assumed that PostgreSQL was installed, a database (empty) created matching the defined name below and a user (role) was created matching the defined<br> username and password. <br></p>
-<p>It is also assumed that MongoDB is installed with default port (27017) or was properly set in Spring configuration, there is no need to create a database on MongoDb <br></p>
+<p>PostgreSQL should be running, a database (empty) created matching the defined name below and a user (role) was created matching the defined username and password. PostgresSQL uses port 5432 by defualt, this can be changed in Spring configuration file. <br></p>
+<p>MongoDB should be running with default port (27017) or the connection string should be edited in Spring configuration, there is no need to create a database on MongoDb <br></p>
 <!-- wp:paragraph -->
 <p>Spring Configuration Properties</p>
 <!-- /wp:paragraph -->
