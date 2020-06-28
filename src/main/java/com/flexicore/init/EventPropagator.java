@@ -32,7 +32,7 @@ public class EventPropagator {
         if(!eventsInProcess.contains(event)){
             eventsInProcess.add(event);
             try {
-                for (ApplicationContext applicationContext : flexiCorePluginManager.getLeafApplicationContext()) {
+                for (ApplicationContext applicationContext : flexiCorePluginManager.getPluginApplicationContexts()) {
                     if (event.getSource() != applicationContext) {
                         applicationContext.publishEvent(event);
                     }

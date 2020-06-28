@@ -4,9 +4,7 @@ import org.pf4j.PluginWrapper;
 import org.pf4j.spring.SpringExtensionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +14,7 @@ import java.util.stream.Collectors;
 public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
     private final FlexiCorePluginManager pluginManager;
     private final Map<String, FlexiCoreApplicationContext> contextCache = new ConcurrentHashMap<>();
-    private final Queue<ApplicationContext> leafContexts = new LinkedBlockingQueue<>();
+    private final Queue<ApplicationContext> pluginsApplicationContexts = new LinkedBlockingQueue<>();
     private final Logger logger = LoggerFactory.getLogger(FlexiCoreExtensionFactory.class);
 
 
@@ -51,9 +49,7 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
             List<ApplicationContext> dependenciesContexts=dependencies.stream().map(f->pluginManager.getPlugin(f)).filter(f->f!=null).map(this::getApplicationContext).collect(Collectors.toList());
             applicationContext.getAutowireCapableBeanFactory().addDependenciesContext(dependenciesContexts);
             applicationContext.refresh();
-
-            leafContexts.removeAll(dependenciesContexts);
-            leafContexts.add(applicationContext);
+            pluginsApplicationContexts.add(applicationContext);
         }
         return applicationContext;
     }
@@ -75,8 +71,8 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
 
 
 
-    public Queue<ApplicationContext> getLeafContexts() {
-        return leafContexts;
+    public Queue<ApplicationContext> getPluginsApplicationContexts() {
+        return pluginsApplicationContexts;
     }
 
 }

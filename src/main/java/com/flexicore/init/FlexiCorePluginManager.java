@@ -1,7 +1,6 @@
 package com.flexicore.init;
 
 import org.pf4j.*;
-import org.pf4j.spring.SpringPlugin;
 import org.pf4j.spring.SpringPluginManager;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -26,9 +25,9 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 
 
 
-    public Collection<ApplicationContext> getLeafApplicationContext(){
+    public Collection<ApplicationContext> getPluginApplicationContexts(){
         FlexiCoreExtensionFactory extensionFactory = (FlexiCoreExtensionFactory) getExtensionFactory();
-        return Collections.unmodifiableCollection(extensionFactory.getLeafContexts());
+        return Collections.unmodifiableCollection(extensionFactory.getPluginsApplicationContexts());
     }
 
     public ApplicationContext getApplicationContext(Class<?> c){

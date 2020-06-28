@@ -45,8 +45,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Named
-
 @Primary
 @Component
 public class PluginService implements com.flexicore.service.PluginService {
@@ -151,7 +149,7 @@ public class PluginService implements com.flexicore.service.PluginService {
 
     @Override
     public List<PluginInformationHolder> getAll() {
-        Map<ModuleManifest, Map<Class<?>, List<Class<?>>>> byType = pluginRepository.getPluginListing();
+      /*  Map<ModuleManifest, Map<Class<?>, List<Class<?>>>> byType = pluginRepository.getPluginListing();
         Map<Class<?>, List<Class<?>>> plugins;
         List<PluginInformationHolder> info = pluginRepository.getModelListing().parallelStream().map(f -> new PluginInformationHolder("", "", -1, f)).collect(Collectors.toList());
         info.addAll(PluginService.externalModules.parallelStream().map(f->new PluginInformationHolder("","",-1,f)).collect(Collectors.toList()));
@@ -173,7 +171,9 @@ public class PluginService implements com.flexicore.service.PluginService {
 
         }
 
-        return info;
+        return info;*/
+        //TODO: provide similar functionality
+        return new ArrayList<>();
 
     }
 

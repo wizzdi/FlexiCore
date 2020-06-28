@@ -30,7 +30,7 @@ public class FlexiCoreEndpointExporter extends ServerEndpointExporter {
     private FlexiCorePluginManager flexiCorePluginManager;
     @Override
     protected void registerEndpoints() {
-        Collection<ApplicationContext> leafApplicationContext = flexiCorePluginManager.getLeafApplicationContext();
+        Collection<ApplicationContext> leafApplicationContext = flexiCorePluginManager.getPluginApplicationContexts();
         ApplicationContext mainContext = getApplicationContext();
         registerInContext(mainContext,true);
         for (ApplicationContext leaf : leafApplicationContext) {

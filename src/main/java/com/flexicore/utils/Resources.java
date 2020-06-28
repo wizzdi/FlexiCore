@@ -23,9 +23,11 @@
 package com.flexicore.utils;
 
 import com.flexicore.service.impl.PluginService;
+import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import java.util.logging.Logger;
 
@@ -45,10 +47,11 @@ import java.util.logging.Logger;
 public class Resources {
 
 
-
     @Bean
-    public Logger produceLog() {
-        return Logger.getLogger(Resources.class.getCanonicalName());
+    @Scope("prototype")
+    public Logger produceLog(InjectionPoint injectionPoint) {
+        Class<?> classOnWired = injectionPoint.getMember().getDeclaringClass();
+        return Logger.getLogger(classOnWired.getCanonicalName());
     }
 
 

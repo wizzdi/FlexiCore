@@ -29,6 +29,7 @@ import javax.persistence.criteria.*;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.PluralAttribute;
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.logging.Level;
@@ -281,7 +282,19 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
 
     @Override
     @Transactional
-    public void merge(Object base) {
+    public void merge(Object base,boolean updateDate) {
+        if(base instanceof Baseclass){
+            OffsetDateTime now = OffsetDateTime.now();
+            Baseclass base1 = (Baseclass) base;
+            if(updateDate){
+                base1.setUpdateDate(now);
+            }
+            if(logger.isLoggable(Level.FINE) ){
+                logger.fine("merging "+ base1.getId()+ " updateDate flag is "+updateDate +" update date "+base1.getUpdateDate());
+            }
+
+        }
+
         em.merge(base);
     }
 
@@ -1526,8 +1539,19 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
 
     @Override
     @Transactional
-    public void massMerge(List<?> toMerge) {
+    public void massMerge(List<?> toMerge,boolean updatedate) {
+        OffsetDateTime now = OffsetDateTime.now();
         for (Object o : toMerge) {
+            if(o instanceof Baseclass){
+                Baseclass baseclass = (Baseclass) o;
+                if(updatedate){
+                    baseclass.setUpdateDate(now);
+                }
+                if(logger.isLoggable(Level.FINE)){
+                    logger.fine("merging "+ baseclass.getId() +" updateDate flag is "+updatedate +" update date is "+baseclass.getUpdateDate());
+                }
+            }
+
             em.merge(o);
         }
     }
@@ -1583,5 +1607,17 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
                 .groupBy(groupBy)
                 .orderBy(cb.asc(join.get(Clazz_.name)));
         return em.createQuery(q).getResultList();
+    }
+
+    @Override
+    @Transactional
+    public void merge(Object base) {
+        merge(base,true);
+    }
+
+    @Override
+    @Transactional
+    public void massMerge(List<?> toMerge) {
+        massMerge(toMerge,true);
     }
 }

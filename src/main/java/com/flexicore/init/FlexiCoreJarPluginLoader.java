@@ -19,8 +19,9 @@ public class FlexiCoreJarPluginLoader extends JarPluginLoader {
     @Override
     public ClassLoader loadPlugin(Path pluginPath, PluginDescriptor pluginDescriptor) {
         ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
-        PluginClassLoader pluginClassLoader = new PluginClassLoader(pluginManager, pluginDescriptor, parentClassLoader);
+        FlexiCorePluginClassLoader pluginClassLoader = new FlexiCorePluginClassLoader(pluginManager, pluginDescriptor, parentClassLoader);
         pluginClassLoader.addFile(pluginPath.toFile());
+
 
         return pluginClassLoader;
     }

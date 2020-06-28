@@ -3,6 +3,7 @@ package com.flexicore.init;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.plugins.TestsInside;
 import com.flexicore.data.TestsRepository;
+import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
 import com.flexicore.events.PluginsLoadedEvent;
 import com.flexicore.interceptors.DynamicResourceInjector;
 import com.flexicore.interceptors.SecurityImposer;
@@ -23,6 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.actuate.health.HealthContributor;
+import org.springframework.boot.actuate.health.HealthContributorRegistry;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -62,6 +67,8 @@ public class PluginInit {
     private SecurityService securityService;
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+    @Autowired
+    private HealthContributorRegistry healthContributorRegistry;
     private static Set<String> handledContext = new ConcurrentSkipListSet<>();
 
     /**
@@ -87,6 +94,7 @@ public class PluginInit {
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public PluginsLoadedEvent initPluginLoader() {
         SecurityContext securityContext = securityService.getAdminUserSecurityContext();
+        CrossLoaderResolver.registerClassLoader( pluginManager.getStartedPlugins().stream().map(f->f.getPluginClassLoader()).collect(Collectors.toList()));
         List<PluginWrapper> startedPlugins = pluginManager.getStartedPlugins().stream().sorted(PLUGIN_COMPARATOR_FOR_REST).collect(Collectors.toList());
         //makes sure older versions are loaded first so default version for apis is being taken from oldest plugin
         for (PluginWrapper startedPlugin : startedPlugins) {
@@ -110,6 +118,19 @@ public class PluginInit {
 
 
             }
+            List<? extends HealthContributor> healthContributors = pluginManager.getExtensions(HealthContributor.class, startedPlugin.getPluginId());
+            for (HealthContributor healthContributor : healthContributors) {
+                logger.info("Health class " + healthContributor.getClass().getCanonicalName());
+
+                try {
+                    healthContributorRegistry.registerContributor(healthContributor.getClass().getSimpleName(), healthContributor);
+                }
+                catch (Exception e){
+                    logger.error("Failed registering Health " + healthContributor.getClass(), e);
+
+                }
+            }
+
         }
 
         List<Class<? extends Plugin>> classes = pluginManager.getExtensionClasses(Plugin.class);
@@ -126,6 +147,7 @@ public class PluginInit {
                     logger.log(Level.SEVERE,"failed adding WS",e);
                 }
             }*/
+
             if (c.isAnnotationPresent(OperationsInside.class)) {
                 classScannerService.registerOperationsInclass(c); // Adds
             }
