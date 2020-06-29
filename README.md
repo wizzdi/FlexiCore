@@ -1,4 +1,5 @@
-<p><a href="https://jenkins.wizzdi.com/job/FlexiCore/"><img src="https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore" alt="Build Status"></a></p>
+
+   <p><a href="https://jenkins.wizzdi.com/job/FlexiCore/"><img src="https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore" alt="Build Status"></a></p>
 
 <!-- wp:image {"id":1517,"sizeSlug":"large"} -->
 <figure class="wp-block-image size-large"><img src="https://wizzdi.com/wp-content/uploads/2020/06/flxicore.image_-1.png" alt="" class="wp-image-1517"/></figure>
@@ -9,7 +10,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p><strong>Flexicore adds to Spring Boot or to Java EE web application a very flexible and powerful plugins support</strong>,<strong> robust access control,</strong> <strong>and an additional set of services many applications require.</strong><br><strong> Learn more on Flexicore in Wizzdi web site</strong>:<br><a href="http://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com">https://www.wizzdi.com</a></p>
+<p><strong>Flexicore adds to Spring Boot or to Java EE web application a very flexible and powerful plugins support</strong>,<strong> robust access control,</strong> <strong>and an additional set of services many applications require.</strong><br><strong> Learn more on Flexicore in Wizzdi web site</strong>:<br><a href="http://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com">https://www.wizzdi.com</a></a></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
@@ -119,14 +120,21 @@
 <!-- wp:code -->
 <pre class="wp-block-code"><code>java -jar FlexiCore-exec.jar</code></pre>
 <!-- /wp:code -->
-<p>PostgreSQL should be running, a database (empty) created matching the defined name below and a user (role) was created matching the defined username and password. PostgresSQL uses port 5432 by defualt, this can be changed in Spring configuration file. <br></p>
-<p>MongoDB should be running with default port (27017) or the connection string should be edited in Spring configuration, there is no need to create a database on MongoDb <br></p>
+
+<!-- wp:paragraph -->
+<p>Prerequisites for running the command above:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>PostgreSQL running and accessible at port 5432 locally (see below how to access a database on a different server)</li><li>A database named <em>flexicore </em>(can be empty) with a login role named <em>flexicore </em>having a password <em>flexicore</em>. See below how to change these default values.</li><li>MongoDB running locally and accessible at port 27017, the database will be automatically created.</li><li> a set of files and folders at <em>/home/flexicore</em>, get the files from <a href="https://wizzdi.com/github-readme/">here</a>, please extract the file to your root or change the properties file below accordingly.</li></ul>
+<!-- /wp:list -->
+
 <!-- wp:paragraph -->
 <p>Spring Configuration Properties</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:table -->
-<figure class="wp-block-table"><table><tbody><tr><td>Property name</td><td>Description</td><td>Default Value</td></tr><tr><td>flexicore.entities</td><td>Path to entities folder</td><td>/home/flexicore/entities</td></tr><tr><td>flexicore.plugins</td><td>Path to plugins folder</td><td>/home/flexicore/plugins</td></tr><tr><td>flexicore.externalStaticMapping</td><td>mapping for static contents</td><td>/**</td></tr><tr><td>flexicore.externalStatic</td><td>static content location</td><td>/home/flexicore/ui/</td></tr><tr><td>flexicore.loginFailedAttempts</td><td>failed logging attempts till blacklisting ip (-1 to disable login blacklist)</td><td>-1</td></tr><tr><td>flexicore.loginBlacklistRetentionMs</td><td>time to keep ip in blacklist , only if flexicore.loginFailedAttempts is enabled</td><td>600000</td></tr><tr><td>spring.datasource.url</td><td>Postgresql connection string</td><td>jdbc:postgresql://localhost:5432/flexicore</td></tr><tr><td>spring.datasource.username</td><td>username to access database</td><td>flexicore</td></tr><tr><td>spring.datasource.password</td><td>password to access database</td><td>flexicore</td></tr><tr><td>spring.data.mongodb.uri</td><td>mongodb connection string</td><td>mongodb://localhost:27017/flexicoreNoSQL</td></tr><tr><td>spring.data.mongodb.port</td><td>mongodb port</td><td>27017</td></tr><tr><td>spring.data.mongodb.host</td><td>mongodb host</td><td>localhost</td></tr><tr><td>spring.data.mongodb.database</td><td>mongodb database</td><td>flexicoreNoSQL</td></tr></tbody></table></figure>
+<figure class="wp-block-table"><table><tbody><tr><td>Property name</td><td>Description</td><td>Default Value</td></tr><tr><td>flexicore.entities</td><td>Path to entities folder, put your entity plugins here.</td><td>/home/flexicore/entities</td></tr><tr><td>flexicore.plugins</td><td>Path to plugins folder, put service plugins here.</td><td>/home/flexicore/plugins</td></tr><tr><td>flexicore.externalStaticMapping</td><td>mapping for static contents</td><td>/**</td></tr><tr><td>flexicore.externalStatic</td><td>static content location</td><td>/home/flexicore/ui/</td></tr><tr><td>flexicore.loginFailedAttempts</td><td>failed logging attempts till blacklisting ip (-1 to disable login blacklist)</td><td>-1</td></tr><tr><td>flexicore.loginBlacklistRetentionMs</td><td>time to keep ip in blacklist , only if flexicore.loginFailedAttempts is enabled</td><td>600000</td></tr><tr><td>spring.datasource.url</td><td>Postgresql connection string</td><td>jdbc:postgresql://localhost:5432/flexicore</td></tr><tr><td>spring.datasource.username</td><td>username to access PostgreSQL database</td><td>flexicore</td></tr><tr><td>spring.datasource.password</td><td>password to access PostgreSQL database</td><td>flexicore</td></tr><tr><td>spring.data.mongodb.uri</td><td>mongodb connection string</td><td>mongodb://localhost:27018/flexicoreNoSQL</td></tr><tr><td>spring.data.mongodb.port</td><td>mongodb port</td><td>27017</td></tr><tr><td>spring.data.mongodb.host</td><td>mongodb host</td><td>localhost</td></tr><tr><td>spring.data.mongodb.database</td><td>mongodb database</td><td>flexicoreNoSQL</td></tr></tbody></table></figure>
 <!-- /wp:table -->
 
 <!-- wp:heading {"level":3} -->
@@ -279,7 +287,7 @@
 <ul><li>Design back-end systems of any size and shape.</li><li>Optionally implement back-end systems from scratch in a matter of days with full accountability for performance and compliance.</li><li>Deploy the implemented systems for you on the cloud in unbeatable price-performance. Dev-ops services included.</li><li>Implement user interfaces for the above using Google Flutter, Angular (Typescript), Java, and Swift.</li><li>Design and implement distributed systems based on Flexicore and Wizzdi database synchronization plugin.</li><li>Design and implement embedded systems if these are associated with Flexicore based systems.<br><br></li></ul>
 <!-- /wp:list -->
 
-<p><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com">https://www.wizzdi.com</a> - Company web site<br><a href="https://www.wizzdi.com">Wizzdi Software Systems</a></p>
+<p><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com">https://www.wizzdi.com</a> - Company web site<br><a href="https://www.wizzdi.com">Wizzdi Software Systems</a></p>
 <p>contact information:<br>info@wizzdi.com</p>
 
 <!-- wp:paragraph -->
