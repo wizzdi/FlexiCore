@@ -126,7 +126,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:list -->
-<ul><li>PostgreSQL running and accessible at port 5432 locally (see below how to access a database on a different server)</li><li>A database named <em>flexicore </em>(can be empty) with a login role named <em>flexicore </em>having a password <em>flexicore</em>. See below how to change these default values.</li><li>MongoDB running locally and accessible at port 27017, the database will be automatically created.</li><li> a set of files and folders at <em>/home/flexicore</em>, get the files from <a href="https://wizzdi.com/github-readme/">here</a>, please extract the file to your root or change the properties file below accordingly.</li></ul>
+<ul><li>PostgreSQL running and accessible at port 5432 locally (see below how to access a database on a different server)</li><li>A database named <em>flexicore </em>(can be empty) with a login role named <em>flexicore </em>having a password <em>flexicore</em>. See below how to change these default values.</li><li>MongoDB running locally and accessible at port 27017, the database will be automatically created.</li><li> a set of files and folders at <em>/home/flexicore</em>, get the files from <a href="https://github.com/wizzdi/FlexiCore/blob/master/home.zip">here</a>, please extract the file to your root or change the properties file below accordingly.</li></ul>
 <!-- /wp:list -->
 
 <!-- wp:paragraph -->
