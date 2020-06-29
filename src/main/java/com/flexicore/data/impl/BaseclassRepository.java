@@ -357,6 +357,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
 
 
     @Override
+    @Transactional
     public void flush() {
         em.flush();
     }
