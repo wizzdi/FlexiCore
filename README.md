@@ -9,7 +9,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p><strong>Flexicore adds to Spring Boot or to Java EE web application a very flexible and powerful plugins support</strong>,<strong> robust access control,</strong> <strong>and an additional set of services many applications require.</strong><br><strong> Learn more on Flexicore in Wizzdi web site</strong>:<br><a href="http://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com">https://www.wizzdi.com</a></a></a></p>
+<p><strong>Flexicore adds to Spring Boot or to Java EE web application a very flexible and powerful plugins support</strong>,<strong> robust access control,</strong> <strong>and an additional set of services many applications require.</strong><br><strong> Learn more on Flexicore in Wizzdi web site</strong>:<br><a href="http://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com">https://www.wizzdi.com</a></a></a></a></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
@@ -20,9 +20,8 @@
 <p>Maven Dependency for plugins:</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:code -->
-<pre class="wp-block-code"><code>  
-  &lt;properties>
+<!-- wp:enlighter/codeblock {"language":"xml"} -->
+<pre class="EnlighterJSRAW" data-enlighter-language="xml" data-enlighter-theme="" data-enlighter-highlight="" data-enlighter-linenumbers="" data-enlighter-lineoffset="" data-enlighter-title="" data-enlighter-group="">  &lt;properties>
         &lt;flexicore-api.version>4.0.0-spring&lt;/flexicore-api.version>
         &lt;pf4j-spring.version>0.6.0-SNAPSHOT&lt;/pf4j-spring.version>
        ...
@@ -101,8 +100,8 @@
                 &lt;/executions>
             &lt;/plugin>
         &lt;/plugins>
-    &lt;/build></code></pre>
-<!-- /wp:code -->
+    &lt;/build></pre>
+<!-- /wp:enlighter/codeblock -->
 
 <!-- wp:paragraph -->
 <p>compiling a FlexiCore-exec jar from repo</p>
@@ -286,7 +285,7 @@
 <ul><li>Design back-end systems of any size and shape.</li><li>Optionally implement back-end systems from scratch in a matter of days with full accountability for performance and compliance.</li><li>Deploy the implemented systems for you on the cloud in unbeatable price-performance. Dev-ops services included.</li><li>Implement user interfaces for the above using Google Flutter, Angular (Typescript), Java, and Swift.</li><li>Design and implement distributed systems based on Flexicore and Wizzdi database synchronization plugin.</li><li>Design and implement embedded systems if these are associated with Flexicore based systems.<br><br></li></ul>
 <!-- /wp:list -->
 
-<p><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com">https://www.wizzdi.com</a> - Company web site<br><a href="https://www.wizzdi.com">Wizzdi Software Systems</a></p>
+<p><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com">https://www.wizzdi.com</a> - Company web site<br><a href="https://www.wizzdi.com">Wizzdi Software Systems</a></p>
 <p>contact information:<br>info@wizzdi.com</p>
 
 <!-- wp:paragraph -->
