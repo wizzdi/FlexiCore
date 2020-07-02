@@ -519,40 +519,9 @@ public class ClassScannerService {
         registerClazzes(claz, existing, defaults, toMerge);
     }
 
-    private Pair<InheritanceType, Class<?>> getInheritedTableName(Class<?> orginal) {
-        for (Class<?> current = orginal; current.getSuperclass() != null; current = current.getSuperclass()) {
-            Inheritance inheritance = current.getDeclaredAnnotation(Inheritance.class);
-            if (inheritance != null) {
-                return Pair.of(inheritance.strategy(), current);
-            }
-        }
-        return null;
-    }
 
 
-    private void createIndexes(Collection<Class<?>> clazes) {
-        for (Class<?> claz : clazes) {
-            Table table = claz.getAnnotation(Table.class);
-            String tableName;
-            Pair<InheritanceType, Class<?>> pair = getInheritedTableName(claz);
 
-            if (pair != null && pair.getLeft().equals(InheritanceType.SINGLE_TABLE)) {
-                Class<?> parent = pair.getRight();
-                Table inherited = parent.getAnnotation(Table.class);
-                tableName = inherited == null || inherited.name().isEmpty() ? parent.getSimpleName() : inherited.name();
-            } else {
-                tableName = table == null || table.name().isEmpty() ? claz.getSimpleName() : table.name();
-            }
-            if (table != null) {
-                for (Index index : table.indexes()) {
-
-
-                    clazzRegistration.createIndex(index, tableName);
-                }
-            }
-        }
-
-    }
 
 
     private void registerClazzes(Class<?> claz, Map<String, Clazz> existing, List<AnnotatedClazzWithName> defaults, List<Object> toMerge) {

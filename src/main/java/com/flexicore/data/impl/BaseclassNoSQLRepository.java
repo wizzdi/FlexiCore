@@ -7,6 +7,8 @@ import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,8 @@ import java.util.logging.Logger;
 import static com.flexicore.service.MongoConnectionService.MONGO_DB;
 
 
+@Component
+@Primary
 public class BaseclassNoSQLRepository extends NoSqlRepository implements com.flexicore.data.BaseclassNoSQLRepository {
 
    private Logger logger = Logger.getLogger(getClass().getCanonicalName());

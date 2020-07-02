@@ -53,7 +53,8 @@ public class BaseclassNoSQLService implements com.flexicore.service.BaseclassNoS
        return baseclassNoSQL;
     }
 
-    private boolean updateBaseclassNoSQLNoMerge(BaseclassNoSQL baseclassNoSQL, BaseclassNoSQLCreate create) {
+    @Override
+    public boolean updateBaseclassNoSQLNoMerge(BaseclassNoSQL baseclassNoSQL, BaseclassNoSQLCreate create) {
         boolean update=false;
         if(create.getName()!=null && create.getName().equals(baseclassNoSQL.getName())){
             baseclassNoSQL.setName(create.getName());

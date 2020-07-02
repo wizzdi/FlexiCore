@@ -24,20 +24,5 @@ public class ClazzRegistration {
         em.persist(clazz);
     }
 
-    @Transactional(noRollbackFor = PersistenceException.class)
-    public void createIndex(Index index, String tableName) {
-        try {
-            Query query = em.createNativeQuery("create " + (index.unique() ? "unique " : "") + "index " + index.name() + " on " + tableName + "(" + index.columnList() + ")");
-            query.executeUpdate();
-            logger.info("created index " + (index.unique() ? "unique " : "") + index.name() + " on table " + tableName + "(" + index.columnList() + ")");
-        } catch (Exception e) {
-            if (e.getMessage().toLowerCase().contains("already exists")) {
-                logger.fine("index " + (index.unique() ? "unique " : "") + index.name() + " on table " + tableName + "(" + index.columnList() + ") , already exists");
 
-            } else {
-                logger.log(Level.SEVERE, "unable to create index", e);
-
-            }
-        }
-    }
 }
