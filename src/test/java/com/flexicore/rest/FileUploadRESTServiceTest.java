@@ -196,11 +196,6 @@ public class FileUploadRESTServiceTest {
             HttpEntity<byte[]> requestEntity = new HttpEntity<>(chunk, headers);
 
             ResponseEntity<FileResource> response=this.restTemplate.exchange("/FlexiCore/rest/resources/upload", HttpMethod.POST, requestEntity, FileResource.class);
-            if(lastChunk){
-                Assertions.assertEquals(Response.Status.EXPECTATION_FAILED.getStatusCode(), response.getStatusCodeValue());
-                break;
-
-            }
             Assertions.assertEquals(200, response.getStatusCodeValue());
             FileResource fileResource=response.getBody();
             Assertions.assertNotNull(fileResource);
