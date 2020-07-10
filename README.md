@@ -13,10 +13,10 @@
 <!-- /wp:paragraph -->
 <h3> Main projects used</h3>
 <h4> Spring Boot</h3>
-<a href="Spring Boot "> https://github.com/spring-projects/spring-boot</a>
+<a href="Spring Boot ">https://github.com/spring-projects/spring-boot</a>
 
 <h4> Pf4J</h3>
-<a href="Pf4j Boot "> https://github.com/pf4j/pf4j</a>
+<a href="Pf4j Boot ">https://github.com/pf4j/pf4j</a>
 
 
 
