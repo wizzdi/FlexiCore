@@ -95,8 +95,13 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
                 File file = new File(fileResource.getFullPath());
                 String calculatedFileMd5=generateMD5(file);
                 if(!md5.equals(calculatedFileMd5)){
-                    if(!file.delete()){
+                    if(file.delete()){
+                        fileResource.setOffset(0L);
+                        fileResourceRepository.merge(fileResource);
+                    }
+                    else{
                         logger.warning("Could not delete bad md5 file "+file);
+
                     }
                     throw new ClientErrorException("File Total MD5 is "+calculatedFileMd5 +" expected "+md5, Response.Status.EXPECTATION_FAILED);
                 }
