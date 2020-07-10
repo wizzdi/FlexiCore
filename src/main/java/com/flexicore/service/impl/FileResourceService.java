@@ -82,7 +82,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
         return existing.isEmpty() ? null : existing.get(0);
     }
 
-    public FileResource uploadFileResource(String filename, SecurityContext securityContext, String md5, InputStream fileInputStream) {
+    public FileResource uploadFileResource(String filename, SecurityContext securityContext, String md5, String chunkMd5, boolean lastChunk, InputStream fileInputStream) {
 
         FileResource fileResource = getExistingFileResource(md5, securityContext);
         if (fileResource == null) {
@@ -90,7 +90,19 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
         }
         if (!fileResource.isDone()) {
-            saveFile(fileInputStream, fileResource);
+            saveFile(fileInputStream,chunkMd5, fileResource);
+            if(lastChunk){
+                File file = new File(fileResource.getFullPath());
+                String calculatedFileMd5=generateMD5(file);
+                if(!md5.equals(calculatedFileMd5)){
+                    if(!file.delete()){
+                        logger.warning("Could not delete bad md5 file "+file);
+                    }
+                    throw new ClientErrorException("File Total MD5 is "+calculatedFileMd5 +" expected "+md5, Response.Status.EXPECTATION_FAILED);
+                }
+                fileResource.setDone(true);
+                fileResourceRepository.merge(fileResource);
+            }
 
         }
 
@@ -238,8 +250,19 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
     @Override
     public void saveFile(InputStream is, FileResource file) {
+        saveFile(is,null,file);
+    }
+    @Override
+    public void saveFile(InputStream is,String chunkMd5, FileResource file) {
         try {
             byte[] data = IOUtils.toByteArray(is);
+            if(chunkMd5!=null){
+                String calculatedChunkMd5=generateMD5(new ByteArrayInputStream(data));
+                if(!chunkMd5.equals(calculatedChunkMd5)){
+                    throw new ClientErrorException("Chunk MD5 was "+calculatedChunkMd5 +" expected "+chunkMd5, Response.Status.PRECONDITION_FAILED);
+                }
+            }
+
             saveFile(data, file.getOffset(), file);
 
         } catch (IOException e) {

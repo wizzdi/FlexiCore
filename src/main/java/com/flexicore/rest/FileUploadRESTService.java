@@ -68,30 +68,7 @@ public class FileUploadRESTService implements RESTService {
     UserService userService;
 
     private Logger logger = Logger.getLogger(getClass().getCanonicalName());
-    /*
-     * @GET
-     *
-     * @Produces(MediaType.APPLICATION_JSON) public List<Media>
-     * listAllMedia(@HeaderParam("authenticationkey") String authenticationkey,
-     *
-     * @HeaderParam("pagesize") Integer pagesize,
-     *
-     * @HeaderParam("currentpage") Integer currentpage) { return
-     * fileResourceService.findAllOrderedByName(pagesize,currentpage); }
-     *
-     * @GET
-     *
-     * @Produces(MediaType.APPLICATION_JSON) public List<Media>
-     * listAllMediaOrderedBy(@HeaderParam("authenticationkey") String
-     * authenticationkey,
-     *
-     * @HeaderParam("pagesize") Integer pagesize,
-     *
-     * @HeaderParam("currentpage") Integer
-     * currentpage, @HeaderParam("orderedBy") List<String> fieldNames) { return
-     * fileResourceService.findAllOrderedByFieldsName(pagesize,currentpage,
-     * fieldNames); }
-     */
+
 
     /**
      * retreives file resource by md5
@@ -131,9 +108,12 @@ public class FileUploadRESTService implements RESTService {
     @Produces("application/json")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     @IOperation(access = Access.allow, Name = "uploadOctet", Description = "uploads a file octat way",noOtherLicenseRequired = true)
-    public FileResource uploadFile(@HeaderParam("authenticationkey") String authenticationkey, @HeaderParam("md5") String md5, @HeaderParam("name") String name,
+    public FileResource uploadFile(@HeaderParam("authenticationkey") String authenticationkey,
+                                   @HeaderParam("md5") String md5, @HeaderParam("name") String name,
+                                   @HeaderParam("chunkMd5") String chunkMd5,
+                                   @HeaderParam("lastChunk") @DefaultValue("false") boolean lastChunk,
                                    InputStream stream, @Context SecurityContext securityContext) {
-        return fileResourceService.uploadFileResource(name, securityContext, md5, stream);
+        return fileResourceService.uploadFileResource(name, securityContext, md5,chunkMd5,lastChunk, stream);
 
     }
 

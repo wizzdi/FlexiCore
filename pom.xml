@@ -18,9 +18,9 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <swagger.version>2.1.2</swagger.version>
-        <pf4j-spring.version>0.6.0-SNAPSHOT</pf4j-spring.version>
+        <pf4j-spring.version>0.6.0</pf4j-spring.version>
 
-        <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
+        <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
         <junit-jupiter.version>5.6.2</junit-jupiter.version>
 
     </properties>
@@ -332,7 +332,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-api</artifactId>
-            <version>4.0.9</version>
+            <version>4.0.10</version>
         </dependency>
 
         <dependency>
