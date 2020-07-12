@@ -2,24 +2,27 @@ package com.flexicore.data;
 
 import com.flexicore.annotations.InheritedComponent;
 import com.flexicore.data.impl.BaseclassRepository;
-import com.flexicore.model.FilteringInformationHolder;
 import com.flexicore.model.QueryInformationHolder;
-import com.flexicore.model.ui.*;
-import com.flexicore.model.ui.plugins.*;
+import com.flexicore.model.ui.UIComponent;
+import com.flexicore.model.ui.UIComponent_;
 import com.flexicore.security.SecurityContext;
 
-//import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+//import javax.ejb.Stateless;
 
 /**
  * Created by Asaf on 12/07/2017.
  */
 @InheritedComponent
-public class UIPluginRepository extends BaseclassRepository {
+public class UIComponentRepository extends BaseclassRepository {
 
     public List<UIComponent> getExistingUIComponentsByIds(Set<String> ids) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -45,15 +48,4 @@ public class UIPluginRepository extends BaseclassRepository {
 
 
 
-    public List<UIPlugin> listUIPluginsByInterface(UIInterface uiInterface, FilteringInformationHolder filteringInformationHolder, int pageSize, int currentPage, SecurityContext securityContext) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<UIPlugin> q = cb.createQuery(UIPlugin.class);
-        Root<UIPlugin> r = q.from(UIPlugin.class);
-        Join<UIPlugin,UIPluginToUIInterface> join=r.join(UIPlugin_.uiPluginToUIInterfaces);
-        Predicate p = cb.equal(join.get(UIPluginToUIInterface_.uiInterface),uiInterface);
-        List<Predicate> preds= new ArrayList<>();
-        preds.add(p);
-        QueryInformationHolder<UIPlugin> queryInformationHolder= new QueryInformationHolder<>(filteringInformationHolder,pageSize,currentPage,UIPlugin.class,securityContext);
-        return getAllFiltered(queryInformationHolder,preds,cb,q,r);
-    }
 }
