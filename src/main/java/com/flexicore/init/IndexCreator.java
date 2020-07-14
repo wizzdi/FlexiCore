@@ -15,10 +15,12 @@ import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class IndexCreator {
 
+    private static final AtomicBoolean init=new AtomicBoolean(false);
     private static final Logger logger= LoggerFactory.getLogger(IndexCreator.class);
 
     @Autowired
@@ -29,14 +31,17 @@ public class IndexCreator {
     @Async
     @EventListener
     public void init(PluginsLoadedEvent o){
-        for (Class<?> entity : entitiesHolder.getEntities()) {
-            try {
-                createIndex(entity);
-            }
-            catch (Exception e){
-                logger.error("Failed creating index for "+entity.getName(),e);
+        if(init.compareAndSet(false,true)){
+            for (Class<?> entity : entitiesHolder.getEntities()) {
+                try {
+                    createIndex(entity);
+                }
+                catch (Exception e){
+                    logger.error("Failed creating index for "+entity.getName(),e);
+                }
             }
         }
+
     }
 
     private void createIndex(Class<?> claz) {

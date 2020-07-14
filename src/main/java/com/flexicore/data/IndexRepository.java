@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Component
 public class IndexRepository {
@@ -16,10 +17,21 @@ public class IndexRepository {
 
     @Transactional(noRollbackFor = PersistenceException.class)
     public void createIndex(Index index, String tableName) {
+
         try {
-            Query query = em.createNativeQuery("create " + (index.unique() ? "unique " : "") + "index " + index.name() + " on " + tableName + "(" + index.columnList() + ")");
-            query.executeUpdate();
-            logger.info("created index " + (index.unique() ? "unique " : "") + index.name() + " on table " + tableName + "(" + index.columnList() + ")");
+            Query existing = em.createNativeQuery("select indexname from pg_indexes where tablename=? and indexname=?");
+            existing.setParameter(1,tableName);
+            existing.setParameter(2,index.name());
+            List<?> results=existing.getResultList();
+            if(results.isEmpty()){
+                Query query = em.createNativeQuery("create " + (index.unique() ? "unique " : "") + "index " + index.name() + " on " + tableName + "(" + index.columnList() + ")");
+                query.executeUpdate();
+                logger.info("created index " + (index.unique() ? "unique " : "") + index.name() + " on table " + tableName + "(" + index.columnList() + ")");
+            }
+            else{
+                logger.debug("index " + (index.unique() ? "unique " : "") + index.name() + " on table " + tableName + "(" + index.columnList() + ") , already exists");
+            }
+
         } catch (Exception e) {
             if (e.getMessage().toLowerCase().contains("already exists")) {
                 logger.debug("index " + (index.unique() ? "unique " : "") + index.name() + " on table " + tableName + "(" + index.columnList() + ") , already exists");

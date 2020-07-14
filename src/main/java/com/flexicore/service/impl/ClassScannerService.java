@@ -154,9 +154,9 @@ public class ClassScannerService {
                     .setInvoker(dynamicInvoker);
             if (dynamicInvokersService.updateInvokerNoMerge(createInvokerRequest, createInvokerRequest.getInvoker())) {
                 toMergeInvokers.add(dynamicInvoker);
-                logger.info("updated invoker " + dynamicInvoker.getCanonicalName());
+                logger.fine("updated invoker " + dynamicInvoker.getCanonicalName());
             } else {
-                logger.info("invoker " + dynamicInvoker.getCanonicalName() + " already exists");
+                logger.fine("invoker " + dynamicInvoker.getCanonicalName() + " already exists");
 
             }
 

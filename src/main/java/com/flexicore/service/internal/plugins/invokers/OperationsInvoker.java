@@ -10,11 +10,13 @@ import com.flexicore.request.OperationFiltering;
 import com.flexicore.request.OperationUpdate;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.OperationService;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 
 @PluginInfo(version = 1)
 @InvokerInfo()
+@Extension
 public class OperationsInvoker implements ListingInvoker<Operation, OperationFiltering> {
 
     @Inject

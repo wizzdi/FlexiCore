@@ -9,11 +9,13 @@ import com.flexicore.model.auditing.AuditingEvent;
 import com.flexicore.request.AuditingFilter;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.AuditingService;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 
 @PluginInfo(version = 1)
 @InvokerInfo
+@Extension
 public class AuditingInvoker implements ListingInvoker<AuditingEvent, AuditingFilter> {
 
     @Inject

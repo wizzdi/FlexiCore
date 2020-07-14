@@ -10,10 +10,12 @@ import com.flexicore.request.CategoryFilter;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.CategoryService;
 
+import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @PluginInfo(version = 1)
 @InvokerInfo()
+@Extension
 public class CategoriesInvoker implements ListingInvoker<Category,CategoryFilter> {
 
     @Autowired

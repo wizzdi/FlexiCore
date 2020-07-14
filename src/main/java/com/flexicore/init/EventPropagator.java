@@ -56,13 +56,13 @@ public class EventPropagator {
         if(!eventsInProcess.contains(event)){
             Object eventToPrint = event instanceof PayloadApplicationEvent ? ((PayloadApplicationEvent<?>) event).getPayload() : event;
 
-            logger.info("Propagating event "+eventToPrint);
+            logger.debug("Propagating event "+eventToPrint);
             eventsInProcess.add(event);
             try {
                 for (ApplicationContext applicationContext : flexiCorePluginManager.getPluginApplicationContexts()) {
                     if (event.getSource() != applicationContext) {
                         Object contextId = applicationContext.getClassLoader() instanceof FlexiCorePluginClassLoader?applicationContext.getClassLoader():applicationContext.getId();
-                        logger.info("Propagating event "+eventToPrint +" to context "+ contextId);
+                        logger.debug("Propagating event "+eventToPrint +" to context "+ contextId);
 
                         applicationContext.publishEvent(event);
                     }
