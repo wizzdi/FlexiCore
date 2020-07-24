@@ -10,11 +10,13 @@ import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.rest.All;
 import com.flexicore.data.TenantRepository;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
+import com.flexicore.events.TenantCreatedEvent;
 import com.flexicore.model.*;
 import com.flexicore.request.*;
 import com.flexicore.security.NewUser;
 import com.flexicore.security.RunningUser;
 import com.flexicore.security.SecurityContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +45,8 @@ public class TenantService implements com.flexicore.service.TenantService {
 
     @Autowired
     private BaseclassNewService baseclassService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
 
 
@@ -72,14 +76,16 @@ public class TenantService implements com.flexicore.service.TenantService {
         }
         Tenant tenant = createTenantNoMerge(tenantCreate, securityContext);
         tenantRepository.merge(tenant);
+        Role role=null;
+        User user=null;
         if (tenantAdmin != null) {
             Operation allOp = baselinkService.findById(Baseclass.generateUUIDFromString(All.class.getCanonicalName()));
             Clazz SecurityWildcard = Baseclass.getClazzbyname(SecurityWildcard.class.getCanonicalName());
-            User user = userService.createUserNoMerge(tenantAdmin, securityContext);
+            user = userService.createUserNoMerge(tenantAdmin, securityContext);
             toMergeUser.add(user);
             TenantToUser tenantToUser=userService.createTenantToUserNoMerge(new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant(tenant),securityContext);
             toMergeUser.add(tenantToUser);
-            Role role = roleService.createRoleNoMerge(new RoleCreate().setName(tenant.getName()+" "+TENANT_ADMINISTRATOR_NAME), securityContext);
+            role = roleService.createRoleNoMerge(new RoleCreate().setName(tenant.getName()+" "+TENANT_ADMINISTRATOR_NAME), securityContext);
             role.setTenant(tenant);
             toMergeRole.add(role);
             RoleToUser roleToUser=userService.createRoleToUserNoMerge(new RoleToUserCreate().setUser(user).setRole(role),securityContext);
@@ -91,6 +97,7 @@ public class TenantService implements com.flexicore.service.TenantService {
         }
         userService.massMerge(toMergeUser);
         roleService.massMerge(toMergeRole);
+        applicationEventPublisher.publishEvent(new TenantCreatedEvent(tenant,role,user));
         return tenant;
 
     }

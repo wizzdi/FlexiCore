@@ -441,12 +441,16 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             existingPredicates.add(cb.like(cb.lower(r.get(Baseclass_.searchKey)), fullTextLike.toLowerCase()));
         }
 
-        if (queryInformationHolder.getFilteringInformationHolder().getExcludingIds() != null && !queryInformationHolder.getFilteringInformationHolder().getExcludingIds().isEmpty()) {
-            existingPredicates.add(cb.not(r.get(Baseclass_.id).in(queryInformationHolder.getFilteringInformationHolder().getExcludingIds())));
+        List<BaseclassNotIdFiltering> excludingIds = queryInformationHolder.getFilteringInformationHolder().getExcludingIds();
+        if (excludingIds != null && !excludingIds.isEmpty()) {
+            Set<String> ids=excludingIds.stream().map(f->f.getId()).collect(Collectors.toSet());
+            existingPredicates.add(cb.not(r.get(Baseclass_.id).in(ids)));
         }
 
-        if (queryInformationHolder.getFilteringInformationHolder().getOnlyIds() != null && !queryInformationHolder.getFilteringInformationHolder().getOnlyIds().isEmpty()) {
-            existingPredicates.add(r.get(Baseclass_.id).in(queryInformationHolder.getFilteringInformationHolder().getOnlyIds()));
+        List<BaseclassOnlyIdFiltering> onlyIds = queryInformationHolder.getFilteringInformationHolder().getOnlyIds();
+        if (onlyIds != null && !onlyIds.isEmpty()) {
+            Set<String> ids=onlyIds.stream().map(f->f.getId()).collect(Collectors.toSet());
+            existingPredicates.add(r.get(Baseclass_.id).in(ids));
         }
 
         if (permissionContextLike != null && !permissionContextLike.isEmpty()) {

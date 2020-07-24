@@ -28,7 +28,7 @@ public class SpringBatchConfiguration {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setMaxPoolSize(12);
         executor.setCorePoolSize(8);
-        executor.setQueueCapacity(15);
+        executor.setQueueCapacity(0);
         executor.setThreadNamePrefix("AsyncThread");
 
         return executor;

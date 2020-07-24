@@ -1473,7 +1473,7 @@ public class FlexiCoreOpenApiReader extends Reader {
             final ParameterizedType parameterized = (ParameterizedType) cls;
             final Type[] args = parameterized.getActualTypeArguments();
             if (args.length != 1) {
-                LOGGER.error("Unexpected class definition: {}", cls);
+                LOGGER.error("Unexpected class definition: {}", cls.getTypeName());
                 return null;
             }
             final Type first = args[0];
@@ -1483,7 +1483,7 @@ public class FlexiCoreOpenApiReader extends Reader {
                 return null;
             }
         } else {
-            LOGGER.error("Unknown class definition: {}", cls);
+            LOGGER.error("Unknown class definition: {}", cls.getTypeName());
             return null;
         }
     }

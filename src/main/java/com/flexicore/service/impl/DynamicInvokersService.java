@@ -408,7 +408,11 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
 
     @Override
     public ExecuteInvokersResponse executeInvoker(ExecuteDynamicExecution executeDynamicExecution, SecurityContext securityContext) {
-        return executeInvoker(executeDynamicExecution.getDynamicExecution(), securityContext);
+        DynamicExecution dynamicExecution = executeDynamicExecution.getDynamicExecution();
+        ExecuteInvokersResponse executeInvokersResponse = executeInvoker(dynamicExecution, securityContext);
+        dynamicExecution.setLastExecuted(OffsetDateTime.now());
+        dynamicInvokersRepository.merge(dynamicExecution);
+        return executeInvokersResponse;
     }
 
     @Override

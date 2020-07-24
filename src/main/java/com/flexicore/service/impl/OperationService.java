@@ -279,10 +279,8 @@ public class OperationService implements com.flexicore.service.OperationService 
 	}
 	@Override
 	public PaginationResponse<Operation> getAllOperations(OperationFiltering operationFiltering, SecurityContext securityContext) {
-		QueryInformationHolder<Operation> cats = new QueryInformationHolder<>(operationFiltering, Operation.class, securityContext);
-
-		List<Operation> list = operationRepository.getAllFiltered(cats);
-		long count = operationRepository.countAllFiltered(cats);
+		List<Operation> list = listAllOperations(operationFiltering,securityContext);
+		long count = operationRepository.countAllOperations(operationFiltering,securityContext);
 		return new PaginationResponse<>(list, operationFiltering, count);
 	}
 

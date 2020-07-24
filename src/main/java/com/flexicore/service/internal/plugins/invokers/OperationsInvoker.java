@@ -13,6 +13,7 @@ import com.flexicore.service.impl.OperationService;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 
 @PluginInfo(version = 1)
 @InvokerInfo()
@@ -32,6 +33,11 @@ public class OperationsInvoker implements ListingInvoker<Operation, OperationFil
     @InvokerMethodInfo(displayName = "update Operation",description = "Updates Operation")
     public Operation update(OperationUpdate operationUpdate, SecurityContext securityContext) {
         operationService.validate(operationUpdate,securityContext);
+        Operation operation=operationUpdate.getId()!=null?operationService.getByIdOrNull(operationUpdate.getId(),Operation.class,null,securityContext):null;
+        if(operation==null){
+            throw new BadRequestException("No Operation with id "+operationUpdate.getId());
+        }
+        operationUpdate.setOperation(operation);
         return operationService.updateOperation(operationUpdate,securityContext);
     }
 
