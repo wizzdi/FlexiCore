@@ -9,12 +9,9 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p><strong>Flexicore adds to Spring Boot or to Java EE web application a very flexible and powerful plugins support</strong>,<strong> robust access control,</strong> <strong>and an additional set of services many applications require.</strong><br><strong> Learn more on Flexicore in Wizzdi web site</strong>:<br><a href="http://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com">https://www.wizzdi.com</a></a></a></a></p>
+<p>Flexicore adds to Spring Boot or to Java EE web application a very flexible and powerful plugins support,robust access control,and an additional set of services many applications require.<br> Learn more on Flexicore in Wizzdi web site:<br><a href="http://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"></a><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com"><a href="https://www.wizzdi.com">https://www.wizzdi.com</a></a></a></a></p>
 <!-- /wp:paragraph -->
-<h3> Main projects used</h3>
 
-<a href="https://github.com/spring-projects/spring-boot" title="Spring Boot Github">Spring Boot</a><br>
-<a href="https://github.com/pf4j/pf4j" title="Plugins for Java">Pf4j</a>
 
 
 
@@ -298,3 +295,8 @@
 <!-- wp:paragraph -->
 <p></p>
 <!-- /wp:paragraph -->
+
+<h3> Main 3rd party projects</h3>
+
+<a href="https://github.com/spring-projects/spring-boot" title="Spring Boot Github">Spring Boot</a><br>
+<a href="https://github.com/pf4j/pf4j" title="Plugins for Java">Pf4j</a>
