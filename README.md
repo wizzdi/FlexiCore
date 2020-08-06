@@ -4,13 +4,8 @@
 
 # ![](https://support.wizzdi.com/wp-content/uploads/2020/05/flexicore-icon-extra-small.png) FlexiCore [![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore)](https://jenkins.wizzdi.com/job/FlexiCore/)
 
-### What is 
 
-> Flexicore
-
-**Flexicore adds to Spring Boot web application a very flexible and powerful plugins support**, **robust access control,** **and an additional set of services many applications require.**  
-**Learn more on Flexicore in Wizzdi web site**:  
-https://www.wizzdi.com
+Flexicore empowers [Spring Boot]([https://github.com/spring-projects/spring-boot](https://github.com/spring-projects/spring-boot)) web application with a very flexible and powerful plugins support, robust access control,and an optional set of services many applications require
 
 ## Use Case
 
