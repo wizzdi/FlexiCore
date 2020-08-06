@@ -167,8 +167,7 @@ java -jar FlexiCore-exec.jar
 ## Spring Configuration Properties
 |Property name|Description|Default Value|
 |--|--|--|
-| flexicore.entities | Path to entities folder, put your entity plugins here. | /home/flexicore/entities
- |
+| flexicore.entities | Path to entities folder, put your entity plugins here. | /home/flexicore/entities|
 |flexicore.plugins|Path to plugins folder, put service plugins here.|/home/flexicore/plugins|
 |flexicore.externalStaticMapping|mapping for static contents| /**|
 |flexicore.externalStatic|static content location|/home/flexicore/ui/|
