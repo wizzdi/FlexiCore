@@ -13,6 +13,7 @@ import com.flexicore.annotations.rest.All;
 import com.flexicore.data.jsoncontainers.BaseclassCreationContainer;
 import com.flexicore.data.jsoncontainers.FieldSetContainer;
 import com.flexicore.data.jsoncontainers.SortingOrder;
+import com.flexicore.events.BaseclassCreated;
 import com.flexicore.model.*;
 import com.flexicore.request.BaseclassCountRequest;
 import com.flexicore.request.MassDeleteRequest;
@@ -21,6 +22,8 @@ import com.flexicore.security.SecurityContext;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +52,9 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     protected EntityManager em;
     private Logger logger = Logger.getLogger(getClass().getCanonicalName());
     private static Operation allOp;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
 
     @Override
@@ -283,9 +289,10 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     @Override
     @Transactional
     public void merge(Object base,boolean updateDate) {
+        Baseclass base1=null;
         if(base instanceof Baseclass){
             OffsetDateTime now = OffsetDateTime.now();
-            Baseclass base1 = (Baseclass) base;
+            base1 = (Baseclass) base;
             if(updateDate){
                 base1.setUpdateDate(now);
             }
@@ -296,6 +303,10 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
         }
 
         em.merge(base);
+        if(base1!=null&&base1.getCreationDate()==null){
+            eventPublisher.publishEvent(new BaseclassCreated<>(base1));
+        }
+
     }
 
     @Override
@@ -1545,19 +1556,29 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     @Override
     @Transactional
     public void massMerge(List<?> toMerge,boolean updatedate) {
+        List<BaseclassCreated<?>> events=new ArrayList<>();
         OffsetDateTime now = OffsetDateTime.now();
         for (Object o : toMerge) {
             if(o instanceof Baseclass){
                 Baseclass baseclass = (Baseclass) o;
+                boolean created=baseclass.getUpdateDate()==null;
                 if(updatedate){
                     baseclass.setUpdateDate(now);
                 }
                 if(logger.isLoggable(Level.FINE)){
                     logger.fine("merging "+ baseclass.getId() +" updateDate flag is "+updatedate +" update date is "+baseclass.getUpdateDate());
                 }
+                if(created){
+                    BaseclassCreated<?> baseclassCreated=new BaseclassCreated<>(baseclass);
+                    events.add(baseclassCreated);
+                }
+
             }
 
             em.merge(o);
+        }
+        for (BaseclassCreated<?> event : events) {
+            eventPublisher.publishEvent(event);
         }
     }
 

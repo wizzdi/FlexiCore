@@ -135,7 +135,8 @@ public class SecurityImposer  {
 
 
 					if (securityService.checkIfAllowed(user, tenants, operation, operationInfo.getiOperation().access())) {
-						return procceed(securityContext, joinPoint,methodName,parameters, start);
+						Object procceed = procceed(securityContext, joinPoint, methodName, parameters, start);
+						return procceed;
 					} else {
 						return deny(websocketSession);
 					}

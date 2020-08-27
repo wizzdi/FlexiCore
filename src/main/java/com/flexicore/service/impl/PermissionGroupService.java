@@ -17,11 +17,12 @@ import com.flexicore.request.PermissionGroupCopy;
 import com.flexicore.request.PermissionGroupsFilter;
 import com.flexicore.request.UpdatePermissionGroup;
 import com.flexicore.security.SecurityContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.ws.rs.BadRequestException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,8 +30,12 @@ import java.util.stream.Collectors;
 @Primary
 @Component
 public class PermissionGroupService implements com.flexicore.service.PermissionGroupService {
+
     @Autowired
     private PermissionGroupRepository permissionGroupRepository;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
 
     @Override
@@ -126,6 +131,10 @@ public class PermissionGroupService implements com.flexicore.service.PermissionG
             permissionGroup.setDescription(createPermissionGroupRequest.getDescription());
             update = true;
         }
+        if (createPermissionGroupRequest.getExternalId() != null && !createPermissionGroupRequest.getExternalId().equals(permissionGroup.getExternalId())) {
+            permissionGroup.setExternalId(createPermissionGroupRequest.getExternalId());
+            update = true;
+        }
         return update;
     }
 
@@ -135,6 +144,7 @@ public class PermissionGroupService implements com.flexicore.service.PermissionG
 
         PermissionGroup permissionGroup = createPermissionGroupNoMerge(createPermissionGroupRequest, securityContext);
         permissionGroupRepository.merge(permissionGroup);
+
         return permissionGroup;
     }
 

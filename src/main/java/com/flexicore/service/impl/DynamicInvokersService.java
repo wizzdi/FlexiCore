@@ -12,6 +12,8 @@ import com.flexicore.interfaces.dynamic.Invoker;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.FileResource;
 import com.flexicore.model.Operation;
+import com.flexicore.model.auditing.AuditingJob;
+import com.flexicore.model.auditing.DefaultAuditingTypes;
 import com.flexicore.model.dynamic.*;
 import com.flexicore.request.*;
 import com.flexicore.response.ExecuteInvokerResponse;
@@ -36,6 +38,8 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.logging.Level;
@@ -59,6 +63,8 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
 
     @Autowired
     private FileResourceService fileResourceService;
+    @Autowired
+    private AuditingService auditingService;
 
 
    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
@@ -182,6 +188,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
                             securityContext.setOperation(operation);
 
                             if (securityService.checkIfAllowed(securityContext)) {
+                                long start = System.currentTimeMillis();
                                 Object[] parameters = new Object[parameterTypes.length];
                                 parameters[0] = executionParametersHolder;
                                 for (int i = 1; i < parameterTypes.length; i++) {
@@ -194,13 +201,14 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
                                     }
                                 }
                                 Object ret = method.invoke(invoker, parameters);
+
+                                //auditingService.addAuditingJob(new AuditingJob(securityContext,null,ret,System.currentTimeMillis()-start, Date.from(Instant.now()), DefaultAuditingTypes.REST.name()));
+
                                 responses.add(new ExecuteInvokerResponse(invokerName, true, ret));
                                 break;
 
                             } else {
                                 throw new NotAuthorizedException("user is not authorized for this resource");
-
-                                //TODO: audit denied ?
                             }
 
                         }
@@ -462,6 +470,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
         if (!collection.isEmpty()) {
             Class<?> c = collection.iterator().next().getClass();
             List<Object> list = new ArrayList<>();
+            Set<String> failed=new HashSet<>();
 
             for (Object o : collection) {
                 for (String field : fieldToName.keySet()) {
@@ -470,6 +479,10 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
                     Object current = o;
                     Class<?> currentClass = c;
                     for (String s : split) {
+                        if(failed.contains(s)){
+                            list.add("");
+                            continue;
+                        }
                         canonical += s;
                         Method method = fieldNameToMethod.get(canonical);
                         if (method == null) {
@@ -478,8 +491,16 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
                             } catch (Exception ignored) {
                             }
                             if (method == null) {
-                                method = currentClass.getMethod("is" + StringUtils.capitalize(s));
+                                try {
+                                    method = currentClass.getMethod("is" + StringUtils.capitalize(s));
+                                }
+                                catch (Exception ignored){
+                                    failed.add(s);
+                                    list.add("");
+                                    continue;
+                                }
                             }
+
                             fieldNameToMethod.put(canonical, method);
                         }
                         Object data = method.invoke(current);

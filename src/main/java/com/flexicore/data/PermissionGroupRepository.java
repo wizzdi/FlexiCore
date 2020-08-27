@@ -66,6 +66,10 @@ public class PermissionGroupRepository extends BaseclassRepository {
             Join<PermissionGroupToBaseclass,Baseclass> baseclassJoin=linkJoin.join(PermissionGroupToBaseclass_.rightside);
             preds.add(baseclassJoin.get(Baseclass_.id).in(ids));
         }
+        if(permissionGroupsFilter.getExternalIds()!=null && !permissionGroupsFilter.getExternalIds().isEmpty()){
+            Set<String> ids=permissionGroupsFilter.getExternalIds();
+            preds.add(r.get(PermissionGroup_.externalId).in(ids));
+        }
     }
 
     public List<PermissionGroup> listPermissionGroups(PermissionGroupsFilter permissionGroupsFilter, SecurityContext securityContext) {

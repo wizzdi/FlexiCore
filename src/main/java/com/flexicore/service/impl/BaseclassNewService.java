@@ -93,7 +93,7 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
                     String key = entry.getKey();
                     Object newVal = entry.getValue();
                     Object val = jsonNode.get(key);
-                    if (!newVal.equals(val)) {
+                    if (newVal!=null&&!newVal.equals(val)) {
                         jsonNode.put(key, newVal);
                         update = true;
                     }

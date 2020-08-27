@@ -13,6 +13,7 @@ import com.flexicore.data.jsoncontainers.BasicContainer;
 import com.flexicore.data.jsoncontainers.ListHolder;
 import com.flexicore.data.jsoncontainers.ObjectMapperContextResolver;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
+import com.flexicore.events.PluginsLoadedEvent;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.FilteringInformationHolder;
 import com.flexicore.model.Operation;
@@ -24,6 +25,8 @@ import com.flexicore.security.SecurityContext;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -75,8 +78,8 @@ public class AuditingService implements com.flexicore.service.AuditingService {
 
     }
 
-    @PostConstruct
-    private void postConstruct() {
+    @EventListener
+    public void init(PluginsLoadedEvent e) {
         if (init.compareAndSet(false, true)) {
             auditingWriter = new AuditingWriter();
             new Thread(auditingWriter).start();
@@ -94,13 +97,16 @@ public class AuditingService implements com.flexicore.service.AuditingService {
         auditingWriter.addEvent(auditingJob);
     }
 
-    public void handleAuditingEvent(@ObservesAsync AuditingEvent auditingEvent){
+    @Async
+    @EventListener
+    public void handleAuditingEvent( AuditingEvent auditingEvent){
         auditingRepository.merge(auditingEvent);
         logger.info("Call to "+auditingEvent.getOperationHolder() +" was Audited");
     }
 
-
-    public void createAuditingEvent(@ObservesAsync AuditingJob auditingJob) throws JsonProcessingException {
+    @Async
+    @EventListener
+    public void createAuditingEvent(AuditingJob auditingJob) throws JsonProcessingException {
         ObjectMapper objectMapper=ObjectMapperContextResolver.getDefaultMapper();
         boolean skipFirst= auditingJob.getInvocationContext().getMethod()!=null&&isFirstAuthToken(auditingJob.getInvocationContext().getMethod().getParameters());
         Stream<Object> parameters = Stream.of(auditingJob.getInvocationContext().getParameters());

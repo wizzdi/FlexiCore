@@ -17,6 +17,10 @@ import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.AbstractEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
@@ -37,6 +41,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Configuration
 @EnableTransactionManagement
@@ -47,6 +52,9 @@ public class EclipseLinkJpaConfiguration extends JpaBaseConfiguration {
 
     @Value("${eclipselink.ddl-generation}")
     private String ddlGeneration;
+
+    @Autowired
+    Environment env;
 
 
     protected EclipseLinkJpaConfiguration(DataSource dataSource, JpaProperties properties, ObjectProvider<JtaTransactionManager> jtaTransactionManager) {
@@ -96,21 +104,15 @@ public class EclipseLinkJpaConfiguration extends JpaBaseConfiguration {
     @Override
     protected Map<String, Object> getVendorProperties() {
         Map<String,Object> props=new HashMap<>();
-        props.put("eclipselink.target-database","PostgreSQL");
-        props.put("eclipselink.weaving", "false");
         props.put("javax.persistence.schema-generation.create-database-schemas", "true");
-        props.put("eclipselink.ddl-generation.output-mode", "database");
-        props.put("eclipselink.ddl-generation", ddlGeneration);
-        props.put("eclipselink.logging.level", "FINE");
-        props.put("eclipselink.logging.level.sql", "FINE");
-        props.put("eclipselink.logging.parameters", "true");
-        props.put("eclipselink.exclude-eclipselink-orm", "true");
-        props.put("eclipselink.jdbc.batch-writing", "JDBC");
-        props.put("eclipselink.jdbc.batch-writing.size", "1000");
-        props.put("eclipselink.jdbc.sql-cast","true");
-
-
-
+        //add all properties starting with eclipselink to vendor properties
+        MutablePropertySources propSrcs = ((AbstractEnvironment) env).getPropertySources();
+        StreamSupport.stream(propSrcs.spliterator(), false)
+                .filter(ps -> ps instanceof EnumerablePropertySource)
+                .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
+                .flatMap(Arrays::stream)
+                .filter(f->f.startsWith("eclipselink"))
+                .forEach(propName -> props.put(propName, env.getProperty(propName)));
         return props;
     }
 
