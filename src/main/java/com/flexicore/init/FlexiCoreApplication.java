@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -35,8 +36,9 @@ public class FlexiCoreApplication {
     public static void main(String[] args) {
 
 
-        ConfigurableApplicationContext context=SpringApplication.run(FlexiCoreApplication.class, args);
-
+        SpringApplication app = new SpringApplication(FlexiCoreApplication.class);
+        app.addListeners(new ApplicationPidFileWriter());
+        ConfigurableApplicationContext context=app.run(args);
 
     }
 
