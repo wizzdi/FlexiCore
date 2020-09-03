@@ -9,10 +9,11 @@ package com.flexicore.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.interceptors.SecurityImposer;
+import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.interfaces.RESTService;
 import com.flexicore.model.Operation;
 import com.flexicore.model.QueryInformationHolder;
+import com.flexicore.request.OperationFiltering;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.BaselinkService;
 import com.flexicore.service.impl.OperationService;
@@ -39,7 +40,7 @@ import java.util.List;
 public class OperationsRESTService implements RESTService {
     
     @Autowired
-    private OperationService repository;
+    private OperationService operationService;
 
 
     @Autowired
@@ -54,7 +55,19 @@ public class OperationsRESTService implements RESTService {
     		@HeaderParam("pagesize") Integer pagesize,
     		@HeaderParam("currentpage") Integer currentpage,@Context SecurityContext securityContext) {
     	QueryInformationHolder<Operation> queryInformationHolder= new QueryInformationHolder<>( Operation.class,securityContext);
-        return repository.getAllFiltered(queryInformationHolder);
+        return operationService.getAllFiltered(queryInformationHolder);
+    }
+
+    @Path("getAllOperations")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @IOperation(access=Access.allow,Name="getAllOperations",Description="lists all operations")
+    public PaginationResponse<Operation> getAllOperations(@HeaderParam("authenticationkey") String authenticationkey,
+                                                           OperationFiltering operationFiltering,
+                                                           @Context SecurityContext securityContext) {
+        operationService.validate(operationFiltering,securityContext);
+        return operationService.getAllOperations(operationFiltering,securityContext);
     }
 
     @PUT
@@ -65,11 +78,11 @@ public class OperationsRESTService implements RESTService {
                                                  @PathParam("id") String id,
                                                  @HeaderParam("auditable") boolean auditable,
                                                  @Context SecurityContext securityContext) {
-       Operation operation=repository.findById(id);
+       Operation operation= operationService.findById(id);
        if(operation.isAuditable()!=auditable){
            operation.setAuditable(auditable);
            service.merge(operation);
-           repository.updateCahce(operation);
+           operationService.updateCahce(operation);
        }
        return operation;
     }
@@ -78,7 +91,7 @@ public class OperationsRESTService implements RESTService {
     @Path("/{id:[^/]+?}")
     @Produces(MediaType.APPLICATION_JSON)
     public Operation lookupOperationById(@PathParam("id") String id) {
-	    Operation operation = repository.findById(id);
+	    Operation operation = operationService.findById(id);
         if (operation == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
