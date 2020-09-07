@@ -12,6 +12,8 @@ import com.flexicore.annotations.ProtectedREST;
 import com.flexicore.data.jsoncontainers.ObjectMapperContextResolver;
 import com.flexicore.data.jsoncontainers.Views;
 import com.flexicore.interfaces.RESTService;
+import com.flexicore.model.DocumentationTag;
+import com.flexicore.model.QueryInformationHolder;
 import com.flexicore.rest.swagger.CustomResolver;
 import com.flexicore.rest.swagger.FlexiCoreOpenApiReader;
 import com.flexicore.rest.swagger.TagFilter;
@@ -82,13 +84,13 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
                                @Context SecurityContext securityContext) throws Exception {
         long start = System.currentTimeMillis();
       //  logger.info("Open api request received");
-      //  Set<String> tags = baseclassService.getAllByKeyWordAndCategory(new QueryInformationHolder<>(DocumentationTag.class, securityContext)).parallelStream().map(f -> f.getName()).collect(Collectors.toSet());
+        Set<String> tags = baseclassService.getAllByKeyWordAndCategory(new QueryInformationHolder<>(DocumentationTag.class, securityContext)).parallelStream().map(f -> f.getName()).collect(Collectors.toSet());
       //  logger.info("time taken to get tags " + (System.currentTimeMillis() - start));
         //start = System.currentTimeMillis();
         //String md5 = MD5Calculator.getMD5(tags.parallelStream().collect(Collectors.joining()));
        // logger.info("time taken to calculate Md5 " + (System.currentTimeMillis() - start));
         start = System.currentTimeMillis();
-        String openApiString = swaggerCache.get("all", () -> getSecureOpenApi(headers, config, app, uriInfo));
+        String openApiString = swaggerCache.get("all", () -> getSecureOpenApi(headers, config, app, uriInfo,tags));
         logger.info("time taken to get openapi json " + (System.currentTimeMillis() - start));
 
         if (openApiString != null) {
@@ -100,7 +102,7 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
     protected String getSecureOpenApi(HttpHeaders headers,
                                       ServletConfig config,
                                       Application app,
-                                      UriInfo uriInfo) throws Exception {
+                                      UriInfo uriInfo, Set<String> tags) throws Exception {
         logger.info("open api read started ");
 
         long started = System.currentTimeMillis();
@@ -138,7 +140,7 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 
         if (oas != null) {
             try {
-                OpenAPISpecFilter filterImpl = new TagFilter(null);
+                OpenAPISpecFilter filterImpl = new TagFilter(tags);
                 SpecFilter f = new SpecFilter();
                 oas = f.filter(oas, filterImpl, getQueryParams(uriInfo.getQueryParameters()), getCookies(headers),
                         getHeaders(headers));

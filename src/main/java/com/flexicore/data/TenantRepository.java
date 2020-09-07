@@ -9,7 +9,7 @@ package com.flexicore.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.Stateless;
+
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

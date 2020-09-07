@@ -26,22 +26,22 @@ public class EventPropagator {
 
     @Autowired
     private FlexiCorePluginManager flexiCorePluginManager;
-    private static final Set<Object> eventsInProcess=new ConcurrentSkipListSet<>(Comparator.comparing(System::identityHashCode));
-    private Logger logger= LoggerFactory.getLogger(EventPropagator.class);
+    private static final Set<Object> eventsInProcess = new ConcurrentSkipListSet<>(Comparator.comparing(System::identityHashCode));
+    private Logger logger = LoggerFactory.getLogger(EventPropagator.class);
 
     @Autowired
     private ApplicationContext applicationContext;
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-    private static final AtomicBoolean init=new AtomicBoolean(false);
+    private static final AtomicBoolean init = new AtomicBoolean(false);
 
     @EventListener
-    public void onContextRefreshed(ContextRefreshedEvent contextRefreshedEvent){
-        if(contextRefreshedEvent.getApplicationContext().getId()!=null&&contextRefreshedEvent.getApplicationContext().getId().equals(applicationContext.getId())){
-            if(init.compareAndSet(false,true)){
+    public void onContextRefreshed(ContextRefreshedEvent contextRefreshedEvent) {
+        if (contextRefreshedEvent.getApplicationContext().getId() != null && contextRefreshedEvent.getApplicationContext().getId().equals(applicationContext.getId())) {
+            if (init.compareAndSet(false, true)) {
                 logger.info("sending Plugins Loaded Event");
-                applicationEventPublisher.publishEvent(new PluginsLoadedEvent(applicationContext,new ArrayList<>()));
+                applicationEventPublisher.publishEvent(new PluginsLoadedEvent(applicationContext, new ArrayList<>()));
             }
         }
 
@@ -49,30 +49,30 @@ public class EventPropagator {
 
     /**
      * the eventsInProcess set is required to prevent infinite recursion
+     *
      * @param event
      */
     @EventListener
     public void handleContextStart(EventObject event) {
-        if(!eventsInProcess.contains(event)){
+        if (!eventsInProcess.contains(event)) {
             Object eventToPrint = event instanceof PayloadApplicationEvent ? ((PayloadApplicationEvent<?>) event).getPayload() : event;
 
-            logger.debug("Propagating event "+eventToPrint);
+            logger.debug("Propagating event " + eventToPrint);
             eventsInProcess.add(event);
             try {
                 for (ApplicationContext applicationContext : flexiCorePluginManager.getPluginApplicationContexts()) {
-                    if (event.getSource() != applicationContext) {
-                        Object contextId = applicationContext.getClassLoader() instanceof FlexiCorePluginClassLoader?applicationContext.getClassLoader():applicationContext.getId();
-                        logger.debug("Propagating event "+eventToPrint +" to context "+ contextId);
+                    try {
 
-                        applicationContext.publishEvent(event);
+                        if (event.getSource() != applicationContext) {
+                            Object contextId = applicationContext.getClassLoader() instanceof FlexiCorePluginClassLoader ? applicationContext.getClassLoader() : applicationContext.getId();
+                            logger.debug("Propagating event " + eventToPrint + " to context " + contextId);
+                            applicationContext.publishEvent(event);
+                        }
+                    } catch (Exception e) {
+                        logger.error("error while propagating event: " + eventToPrint, e);
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                logger.error("error while propagating event: "+ eventToPrint,e);
-            }
-            finally {
+            } finally {
                 eventsInProcess.remove(event);
             }
         }

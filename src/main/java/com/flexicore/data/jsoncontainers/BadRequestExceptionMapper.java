@@ -7,7 +7,7 @@ import com.flexicore.interfaces.ErrorCodeException;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.springframework.stereotype.Service;
 
-import javax.ejb.EJBException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
@@ -41,9 +41,6 @@ public class BadRequestExceptionMapper implements ExceptionMapper<Exception>  {
     public Response toResponse(Exception exception) {
         if(exception instanceof DefaultOptionsMethodException){
             return ((DefaultOptionsMethodException) exception).getResponse();
-        }
-        if(exception instanceof EJBException){
-            exception=((EJBException) exception).getCausedByException();
         }
 
         logger.log(Level.SEVERE,"error",exception);

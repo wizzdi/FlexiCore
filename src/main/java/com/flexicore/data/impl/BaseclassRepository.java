@@ -14,6 +14,7 @@ import com.flexicore.data.jsoncontainers.BaseclassCreationContainer;
 import com.flexicore.data.jsoncontainers.FieldSetContainer;
 import com.flexicore.data.jsoncontainers.SortingOrder;
 import com.flexicore.events.BaseclassCreated;
+import com.flexicore.events.BaseclassUpdated;
 import com.flexicore.model.*;
 import com.flexicore.request.BaseclassCountRequest;
 import com.flexicore.request.MassDeleteRequest;
@@ -303,8 +304,14 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
         }
 
         em.merge(base);
-        if(base1!=null&&base1.getCreationDate()==null){
-            eventPublisher.publishEvent(new BaseclassCreated<>(base1));
+        if(base1!=null){
+            if(base1.getCreationDate()==null){
+                eventPublisher.publishEvent(new BaseclassCreated<>(base1));
+            }
+            else{
+                eventPublisher.publishEvent(new BaseclassUpdated<>(base1));
+
+            }
         }
 
     }

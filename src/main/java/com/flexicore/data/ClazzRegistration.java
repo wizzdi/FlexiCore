@@ -4,7 +4,7 @@ import com.flexicore.annotations.InheritedComponent;
 import com.flexicore.model.Clazz;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ejb.Stateless;
+
 import javax.persistence.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;

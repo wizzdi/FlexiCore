@@ -14,7 +14,7 @@ import com.flexicore.security.SecurityContext;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import javax.ejb.Stateless;
+
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;

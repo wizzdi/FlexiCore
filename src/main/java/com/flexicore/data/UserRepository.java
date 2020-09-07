@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.ejb.Stateless;
+
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 

@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import javax.ejb.Stateless;
+
 
 import com.flexicore.annotations.InheritedComponent;
 import org.springframework.beans.factory.annotation.Autowired;

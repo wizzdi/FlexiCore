@@ -8,7 +8,7 @@ import com.flexicore.request.GetConnectedGeneric;
 import com.flexicore.request.GetDisconnectedGeneric;
 import com.flexicore.security.SecurityContext;
 
-import javax.ejb.Stateless;
+
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;

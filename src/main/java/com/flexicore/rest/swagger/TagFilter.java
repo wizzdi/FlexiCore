@@ -23,7 +23,8 @@ public class TagFilter extends AbstractSpecFilter {
 
     @Override
     public Optional<Operation> filterOperation(Operation operation, ApiDescription api, Map<String, List<String>> params, Map<String, String> cookies, Map<String, List<String>> headers) {
-       return Optional.of(operation);
+        List<String> names=operation.getTags()!=null?operation.getTags().parallelStream().filter(f->accessibleTags.contains(f)).collect(Collectors.toList()):new ArrayList<>();
+        return names.isEmpty()?Optional.empty():Optional.of(operation);
     }
 
     @Override
@@ -38,7 +39,8 @@ public class TagFilter extends AbstractSpecFilter {
 
     @Override
     public Optional<OpenAPI> filterOpenAPI(OpenAPI openAPI, Map<String, List<String>> params, Map<String, String> cookies, Map<String, List<String>> headers) {
-        return super.filterOpenAPI(openAPI, params, cookies, headers);
+
+        return openAPI.getTags().isEmpty()?Optional.empty(): super.filterOpenAPI(openAPI, params, cookies, headers);
     }
 
     @Override

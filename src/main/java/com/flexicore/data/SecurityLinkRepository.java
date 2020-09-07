@@ -12,7 +12,7 @@ import com.flexicore.model.*;
 import com.flexicore.request.SecurityLinkFilter;
 import com.flexicore.security.SecurityContext;
 
-import javax.ejb.Stateless;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;

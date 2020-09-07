@@ -12,7 +12,7 @@ import com.flexicore.model.*;
 import com.flexicore.request.PermissionGroupsFilter;
 import com.flexicore.security.SecurityContext;
 
-import javax.ejb.Stateless;
+
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;

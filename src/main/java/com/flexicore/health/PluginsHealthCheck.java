@@ -1,7 +1,10 @@
 package com.flexicore.health;
 
+import com.flexicore.data.jsoncontainers.PluginType;
 import com.flexicore.model.ModuleManifest;
 import com.flexicore.service.impl.PluginService;
+import org.pf4j.PluginManager;
+import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,9 @@ public class PluginsHealthCheck implements HealthIndicator {
     @Autowired
     private PluginService pluginService;
 
+    @Autowired
+    private PluginManager pluginManager;
+
     @PostConstruct
     private void init() {
         logger.info("plugins health check post construct called");
@@ -31,10 +37,11 @@ public class PluginsHealthCheck implements HealthIndicator {
     @Override
     public Health health() {
         Health.Builder responseBuilder = Health.up();
+
         if(pluginService!=null){
-            Map<String, ModuleManifest> map = pluginService.getAll().parallelStream().filter(f -> f != null && f.getModuleManifest() != null && f.getModuleManifest().getUuid() != null).collect(Collectors.toMap(f -> f.getModuleManifest().getUuid(), f -> f.getModuleManifest(), (a, b) -> a));
-            for (ModuleManifest moduleManifest : map.values()) {
-                responseBuilder.withDetail(moduleManifest.getUuid() + "(" + moduleManifest.getPluginType() + ")", moduleManifest.getVersion());
+            for (PluginWrapper pluginWrapper : pluginManager.getStartedPlugins()) {
+                String version = pluginWrapper.getDescriptor()!=null?pluginWrapper.getDescriptor().getVersion():"unknown";
+                responseBuilder.withDetail(pluginWrapper.getPluginId() + "(" + PluginType.Service.name() + ")", version);
 
             }
 

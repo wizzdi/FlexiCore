@@ -17,7 +17,7 @@ import com.flexicore.request.InvokersFilter;
 import com.flexicore.request.InvokersOperationFilter;
 import com.flexicore.security.SecurityContext;
 
-import javax.ejb.Stateless;
+
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;

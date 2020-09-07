@@ -10,7 +10,7 @@ import com.flexicore.request.TreeFilter;
 import com.flexicore.request.TreeNodeFilter;
 import com.flexicore.security.SecurityContext;
 
-import javax.ejb.Stateless;
+
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
