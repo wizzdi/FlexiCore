@@ -48,15 +48,7 @@ import static com.flexicore.model.User.*;
 @InheritedComponent
 public class UserRepository extends BaseclassRepository {
 
-    /**
-     * get user by UUID
-     *
-     * @param id
-     * @return
-     */
-    public User findById(String id) {
-        return em.find(User.class, id);
-    }
+
 
     public int multipleCreate(int number, SecurityContext securityContext) {
         NewUser rUser;

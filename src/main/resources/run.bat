@@ -1,2 +1,2 @@
-set "JAVA_OPTS=-Dcom.flexicore.init.Initializator.props=/home/flexicore/flexicore.config --add-opens java.base/jdk.internal.loader=ALL-UNNAMED"
-java %JAVA_OPTS% -jar .\FlexiCore-3.1.7-thorntail.jar"
+set "JAVA_OPTS=-Dloader.main=com.flexicore.init.FlexiCoreApplication -Dloader.path=file:/home/flexicore/entities/"
+java %JAVA_OPTS% -jar .\FlexiCore-4.0.19-exec.jar"

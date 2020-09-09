@@ -873,7 +873,7 @@ public class UserService implements com.flexicore.service.UserService {
     public UserProfile getUserProfile(UserProfileRequest userProfileRequest, SecurityContext securityContext) {
         Tenant tenantToCreateIn = securityContext.getTenantToCreateIn();
         Tenant tenant = tenantToCreateIn == null && !securityContext.getTenants().isEmpty() ? securityContext.getTenants().get(0) : tenantToCreateIn;
-        return new UserProfile().setUser(securityContext.getUser()).setTenant(tenant);
+        return new UserProfile().setUser(securityContext.getUser()).setTenant(tenant).setTenants(securityContext.getTenants());
     }
 
     @Override
