@@ -14,8 +14,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 
 @Primary
@@ -23,6 +21,7 @@ import java.util.stream.Collectors;
 public class PluginsHealthCheck implements HealthIndicator {
 
     private static final Logger logger = LoggerFactory.getLogger(PluginsHealthCheck.class);
+
     @Autowired
     private PluginService pluginService;
 
@@ -37,16 +36,16 @@ public class PluginsHealthCheck implements HealthIndicator {
     @Override
     public Health health() {
         Health.Builder responseBuilder = Health.up();
-
-        if(pluginService!=null){
+        if (pluginService != null) {
             for (PluginWrapper pluginWrapper : pluginManager.getStartedPlugins()) {
-                String version = pluginWrapper.getDescriptor()!=null?pluginWrapper.getDescriptor().getVersion():"unknown";
+                String version = pluginWrapper.getDescriptor() != null ? pluginWrapper.getDescriptor().getVersion() : "unknown";
                 responseBuilder.withDetail(pluginWrapper.getPluginId() + "(" + PluginType.Service.name() + ")", version);
-
             }
-
+            for (ModuleManifest externalModule : com.flexicore.service.PluginService.externalModules) {
+                String version = externalModule.getVersion() != null ? externalModule.getVersion() : "unknown";
+                responseBuilder.withDetail(externalModule.getUuid() + "(" + PluginType.External.name() + ")", version);
+            }
         }
-
 
         return responseBuilder.build();
 

@@ -17,6 +17,7 @@ import com.flexicore.model.QueryInformationHolder;
 import com.flexicore.rest.swagger.CustomResolver;
 import com.flexicore.rest.swagger.FlexiCoreOpenApiReader;
 import com.flexicore.rest.swagger.TagFilter;
+import com.flexicore.security.MD5Calculator;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.BaseclassService;
 import com.google.common.cache.Cache;
@@ -90,7 +91,9 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
         //String md5 = MD5Calculator.getMD5(tags.parallelStream().collect(Collectors.joining()));
        // logger.info("time taken to calculate Md5 " + (System.currentTimeMillis() - start));
         start = System.currentTimeMillis();
-        String openApiString = swaggerCache.get("all", () -> getSecureOpenApi(headers, config, app, uriInfo,tags));
+        String tagNamesConcat = tags.stream().collect(Collectors.joining(","));
+        String md5 = tagNamesConcat.isEmpty()?"all":MD5Calculator.getMD5(tagNamesConcat);
+        String openApiString = swaggerCache.get(md5, () -> getSecureOpenApi(headers, config, app, uriInfo,tags));
         logger.info("time taken to get openapi json " + (System.currentTimeMillis() - start));
 
         if (openApiString != null) {
