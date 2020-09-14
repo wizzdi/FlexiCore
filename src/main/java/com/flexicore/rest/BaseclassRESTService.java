@@ -704,8 +704,10 @@ public class BaseclassRESTService implements RESTService {
         try {
             clazz = (Class<T>) Class.forName(classname);
             long start = System.currentTimeMillis();
-            T result = repository.getById(id, clazz, null, securityContext);
-
+            T result = repository.getByIdOrNull(id, clazz, null, securityContext);
+            if(result==null){
+                throw new BadRequestException("no baseclass of type "+clazz.getSimpleName() +" with id "+id);
+            }
             log.log(Level.INFO, "Find by id took: " + (System.currentTimeMillis() - start) + " MS");
             return result;
         } catch (ClassNotFoundException e) {

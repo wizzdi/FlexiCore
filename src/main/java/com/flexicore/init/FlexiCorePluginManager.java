@@ -2,14 +2,20 @@ package com.flexicore.init;
 
 import org.pf4j.*;
 import org.pf4j.spring.SpringPluginManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FlexiCorePluginManager extends SpringPluginManager {
+
+    private static final Logger logger= LoggerFactory.getLogger(FlexiCorePluginManager.class);
 
     public FlexiCorePluginManager() {
     }
@@ -52,10 +58,21 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 
     @Override
     public void init() {
-        this.loadPlugins();
+        try {
+            this.loadPlugins();
+        }
+        catch (DependencyResolver.DependenciesWrongVersionException e){
+            List<DependencyResolver.WrongDependencyVersion> dependencies = e.getDependencies();
+            logger.error("loading plugins failed , wrong versions: "+dependencies.stream().map(f->getWrongDependencyString(f)).collect(Collectors.joining(System.lineSeparator())),e);
+            throw e;
+        }
         this.startPlugins();
         AbstractAutowireCapableBeanFactory beanFactory = (AbstractAutowireCapableBeanFactory) getApplicationContext().getAutowireCapableBeanFactory();
         FlexiCoreExtensionsInjector extensionsInjector = new FlexiCoreExtensionsInjector(this, beanFactory);
         extensionsInjector.injectExtensions();
+    }
+
+    private String getWrongDependencyString(DependencyResolver.WrongDependencyVersion wrongDependencyVersion) {
+        return "plugin "+wrongDependencyVersion.getDependentId() +" required "+wrongDependencyVersion.getDependencyId() +" version: "+wrongDependencyVersion.getRequiredVersion() +", actual: "+wrongDependencyVersion.getExistingVersion();
     }
 }

@@ -172,7 +172,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
     }
 
     public Job finalizeUpload(String md5, SecurityContext securityContext, String hint, Properties prop) {
-        Job job;
+        Job job=null;
 
         FileResource fileResource = getExistingFileResource(md5, securityContext);
 
@@ -197,11 +197,10 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
 
             }
-            if (prop != null && Boolean.valueOf(prop.getProperty("dontProcess", "false"))) {
+            if (prop != null && Boolean.parseBoolean(prop.getProperty("dontProcess", "false"))) {
                 return null;
             }
 
-            job = new Job();
             JobInformation info = new JobInformation();
             info.setJobInfo(fileResource);
             info.setHandle(true); // tells the PI system to read the next
@@ -209,45 +208,22 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
             info.setHandler(AnalyzerPlugin.class); // the first PI to run
             // (or multiple of) will// be an Analyzer PI
             info.setJobProperties(prop);
-            job.setCurrentPhase(ProcessPhase.Waiting.getName());
-            job.setCurrentPhasePrecentage(0);
-            job.setJobInformation(info);
-            job.setSecurityContext(securityContext); // We need to know who
-            // has invoked it.
-            jobService.putFileProcessJob(job); // Keeps the FC Job in a
-            // static data structure to
-            // get the Job from the
-            // JobID that we will put
-            // into Properties.
-            JobOperator jo = BatchRuntime.getJobOperator();
             if (prop == null) {
                 prop = new Properties();
             }
 
-            prop.setProperty("fileProcessJobId", job.getId());// Associate
-            // the FC
-            // Job with
-            // Java
-            // Batch Job
             if (hint != null && !hint.isEmpty()) {
                 prop.setProperty("hint", hint);
             }
-            merge(fileResource);
+            job=jobService.startJob(fileResource,AnalyzerPlugin.class,prop,null,securityContext);
 
-            long jid = jo.start("genericJob", prop); // Starts Java Batch
-            // JOB , genericJob
-            // is the name and
-            // ID of a Batch Job
-            // defined in
-            // Meta-inf/Batch-jobs
-            job.setBatchJobId(jid);
+
+            merge(fileResource);
 
 
         } else {
-            // cannot happen!
             logger.severe("No file resource found for MD5:  " + md5);
-            throw new ClientErrorException("the MD5 on finalize was not found in the database",
-                    Response.Status.BAD_REQUEST);
+            throw new ClientErrorException("the MD5 on finalize was not found in the database", Response.Status.BAD_REQUEST);
 
         }
         return job;

@@ -18,27 +18,27 @@ public class FlexiCorePluginClassLoader extends PluginClassLoader {
     private boolean parentFirst;
     private PluginDescriptor pluginDescriptor;
     private PluginManager pluginManager;
-    private static final Set<String> RESERVED=new HashSet<>(Arrays.asList("META-INF/extensions.idx","META-INF/MANIFEST.MF"));
-    private static final Logger log= LoggerFactory.getLogger(FlexiCorePluginClassLoader.class);
+    private static final Set<String> RESERVED = new HashSet<>(Arrays.asList("META-INF/extensions.idx", "META-INF/MANIFEST.MF"));
+    private static final Logger log = LoggerFactory.getLogger(FlexiCorePluginClassLoader.class);
     private static final String JAVA_PACKAGE_PREFIX = "java.";
     private static final String PLUGIN_PACKAGE_PREFIX = "org.pf4j.";
 
     public FlexiCorePluginClassLoader(PluginManager pluginManager, PluginDescriptor pluginDescriptor, ClassLoader parent) {
-        this(pluginManager, pluginDescriptor, parent,false);
+        this(pluginManager, pluginDescriptor, parent, false);
     }
 
     private void initName(PluginDescriptor pluginDescriptor) {
-        if(pluginDescriptor!=null){
-            name=pluginDescriptor.getPluginId()+"@"+pluginDescriptor.getVersion();
+        if (pluginDescriptor != null) {
+            name = pluginDescriptor.getPluginId() + "@" + pluginDescriptor.getVersion();
         }
     }
 
     public FlexiCorePluginClassLoader(PluginManager pluginManager, PluginDescriptor pluginDescriptor, ClassLoader parent, boolean parentFirst) {
         super(pluginManager, pluginDescriptor, parent, parentFirst);
         initName(pluginDescriptor);
-        this.parentFirst=parentFirst;
-        this.pluginManager=pluginManager;
-        this.pluginDescriptor=pluginDescriptor;
+        this.parentFirst = parentFirst;
+        this.pluginManager = pluginManager;
+        this.pluginDescriptor = pluginDescriptor;
 
 
     }
@@ -49,12 +49,12 @@ public class FlexiCorePluginClassLoader extends PluginClassLoader {
 
     @Override
     public String toString() {
-        return "FlexiCorePluginClassLoader{"+name+"}";
+        return "FlexiCorePluginClassLoader{" + name + "}";
     }
 
     @Override
     public URL getResource(String name) {
-        if(parentFirst&&RESERVED.contains(name)){
+        if (parentFirst && RESERVED.contains(name)) {
             log.trace("resource '{}' is in reserved list, will attempt to load it locally even though parent first is enabled", name);
             URL url = findResource(name);
             if (url != null) {
@@ -152,7 +152,8 @@ public class FlexiCorePluginClassLoader extends PluginClassLoader {
         }
     }
 
-    private Class<?> loadClassFromDependencies(String className) {
+    @Override
+    protected Class<?> loadClassFromDependencies(String className) {
         log.trace("Search in dependencies for class '{}'", className);
         List<PluginDependency> dependencies = pluginDescriptor.getDependencies();
         for (PluginDependency dependency : dependencies) {

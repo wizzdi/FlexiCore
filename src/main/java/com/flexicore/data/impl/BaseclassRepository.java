@@ -1601,6 +1601,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     }
 
     @Override
+    @Transactional
     public void massDelete(MassDeleteRequest massDeleteRequest) {
         Set<String> ids = massDeleteRequest.getBaseclass().parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
         CriteriaBuilder cb = em.getCriteriaBuilder();
