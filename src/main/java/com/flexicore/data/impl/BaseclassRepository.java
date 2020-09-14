@@ -1143,7 +1143,11 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
         Join<PermissionGroupToBaseclass, Baseclass> permissionGroupTargetJoin = permissionGroupLinkJoin.join(PermissionGroupToBaseclass_.rightside);
 
 
-        Predicate linkPredicate = cb.and(createBaseclassSpecificPredicate(cb, roles, user, tenants, op, userDenied, roleDenied, securityLinkRoot, userToBaseClassRoot, roleToBaseclassRoot, tenantToBaseClassPremissionRoot), cb.isFalse(permissionGroupLinkJoin.get(PermissionGroupToBaseclass_.softDelete)));
+        Predicate linkPredicate = cb.and(
+                createBaseclassSpecificPredicate(cb, roles, user, tenants, op, userDenied, roleDenied, securityLinkRoot, userToBaseClassRoot, roleToBaseclassRoot, tenantToBaseClassPremissionRoot),
+                cb.isFalse(permissionGroupLinkJoin.get(PermissionGroupToBaseclass_.softDelete)),
+                cb.isFalse(rightsideJoin.get(PermissionGroup_.softDelete))
+        );
 
         sub.select(permissionGroupTargetJoin.get(Baseclass_.id)).where(linkPredicate);
         return sub;

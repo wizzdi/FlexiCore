@@ -22,6 +22,7 @@ import com.flexicore.model.*;
 import com.flexicore.model.nosql.BaseclassNoSQL;
 import com.flexicore.request.*;
 import com.flexicore.response.ClassInfo;
+import com.flexicore.response.MassDeleteResponse;
 import com.flexicore.response.ParameterInfo;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.BaseclassNoSQLService;
@@ -799,11 +800,13 @@ public class BaseclassRESTService implements RESTService {
     @Path("massDelete")
     @IOperation(access = Access.allow, Name = "mass delete Baseclass", Description = "mass deletes baseclass")
     @Operation(summary = "massDelete", description = "deletes an entity by id")
-    public void massDelete(@HeaderParam("authenticationkey") String authenticationkey,
-                           MassDeleteRequest massDeleteRequest,
-                           @Context SecurityContext securityContext) {
+    public MassDeleteResponse massDelete(@HeaderParam("authenticationkey") String authenticationkey,
+                                         MassDeleteRequest massDeleteRequest,
+                                         @Context SecurityContext securityContext) {
         baseclassService.validate(massDeleteRequest, securityContext);
         baseclassService.massDelete(massDeleteRequest, securityContext);
+        Set<String> ids = massDeleteRequest.getBaseclass().stream().map(f -> f.getId()).collect(Collectors.toSet());
+        return new MassDeleteResponse().setDeletedIds(ids);
     }
 
 

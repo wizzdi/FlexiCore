@@ -6,6 +6,7 @@ import com.flexicore.model.Category;
 import com.flexicore.model.Role;
 import com.flexicore.request.*;
 import com.flexicore.response.AuthenticationResponse;
+import com.flexicore.response.MassDeleteResponse;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +65,11 @@ public class BaseclassRESTServiceTest {
         Category category = createCategory();
         MassDeleteRequest request = new MassDeleteRequest()
                 .setIds(Collections.singleton(category.getId()));
-        ResponseEntity<Void> roleResponse = this.restTemplate.postForEntity("/FlexiCore/rest/baseclass/massDelete", request, Void.class);
-        Assertions.assertEquals(204, roleResponse.getStatusCodeValue());
+        ResponseEntity<MassDeleteResponse> roleResponse = this.restTemplate.postForEntity("/FlexiCore/rest/baseclass/massDelete", request, MassDeleteResponse.class);
+        Assertions.assertEquals(200, roleResponse.getStatusCodeValue());
+        MassDeleteResponse body = roleResponse.getBody();
+        Assertions.assertNotNull(body);
+        Assertions.assertEquals(body.getDeletedIds(),request.getIds());
         ResponseEntity<Category> categoryResponse = this.restTemplate.getForEntity("/FlexiCore/rest/baseclass/getbyid/"+category.getId()+"/"+Category.class.getCanonicalName(), Category.class);
         Assertions.assertEquals(400,categoryResponse.getStatusCodeValue());
 

@@ -295,7 +295,8 @@ public class SecurityService implements com.flexicore.service.SecurityService {
 
 
         }
-        List<PermissionGroupToBaseclass> permissionGroupToBaseclasses=baselinkService.listAllBaselinks(new BaselinkFilter().setLinkClass(PermissionGroupToBaseclass.class).setRightside(baseclasses),null);
+        List<PermissionGroupToBaseclass> permissionGroupToBaseclassesUndeleted = baselinkService.listAllBaselinks(new BaselinkFilter().setLinkClass(PermissionGroupToBaseclass.class).setRightside(baseclasses), null);
+        List<PermissionGroupToBaseclass> permissionGroupToBaseclasses= permissionGroupToBaseclassesUndeleted.stream().filter(f->!f.getLeftside().isSoftDelete()).collect(Collectors.toList());;
         for (PermissionGroupToBaseclass permissionGroupToBaseclass : permissionGroupToBaseclasses) {
             relatedBaseclass.computeIfAbsent(permissionGroupToBaseclass.getLeftside().getId(),f->new HashMap<>()).put(permissionGroupToBaseclass.getRightside().getId(),permissionGroupToBaseclass.getRightside());
         }

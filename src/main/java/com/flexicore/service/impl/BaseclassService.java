@@ -187,14 +187,14 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
         Set<String> ids = massDeleteRequest.getIds();
         Map<String, Baseclass> map = ids.isEmpty() ? new HashMap<>() : listByIds(Baseclass.class, ids, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
         ids.removeAll(map.keySet());
-        if (!ids.isEmpty()) {
-            throw new BadRequestException("No Baseclass with ids " + ids);
-        }
         massDeleteRequest.setBaseclass(new ArrayList<>(map.values()));
     }
 
     @Override
     public void massDelete(MassDeleteRequest massDeleteRequest, SecurityContext securityContext) {
+        if(massDeleteRequest.getBaseclass().isEmpty()){
+            return;
+        }
         baseclassRepository.massDelete(massDeleteRequest);
     }
 
