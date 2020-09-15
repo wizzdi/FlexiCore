@@ -41,8 +41,13 @@ public class BaseclassNoSQLRepository extends NoSqlRepository implements com.fle
 
     @Override
     public <T extends BaseclassNoSQL> T getByIdOrNull(Class<T> c, String id) {
+        return getByIdOrNull(c,BASECLASS_NO_SQL,id);
+    }
+
+    @Override
+    public <T extends BaseclassNoSQL> T getByIdOrNull(Class<T> c,String collectionName, String id) {
         MongoDatabase db = mongoClient.getDatabase(mongoDBName).withCodecRegistry(pojoCodecRegistry.get());
-        MongoCollection<T> collection = db.getCollection(BASECLASS_NO_SQL, c).withCodecRegistry(pojoCodecRegistry.get());
+        MongoCollection<T> collection = db.getCollection(collectionName, c).withCodecRegistry(pojoCodecRegistry.get());
 
         Bson pred = Filters.eq(ID, id);
         FindIterable<T> iter = collection.find(pred, c);
@@ -55,11 +60,15 @@ public class BaseclassNoSQLRepository extends NoSqlRepository implements com.fle
         }
     }
 
-
     @Override
     public <T extends BaseclassNoSQL> List<T> listByIds(Class<T> c, Set<String> ids) {
+        return listByIds(c,BASECLASS_NO_SQL,ids);
+    }
+
+    @Override
+    public <T extends BaseclassNoSQL> List<T> listByIds(Class<T> c,String collectionName, Set<String> ids) {
         MongoDatabase db = mongoClient.getDatabase(mongoDBName).withCodecRegistry(pojoCodecRegistry.get());
-        MongoCollection<T> collection = db.getCollection(BASECLASS_NO_SQL, c).withCodecRegistry(pojoCodecRegistry.get());
+        MongoCollection<T> collection = db.getCollection(collectionName, c).withCodecRegistry(pojoCodecRegistry.get());
 
         Bson pred = Filters.in(ID, ids);
         FindIterable<T> iter = collection.find(pred, c);
@@ -73,16 +82,26 @@ public class BaseclassNoSQLRepository extends NoSqlRepository implements com.fle
 
     @Override
     public void mergeBaseclassNoSQL(BaseclassNoSQL o) {
+        mergeBaseclassNoSQL(o,BASECLASS_NO_SQL);
+    }
+
+    @Override
+    public void mergeBaseclassNoSQL(BaseclassNoSQL o,String collectionName) {
         MongoDatabase db = mongoClient.getDatabase(mongoDBName).withCodecRegistry(pojoCodecRegistry.get());
-        MongoCollection<BaseclassNoSQL> collection = db.getCollection(BASECLASS_NO_SQL, BaseclassNoSQL.class).withCodecRegistry(pojoCodecRegistry.get());
+        MongoCollection<BaseclassNoSQL> collection = db.getCollection(collectionName, BaseclassNoSQL.class).withCodecRegistry(pojoCodecRegistry.get());
         collection.insertOne(o);
 
     }
 
     @Override
     public void massMergeBaseclassNoSQL(List<? extends BaseclassNoSQL> o) {
+        massMergeBaseclassNoSQL(o,BASECLASS_NO_SQL);
+    }
+
+    @Override
+    public void massMergeBaseclassNoSQL(List<? extends BaseclassNoSQL> o,String collectionName) {
         MongoDatabase db = mongoClient.getDatabase(mongoDBName).withCodecRegistry(pojoCodecRegistry.get());
-        MongoCollection<BaseclassNoSQL> collection = db.getCollection(BASECLASS_NO_SQL, BaseclassNoSQL.class).withCodecRegistry(pojoCodecRegistry.get());
+        MongoCollection<BaseclassNoSQL> collection = db.getCollection(collectionName, BaseclassNoSQL.class).withCodecRegistry(pojoCodecRegistry.get());
         collection.insertMany(o);
 
     }
