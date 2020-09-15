@@ -73,6 +73,12 @@ public class BaseclassRESTServiceTest {
         ResponseEntity<Category> categoryResponse = this.restTemplate.getForEntity("/FlexiCore/rest/baseclass/getbyid/"+category.getId()+"/"+Category.class.getCanonicalName(), Category.class);
         Assertions.assertEquals(400,categoryResponse.getStatusCodeValue());
 
+       roleResponse = this.restTemplate.postForEntity("/FlexiCore/rest/baseclass/massDelete", request, MassDeleteResponse.class);
+        Assertions.assertEquals(200, roleResponse.getStatusCodeValue());
+        body = roleResponse.getBody();
+        Assertions.assertNotNull(body);
+        Assertions.assertTrue(body.getDeletedIds().isEmpty());
+
 
     }
 
