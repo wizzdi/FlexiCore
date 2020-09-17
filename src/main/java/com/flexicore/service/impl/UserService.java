@@ -848,6 +848,12 @@ public class UserService implements com.flexicore.service.UserService {
         return userrepository.getAllTenantToUsers(userFiltering, securityContext);
     }
 
+    public PaginationResponse<TenantToUser> listAllTenantToUsers(TenantToUserFilter tenantToUserFilter, SecurityContext securityContext) {
+        List<TenantToUser> tenantToUsers=getAllTenantToUsers(tenantToUserFilter, securityContext);
+        long count=userrepository.countAllTenantToUsers(tenantToUserFilter,securityContext);
+        return new PaginationResponse<>(tenantToUsers,tenantToUserFilter,count);
+    }
+
     @Override
     public RoleToUser createRoleToUserNoMerge(RoleToUserCreate roleToUserCreate, SecurityContext securityContext) {
         RoleToUser roleToUser = new RoleToUser("roleLink", securityContext);
@@ -961,5 +967,39 @@ public class UserService implements com.flexicore.service.UserService {
     public List<RoleToUser> listAllRoleToUsers(RoleToUserFilter roleToUserFilter, SecurityContext securityContext) {
         return userrepository.listAllRoleToUsers(roleToUserFilter, securityContext);
 
+    }
+
+    public void validate(TenantToUserCreate tenantToUserCreate, SecurityContext securityContext) {
+        String tenantId=tenantToUserCreate.getTenantId();
+        Tenant tenant=tenantId!=null?tenantRepository.getByIdOrNull(tenantId,Tenant.class,null,securityContext):null;
+        if (tenantId!=null&&tenant==null){
+            throw new BadRequestException("No Tenant With Id "+tenantId);
+        }
+        tenantToUserCreate.setTenant(tenant);
+
+        String userId=tenantToUserCreate.getUserId();
+        User user=userId!=null?tenantRepository.getByIdOrNull(userId,User.class,null,securityContext):null;
+        if (userId!=null&&user==null){
+            throw new BadRequestException("No User With Id "+userId);
+        }
+        tenantToUserCreate.setUser(user);
+    }
+
+    public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, List<String> batchString, SecurityContext securityContext) {
+        return userrepository.getByIdOrNull(id, c, batchString, securityContext);
+    }
+
+    public TenantToUser createTenantToUser(TenantToUserCreate tenantToUserCreate, SecurityContext securityContext) {
+        TenantToUser tenantToUser=createTenantToUserNoMerge(tenantToUserCreate,securityContext);
+        tenantRepository.merge(tenantToUser);
+        return tenantToUser;
+    }
+
+    public TenantToUser updateTenantToUser(TenantToUserUpdate tenantToUserUpdate, SecurityContext securityContext) {
+        TenantToUser tenantToUser=tenantToUserUpdate.getTenantToUser();
+        if(updateTenantToUserNoMerge(tenantToUserUpdate,tenantToUser)){
+            tenantRepository.merge(tenantToUser);
+        }
+        return tenantToUser;
     }
 }

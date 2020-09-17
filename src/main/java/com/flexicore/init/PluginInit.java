@@ -17,6 +17,7 @@ import com.flexicore.service.impl.ClassScannerService;
 import com.flexicore.service.impl.LicenseEnforcer;
 import com.flexicore.service.impl.SecurityService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pf4j.PluginManager;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
@@ -157,6 +158,9 @@ public class PluginInit {
                 TestsRepository.put(c.getCanonicalName(), c);
             }
             if (c.isAnnotationPresent(OpenAPIDefinition.class)) {
+                classScannerService.addSwaggerTags(c, securityContext);
+            }
+            if (c.isAnnotationPresent(Tag.class)) {
                 classScannerService.addSwaggerTags(c, securityContext);
             }
         }

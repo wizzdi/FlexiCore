@@ -79,6 +79,7 @@ import java.util.stream.Collectors;
 
         @Tag(name = "Authentication", description = "Manage Sign-in and Sign-up"),
         @Tag(name = "AuthenticationNew", description = "Manage Sign-in and Sign-up"),
+        @Tag(name = "TenantToUser", description = "TenantToUser API's"),
 
         @Tag(name = "Plugins", description = "Manage Plugins"),
         @Tag(name = "Tenants", description = "Manage Tenants"),

@@ -711,6 +711,12 @@ public class ClassScannerService {
             addSwaggerTags(annotated, securityContext);
         }
 
+        Set<Class<?>> tags = reflections.getTypesAnnotatedWith(Tag.class);
+
+        for (Class<?> annotated : tags) {
+            addSwaggerTags(annotated, securityContext);
+        }
+
 
     }
 
@@ -718,24 +724,33 @@ public class ClassScannerService {
         OpenAPIDefinition def = annotated.getAnnotation(OpenAPIDefinition.class);
         if (def != null) {
             for (Tag tag : def.tags()) {
-                String id = Baseclass.generateUUIDFromString(tag.name());
-                DocumentationTag doc = baselinkrepository.findByIdOrNull(DocumentationTag.class, id);
-                if (doc == null) {
-
-                    doc = new DocumentationTag(tag.name(), securityContext);
-                    doc.setSystemObject(true);
-                    doc.setId(id);
-                    doc.setDescription(doc.getDescription());
-                    baselinkrepository.merge(doc);
-                    logger.fine("found new tag: " + tag.name());
-                } else {
-                    logger.fine("tag: " + tag.name() + " already exist in the database");
-                }
+                addTag(securityContext, tag);
 
 
             }
         }
+        Tag tag = annotated.getAnnotation(Tag.class);
 
+        if(tag!=null){
+            addTag(securityContext,tag);
+        }
+
+    }
+
+    private void addTag(SecurityContext securityContext, Tag tag) {
+        String id = Baseclass.generateUUIDFromString(tag.name());
+        DocumentationTag doc = baselinkrepository.findByIdOrNull(DocumentationTag.class, id);
+        if (doc == null) {
+
+            doc = new DocumentationTag(tag.name(), securityContext);
+            doc.setSystemObject(true);
+            doc.setId(id);
+            doc.setDescription(doc.getDescription());
+            baselinkrepository.merge(doc);
+            logger.fine("found new tag: " + tag.name());
+        } else {
+            logger.fine("tag: " + tag.name() + " already exist in the database");
+        }
     }
 
 
