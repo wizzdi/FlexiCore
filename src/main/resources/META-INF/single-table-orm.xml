@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm"
+                 version="2.1">
+
+    <description>Mapping Document containing persistence unit metadata.</description>
+
+    <package>com.flexicore.model</package>
+
+    <entity class="Baseclass">
+        <inheritance strategy="SINGLE_TABLE"/>
+
+    </entity>
+</entity-mappings>
