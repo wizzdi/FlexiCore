@@ -2,11 +2,13 @@ package com.flexicore.init;
 
 import com.flexicore.data.IndexRepository;
 import com.flexicore.events.PluginsLoadedEvent;
+import com.flexicore.model.Baseclass;
 import com.flexicore.provider.EntitiesHolder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -28,6 +30,9 @@ public class IndexCreator {
 
     @Autowired
     private EntitiesHolder entitiesHolder;
+
+    @Value("${flexicore.inheritence.strategy:SINGLE_TABLE}")
+    private String inheritanceType;
     @Async
     @EventListener
     public void init(PluginsLoadedEvent o){
@@ -69,7 +74,8 @@ public class IndexCreator {
         for (Class<?> current = orginal; current.getSuperclass() != null; current = current.getSuperclass()) {
             Inheritance inheritance = current.getDeclaredAnnotation(Inheritance.class);
             if (inheritance != null) {
-                return Pair.of(inheritance.strategy(), current);
+                InheritanceType strategy =  Baseclass.class.equals(current)?InheritanceType.valueOf(inheritanceType):inheritance.strategy();
+                return Pair.of(strategy, current);
             }
         }
         return null;
