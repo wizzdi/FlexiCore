@@ -729,11 +729,14 @@ public class ClassScannerService {
 
             }
         }
-        Tag tag = annotated.getAnnotation(Tag.class);
-
-        if(tag!=null){
-            addTag(securityContext,tag);
+        Tag[] tags = annotated.getAnnotationsByType(Tag.class);
+        for (Tag tag : tags) {
+            if(tag!=null){
+                addTag(securityContext,tag);
+            }
         }
+
+
 
     }
 

@@ -160,7 +160,8 @@ public class PluginInit {
             if (c.isAnnotationPresent(OpenAPIDefinition.class)) {
                 classScannerService.addSwaggerTags(c, securityContext);
             }
-            if (c.isAnnotationPresent(Tag.class)) {
+            Tag[] annotationsByType = c.getAnnotationsByType(Tag.class);
+            if (annotationsByType.length != 0) {
                 classScannerService.addSwaggerTags(c, securityContext);
             }
         }
