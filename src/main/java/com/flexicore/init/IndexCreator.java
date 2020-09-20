@@ -13,10 +13,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Index;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -64,8 +61,12 @@ public class IndexCreator {
         if (table != null) {
             for (Index index : table.indexes()) {
 
-
-                indexRepository.createIndex(index, tableName);
+                try {
+                    indexRepository.createIndex(index, tableName);
+                }
+                catch (RuntimeException rollbackException){
+                    logger.debug("failed creating index",rollbackException);
+                }
             }
         }
     }

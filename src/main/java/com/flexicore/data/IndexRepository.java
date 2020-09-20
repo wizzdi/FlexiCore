@@ -3,6 +3,7 @@ package com.flexicore.data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ public class IndexRepository {
     @PersistenceContext
     private EntityManager em;
 
-    @Transactional(noRollbackFor = PersistenceException.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createIndex(Index index, String tableName) {
 
         try {

@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Configuration
-@EnableTransactionManagement
+@EnableTransactionManagement(proxyTargetClass = true)
 public class EclipseLinkJpaConfiguration extends JpaBaseConfiguration {
 
 
