@@ -31,11 +31,17 @@ public class BaseclassNoSQLService implements com.flexicore.service.BaseclassNoS
 
     @Override
     public <T extends BaseclassNoSQL> List<T> listByIds(Class<T> c, Set<String> ids) {
+        if(ids.isEmpty()){
+            return new ArrayList<>();
+        }
         return baseclassNoSQLRepository.listByIds(c, ids);
     }
 
     @Override
     public <T extends BaseclassNoSQL> List<T> listByIds(Class<T> c, String collection, Set<String> ids) {
+        if(ids.isEmpty()){
+            return new ArrayList<>();
+        }
         return baseclassNoSQLRepository.listByIds(c,collection, ids);
     }
 
