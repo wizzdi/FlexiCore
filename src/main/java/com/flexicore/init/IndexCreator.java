@@ -50,11 +50,11 @@ public class IndexCreator {
         Table table = claz.getAnnotation(Table.class);
         String tableName;
         Pair<InheritanceType, Class<?>> pair = getInheritedTableName(claz);
-
-        if (pair != null && pair.getLeft().equals(InheritanceType.SINGLE_TABLE)) {
+        boolean singleTable=false;
+        if (pair != null && (singleTable=pair.getLeft().equals(InheritanceType.SINGLE_TABLE))) {
             Class<?> parent = pair.getRight();
-            Table inherited = parent.getAnnotation(Table.class);
-            tableName = inherited == null || inherited.name().isEmpty() ? parent.getSimpleName() : inherited.name();
+            Table inheritedTable = parent.getAnnotation(Table.class);
+            tableName = inheritedTable == null || inheritedTable.name().isEmpty() ? parent.getSimpleName() : inheritedTable.name();
         } else {
             tableName = table == null || table.name().isEmpty() ? claz.getSimpleName() : table.name();
         }
@@ -62,7 +62,7 @@ public class IndexCreator {
             for (Index index : table.indexes()) {
 
                 try {
-                    indexRepository.createIndex(index, tableName);
+                    indexRepository.createIndex(index, tableName,singleTable);
                 }
                 catch (RuntimeException rollbackException){
                     logger.debug("failed creating index",rollbackException);

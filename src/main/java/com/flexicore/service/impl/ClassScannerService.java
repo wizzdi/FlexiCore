@@ -134,6 +134,7 @@ public class ClassScannerService {
 
     }
 
+
     private void registerInvoker(Class<?> invokerClass, Map<String, DynamicInvoker> invokersMap, Map<String, Map<String, Operation>> operationsForInvokers, Map<String, OperationToClazz> related, List<Object> toMergeInvokers, List<Object> toMergeOperations, SecurityContext securityContext) {
         DynamicInvoker dynamicInvoker = invokersMap.get(invokerClass.getCanonicalName());
         InvokerInfo invokerInfo = invokerClass.getDeclaredAnnotation(InvokerInfo.class);

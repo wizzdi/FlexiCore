@@ -8,6 +8,8 @@ package com.flexicore.data.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.Baseclassroot;
+import com.flexicore.annotations.FullTextSearch;
+import com.flexicore.annotations.FullTextSearchOptions;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.rest.All;
 import com.flexicore.data.jsoncontainers.BaseclassCreationContainer;
@@ -32,10 +34,15 @@ import javax.persistence.*;
 import javax.persistence.criteria.*;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.PluralAttribute;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -300,6 +307,8 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             if(logger.isLoggable(Level.FINE) ){
                 logger.fine("merging "+ base1.getId()+ " updateDate flag is "+updateDate +" update date "+base1.getUpdateDate());
             }
+            updateSearchKey(base1);
+
 
         }
 
@@ -1579,6 +1588,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
                 if(logger.isLoggable(Level.FINE)){
                     logger.fine("merging "+ baseclass.getId() +" updateDate flag is "+updatedate +" update date is "+baseclass.getUpdateDate());
                 }
+                updateSearchKey(baseclass);
                 if(created){
                     BaseclassCreated<?> baseclassCreated=new BaseclassCreated<>(baseclass);
                     events.add(baseclassCreated);
@@ -1592,6 +1602,68 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             eventPublisher.publishEvent(event);
         }
     }
+
+    public void updateSearchKey(Baseclass b){
+        try {
+            if (isFreeTextSupport(b.getClass())) {
+                String freeText= Stream.of( Introspector.getBeanInfo(b.getClass(), Object.class).getPropertyDescriptors()).filter(this::isPropertyForTextSearch).map(PropertyDescriptor::getReadMethod).filter(this::isIncludeMethod).map(f-> invoke(b, f)).filter(Objects::nonNull).map(f->f+"").filter(f->!f.isEmpty()).collect(Collectors.joining("|"));
+                b.setSearchKey(freeText);
+                logger.fine("Free Text field for "+b.getId() +" is set");
+
+            }
+        }
+
+        catch (Exception e){
+            logger.log(Level.SEVERE,"unable to set free text field",e);
+        }
+    }
+    private static final Map<String, Boolean> freeTextSuportMap = new ConcurrentHashMap<>();
+
+    private Object invoke(Baseclass b, Method f) {
+        try {
+            return f.invoke(b);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            logger.log(Level.SEVERE,"unable to invoke method",e);
+        }
+        return null;
+    }
+
+    private boolean isFreeTextSupport(Class<? extends Baseclass> aClass) {
+        return freeTextSuportMap.computeIfAbsent(aClass.getCanonicalName(),f-> checkFreeTextSupport(aClass));
+    }
+    private boolean isIncludeMethod(Method f) {
+        if(f==null||f.isAnnotationPresent(Transient.class)){
+            return false;
+        }
+        FullTextSearchOptions fullTextSearchOptions=f.getAnnotation(FullTextSearchOptions.class);
+
+        return fullTextSearchOptions==null||fullTextSearchOptions.include();
+    }
+
+    private boolean checkFreeTextSupport(Class<? extends Baseclass> aClass) {
+        FullTextSearch annotation = aClass.getAnnotation(FullTextSearch.class);
+        return annotation!=null&&annotation.supported();
+    }
+
+    private boolean isPropertyForTextSearch(PropertyDescriptor f) {
+        return propertyTypes.contains(f.getPropertyType());
+    }
+
+    private static final Set<Class<?>> propertyTypes= Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+            String.class,
+            int.class,
+            double.class,
+            float.class,
+            int.class,
+            long.class,
+            short.class,
+            Double.class,
+            Float.class,
+            Integer.class,
+            Long.class,
+            Short.class
+
+    )));
 
     @Override
     @Transactional

@@ -467,8 +467,14 @@ public class BaseclassRESTService implements RESTService {
     public PaginationResponse<Baseclass> getDisconnected(@HeaderParam("authenticationkey") String authenticationkey,
                                                          GetDisconnected getDisconnected,
                                                          @Context SecurityContext securityContext) {
+        long start=System.currentTimeMillis();
         baseclassService.validate(getDisconnected, securityContext);
-        return baseclassService.getDisconnected(getDisconnected, securityContext);
+        logger.info("validation took "+(System.currentTimeMillis()-start)+" ms");
+        start=System.currentTimeMillis();
+        PaginationResponse<Baseclass> disconnected = baseclassService.getDisconnected(getDisconnected, securityContext);
+        logger.info("fetching took "+(System.currentTimeMillis()-start)+" ms");
+
+        return disconnected;
     }
 
 

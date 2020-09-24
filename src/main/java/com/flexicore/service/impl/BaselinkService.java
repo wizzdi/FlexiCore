@@ -243,35 +243,60 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     }
 
     @Override
-    public void validate(BaselinkFilter createBaselinkRequest, SecurityContext securityContext) {
+    public void validate(BaselinkFilter baselinkFilter, SecurityContext securityContext) {
 
         Class<? extends Baselink> clazz;
-        String linkClazzName = createBaselinkRequest.getLinkClassName();
+        String linkClazzName = baselinkFilter.getLinkClassName();
         try {
             clazz = linkClazzName != null ? (Class<? extends Baselink>) Class.forName(linkClazzName) : null;
         } catch (ClassNotFoundException e) {
             throw new BadRequestException("no class with name:" + linkClazzName);
         }
-        createBaselinkRequest.setLinkClass(clazz);
-        Set<String> rightsideIds = createBaselinkRequest.getRightsideIds();
-        Map<String, Baseclass> rightsideMap = rightsideIds.isEmpty() ? new HashMap<>() : repository.listByIds(Baseclass.class, rightsideIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+        String rightsideClassName = baselinkFilter.getRightsideTypeClassName();
+        try {
+            baselinkFilter.setRightsideType(rightsideClassName != null ? (Class<? extends Baseclass>) Class.forName(rightsideClassName) : getLinkSideClass(true,clazz));
+        } catch (ClassNotFoundException e) {
+            throw new BadRequestException("no class with name:" + linkClazzName);
+        }
+
+        String leftsideClassName = baselinkFilter.getLeftsideTypeClassName();
+        try {
+            baselinkFilter.setLeftsideType(leftsideClassName != null ? (Class<? extends Baseclass>) Class.forName(leftsideClassName) : getLinkSideClass(false,clazz));
+        } catch (ClassNotFoundException e) {
+            throw new BadRequestException("no class with name:" + linkClazzName);
+        }
+
+        baselinkFilter.setLinkClass(clazz);
+        Set<String> rightsideIds = baselinkFilter.getRightsideIds();
+        Map<String, Baseclass> rightsideMap = rightsideIds.isEmpty() ? new HashMap<>() : repository.listByIds(baselinkFilter.getRightsideType(), rightsideIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
         rightsideIds.removeAll(rightsideMap.keySet());
         if (!rightsideIds.isEmpty()) {
             throw new BadRequestException("No Rightside ids " + rightsideIds);
         }
-        createBaselinkRequest.setRightside(new ArrayList<>(rightsideMap.values()));
-        Set<String> leftsideIds = createBaselinkRequest.getLeftsideIds();
-        Map<String, Baseclass> leftsideMap = leftsideIds.isEmpty() ? new HashMap<>() : repository.listByIds(Baseclass.class, leftsideIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+        baselinkFilter.setRightside(new ArrayList<>(rightsideMap.values()));
+        Set<String> leftsideIds = baselinkFilter.getLeftsideIds();
+        Map<String, Baseclass> leftsideMap = leftsideIds.isEmpty() ? new HashMap<>() : repository.listByIds(baselinkFilter.getLeftsideType(), leftsideIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
         leftsideIds.removeAll(leftsideMap.keySet());
         if (!leftsideIds.isEmpty()) {
             throw new BadRequestException("No Leftside ids " + leftsideIds);
         }
-        createBaselinkRequest.setLeftside(new ArrayList<>(leftsideMap.values()));
-        Baseclass value = createBaselinkRequest.getValueId() != null ? getByIdOrNull(createBaselinkRequest.getValueId(), Baseclass.class, null, securityContext) : null;
-        if (value == null && createBaselinkRequest.getValueId() != null) {
-            throw new BadRequestException("No Value with id " + createBaselinkRequest.getValueId());
+        baselinkFilter.setLeftside(new ArrayList<>(leftsideMap.values()));
+        Baseclass value = baselinkFilter.getValueId() != null ? getByIdOrNull(baselinkFilter.getValueId(), Baseclass.class, null, securityContext) : null;
+        if (value == null && baselinkFilter.getValueId() != null) {
+            throw new BadRequestException("No Value with id " + baselinkFilter.getValueId());
         }
-        createBaselinkRequest.setValue(value);
+        baselinkFilter.setValue(value);
+    }
+
+    private Class<? extends Baseclass> getLinkSideClass(boolean rightside, Class<? extends Baselink> linkClass) {
+        String name = rightside ? "getRightside" : "getLeftside";
+
+        try {
+            return (Class<? extends Baseclass>) linkClass.getMethod(name).getReturnType();
+        } catch (Exception e) {
+            logger.severe("failed getting type of "+name +" to determine type");
+        }
+        return Baseclass.class;
     }
 
     @Override

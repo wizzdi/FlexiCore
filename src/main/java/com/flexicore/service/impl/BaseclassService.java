@@ -414,13 +414,14 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
         } catch (ClassNotFoundException e) {
             throw new BadRequestException("No Class with name " + getDisconnected.getWantedClassName());
         }
-        if (getDisconnected.getBaselinkFilter() == null) {
+        BaselinkFilter baselinkFilter = getDisconnected.getBaselinkFilter();
+        if (baselinkFilter == null) {
             throw new BadRequestException("baselink filter must be non null");
         }
-        if (getDisconnected.getBaselinkFilter().getLinkClassName() == null) {
+        if (baselinkFilter.getLinkClassName() == null) {
             throw new BadRequestException("Baselink filter class name must be non null");
         }
-        baselinkService.validate(getDisconnected.getBaselinkFilter(), securityContext);
+        baselinkService.validate(baselinkFilter, securityContext);
     }
 
     @Override
