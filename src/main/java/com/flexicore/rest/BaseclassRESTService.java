@@ -381,15 +381,6 @@ public class BaseclassRESTService implements RESTService {
     }
 
 
-    /**
-     * get the connected instances to an instance, filtered by a Link class
-     *
-     * @param authenticationkey
-     * @param id
-     * @param linkClazzName
-     * @param securityContext
-     * @return list of connected baseclass
-     */
     @POST
     @Path("connected/{wantedClazzName}/{id}/{linkClazzName}")
     @Consumes("application/json")
@@ -419,15 +410,7 @@ public class BaseclassRESTService implements RESTService {
         return baseclasses;
     }
 
-    /**
-     * get the connected instances to an instance, filtered by a Link class
-     *
-     * @param authenticationkey
-     * @param id
-     * @param linkClazzName
-     * @param securityContext
-     * @return list of connected classes
-     */
+
     @POST
     @Path("connectedClasses/{wantedClazzName}/{id}/{linkClazzName}")
     @Consumes("application/json")
@@ -490,16 +473,6 @@ public class BaseclassRESTService implements RESTService {
         return baseclassService.getConnected(getConnected, securityContext);
     }
 
-
-    /**
-     * get the connected instances to an instance, filtered by a Link class
-     *
-     * @param authenticationkey
-     * @param id
-     * @param linkClazzName
-     * @param securityContext
-     * @return number of connected baseclass
-     */
     @POST
     @Path("countConnected/{wantedClazzName}/{id}/{linkClazzName}")
     @Consumes("application/json")
@@ -531,15 +504,6 @@ public class BaseclassRESTService implements RESTService {
         return baseclasses;
     }
 
-    /**
-     * get the connected instances to an instance, filtered by a Link class
-     *
-     * @param authenticationkey
-     * @param id
-     * @param linkClazzName
-     * @param securityContext
-     * @return count of disconnected baseclass
-     */
     @POST
     @Path("countDisconnected/{wantedClazzName}/{id}/{linkClazzName}")
     @Consumes("application/json")
@@ -599,13 +563,17 @@ public class BaseclassRESTService implements RESTService {
      * NOT connected to an instance of a User. This is required when we need to
      * connect unconnected instances. In the generic view, disconnected Role
      * instances can be dragged and dropped to be connected.
-     *
-     * @param authenticationkey
-     * @param id
-     * @param wantedClazzName
-     * @param linkClazzName
-     * @param securityContext
-     * @return list of disconnected baseclass
+     * @param authenticationkey authentication key
+     * @param id id
+     * @param wantedClazzName wanted type
+     * @param linkClazzName link type
+     * @param filteringInformationHolder filter
+     * @param pagesize page size
+     * @param currentpage current page
+     * @param valueId value id
+     * @param simpleValue simple value
+     * @param securityContext security context
+     * @return list of disconnected
      */
     @POST
     @Path("disconnected/{wantedClazzName}/{id}/{linkClazzName}")
@@ -759,11 +727,11 @@ public class BaseclassRESTService implements RESTService {
 
 
     /**
-     * @param authenticationkey
-     * @param id
-     * @param clazz_name
-     * @param updateContainer
-     * @param securityContext
+     * @param authenticationkey authentication key
+     * @param id id to update
+     * @param clazz_name type to update
+     * @param updateContainer container
+     * @param securityContext security context
      * @return true if baseclass was updated
      */
     @PUT
@@ -785,7 +753,9 @@ public class BaseclassRESTService implements RESTService {
     }
 
     /**
-     * @param id
+     * @param securityContext security context
+     * @param authenticationkey authentication key
+     * @param id id to delete
      */
     @DELETE
     @Path("{id}")
@@ -817,7 +787,11 @@ public class BaseclassRESTService implements RESTService {
 
 
     /**
-     * @param id
+     * @param authenticationkey authentication key
+     * @param securityContext security context
+     * @param <T> type to delete
+     * @param clazzName type to delete
+     * @param id id to delete
      */
     @DELETE
     @Path("{class_name}/{id}")

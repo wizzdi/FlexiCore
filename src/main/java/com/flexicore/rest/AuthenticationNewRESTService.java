@@ -49,7 +49,7 @@ public class AuthenticationNewRESTService implements RestServicePlugin {
      * Login into the system, if successful, receives an authentication key for
      * further operations.
      *
-     * @param authenticationRequest
+     * @param authenticationRequest authentication request
      * @return authentication response
      */
     @POST

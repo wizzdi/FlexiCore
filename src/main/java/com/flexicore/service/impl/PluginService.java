@@ -64,8 +64,8 @@ public class PluginService implements com.flexicore.service.PluginService {
 
 
     /**
-     * @param pluginType
-     * @param requirements
+     * @param pluginType plugin type
+     * @param requirements requirements
      * @return a list of instances which implement pluginType
      */
     @Override
@@ -88,7 +88,9 @@ public class PluginService implements com.flexicore.service.PluginService {
     /**
      * @param plugin  - class implementing Plugin interface
      * @param type    - Type of Plugin aka interface that extends Plugin
-     * @param moduleManifest
+     * @param moduleManifest module manifest for the plugin to be added
+     * @param <T> type of plugin
+     * @param info plugin info
      */
     public <T extends Plugin> void addPlugin(Class<T> plugin, Class<T> type, ModuleManifest moduleManifest, PluginInfo info) {
         addPlugin(plugin,type,moduleManifest,info,false);

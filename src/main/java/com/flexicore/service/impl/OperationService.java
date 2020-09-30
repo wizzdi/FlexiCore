@@ -85,8 +85,8 @@ public class OperationService implements com.flexicore.service.OperationService 
 	/**
 	 * check f
 	 *
-	 * @param operation
-	 * @param tenant
+	 * @param operation operation
+	 * @param tenant tenant
 	 * @return true if tenant is allowed to the operation
 	 */
 	@Override

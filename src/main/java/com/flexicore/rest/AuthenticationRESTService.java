@@ -51,8 +51,9 @@ public class AuthenticationRESTService implements RESTService {
      * Login into the system, if successful, receives an authentication key for
      * further operations.
      *
-     * @param authenticationkey
-     * @param bundle
+     * @param authenticationkey authentication key - empty
+     * @param bundle            authentication request
+     * @param req               request context
      * @return authentication bundle
      */
     @POST
@@ -102,7 +103,8 @@ public class AuthenticationRESTService implements RESTService {
 
 
     /**
-     * @param authenticationkey
+     * @param authenticationkey authentication key for the user
+     * @param securityContext   security context obtained from auethentication key
      * @return true if the user was logged out successfully or not
      */
     @POST

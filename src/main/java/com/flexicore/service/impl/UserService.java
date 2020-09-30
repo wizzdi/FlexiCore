@@ -156,13 +156,13 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
     /**
-     * @param newuser
-     * @param securityContext
+     * @param newuser new user
+     * @param securityContext secuirty contexts
      * @return AuthenticationKey
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws Exception
+     * @throws ClassNotFoundException when user type class is not found
+     * @throws InstantiationException instantiating the class is not possible
+     * @throws IllegalAccessException instantiating the class is not possible
+     * @throws Exception instantiating the class is not possible
      */
 
     @Override
@@ -277,13 +277,13 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
     /**
-     * @param newuser
-     * @param shouldlogin
-     * @param securityContext
-     * @param tenant
-     * @param <T>
+     * @param newuser new user to register
+     * @param shouldlogin login after register
+     * @param securityContext security context of the administrator user registrating the user
+     * @param tenant tenant to register the user in
+     * @param <T> type of the user
      * @return logged in user
-     * @throws Exception
+     * @throws Exception when failed creating the user
      * @deprecated replaced by {@link #createUser(UserCreate, SecurityContext)}
      */
     @Override
@@ -329,10 +329,10 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
     /**
-     * @param newuser
-     * @param shouldlogin
-     * @param securityContext
-     * @param <T>
+     * @param newuser new user
+     * @param shouldlogin login after register or not
+     * @param securityContext security context of admin user
+     * @param <T> type of user
      * @return logged in user
      * @deprecated replaced by {@link #createUserNoMerge(UserCreate, SecurityContext)}
      */
@@ -347,11 +347,11 @@ public class UserService implements com.flexicore.service.UserService {
 
 
     /**
-     * @param newuser
-     * @param shouldlogin
-     * @param securityContext
-     * @param tenant
-     * @param <T>
+     * @param newuser new user
+     * @param shouldlogin login after register
+     * @param securityContext security context of admin user
+     * @param tenant tenant to register in
+     * @param <T> type of user
      * @return logged in user
      * @deprecated replaced by {@link #createUserNoMerge(UserCreate, SecurityContext)}
      */
@@ -511,8 +511,8 @@ public class UserService implements com.flexicore.service.UserService {
     /**
      * log into the system, if user!=null will not search for it.
      *
-     * @param bundle
-     * @param user
+     * @param bundle bundle
+     * @param user user
      * @return logged in user
      */
     @Override
@@ -559,8 +559,8 @@ public class UserService implements com.flexicore.service.UserService {
     /**
      * authenticates a user by email and password or by phonenumber and password or by facebook user id and facebook token
      *
-     * @param bundle
-     * @param user
+     * @param bundle bundle
+     * @param user user
      * @return user
      */
     @Override
@@ -730,7 +730,7 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
     /**
-     * @param tenantAdmin
+     * @param tenantAdmin new user
      * @deprecated 2.2.0 replaced by {@link #validateUser(UserCreate, SecurityContext)}
      */
     @Override

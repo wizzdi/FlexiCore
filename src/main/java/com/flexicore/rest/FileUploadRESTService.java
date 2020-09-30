@@ -73,8 +73,9 @@ public class FileUploadRESTService implements RESTService {
     /**
      * retreives file resource by md5
      *
-     * @param authenticationkey
+     * @param authenticationkey authentication key
      * @param md5               md5 of requested file
+     * @param securityContext security context
      * @return FileResource requested file
      */
     @GET
@@ -136,6 +137,12 @@ public class FileUploadRESTService implements RESTService {
      * finalize upload of a file and start analyzing and processing
      *
      * @param md5 finalized file md5
+     * @param securityContext security context
+     * @param authenticationkey authentication key
+     * @param dontProcess true if no proccessing should be done
+     * @param fileType file type
+     * @param headers headers
+     * @param hint hint for finalizing
      * @return processing/analyzing job to track the long running process
      */
     @GET
@@ -167,9 +174,9 @@ public class FileUploadRESTService implements RESTService {
 
     /**
      * finalize upload of a file and start analyzing and processing
-     * @param authenticationkey
-     * @param finallizeFileResource
-     * @param securityContext
+     * @param authenticationkey authentication key
+     * @param finallizeFileResource finalize file resource
+     * @param securityContext security context
      * @return finalized response
      */
     @POST

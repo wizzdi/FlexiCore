@@ -188,10 +188,10 @@ public class PluginRepository {
      *
      * @param jarPath path to jar
      * @return file representing the copied jar
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     * @throws TransformerException
+     * @throws ParserConfigurationException when xml failed to be parsed
+     * @throws SAXException when xml failed to be written
+     * @throws IOException when xml failed to be written
+     * @throws TransformerException when xml failed to be written
      */
     public File addJarToPersistenceContext(String jarPath)
             throws ParserConfigurationException, SAXException, IOException, TransformerException {

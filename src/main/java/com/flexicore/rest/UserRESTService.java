@@ -58,9 +58,11 @@ public class UserRESTService implements RESTService {
     /**
      * Retrieves a list of all users
      *
-     * @param authenticationkey
-     * @param pagesize
-     * @param currentpage
+     * @param authenticationkey authentication key
+     * @param pagesize page size
+     * @param currentpage current page
+     * @param securityContext securiy context
+     * @param getAllOfType filtering
      * @return {@code List<User>} at current page by page size
      */
     @POST
@@ -93,7 +95,8 @@ public class UserRESTService implements RESTService {
 
     /**
      * Retrieves user by id
-     *
+     * @param authenticationkey authentication key
+     * @param securityContext security context
      * @param id requested {@code User} id
      * @return requested {@code User}
      */
@@ -110,7 +113,9 @@ public class UserRESTService implements RESTService {
     }
 
     /**
+     * @param authenticationkey authentication key
      * @param Email requested {@code User} email
+     * @param securityContext security context
      * @return requested {@code User}
      */
     @GET
@@ -129,9 +134,11 @@ public class UserRESTService implements RESTService {
      * Creates a new user, seems that the method is detected with no path parameter
      * returns a running user anyway, we need the user object
      *
-     * @param authenticationkey
-     * @param loginuponsuccess  - true if do login after creation
-     * @param {@code            NewUser} object to create
+     * @param authenticationkey authentication key
+     * @param loginuponsuccess  true if do login after creation
+     * @param newuser to create
+     * @param <T> type of user to create
+     * @param securityContext security ccontext
      * @return logged in user created
      */
     @POST

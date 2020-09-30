@@ -44,8 +44,8 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
 
     /**
      * keeping compatibility with code gen
-     * @param filteringInformationHolder
-     * @param securityContext
+     * @param filteringInformationHolder filteringinformationholder
+     * @param securityContext security context
      */
     @Override
     public void validateFilter(FilteringInformationHolder filteringInformationHolder, SecurityContext securityContext){
@@ -55,8 +55,8 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
     /**
      * keeping compatibility with code gen
      *
-     * @param baseclassCreate
-     * @param securityContext
+     * @param baseclassCreate baseclass create
+     * @param securityContext security context
      */
     @Override
     public void validateCreate(BaseclassCreate baseclassCreate, SecurityContext securityContext) {

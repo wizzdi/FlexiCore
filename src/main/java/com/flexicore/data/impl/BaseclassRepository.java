@@ -533,8 +533,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     /**
      * get a list of instances filtered (for now) by access control, categories,
      * keywords, paged and sorted. The method handles n+1 through EclipseLink
-     * Batchfetch See:
-     * {@link https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm}
+     * Batchfetch See <a href="https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm">eclipselink docs</a>
      * This method should be called only if there are no predicates added by the
      * caller
      *
@@ -580,8 +579,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     /**
      * get a list of instances filtered (for now) by access control, categories,
      * keywords, paged and sorted. The method handles n+1 through EclipseLink
-     * Batchfetch See:
-     * {@link https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm}
+     * Batchfetch See <a href="https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm">eclipselink docs</a>
      * This method should be called if there are predicates added by the caller
      * , all predicate are 'AND'
      *
@@ -608,8 +606,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     /**
      * get a list of instances filtered (for now) by access control, categories,
      * keywords, paged and sorted. The method handles n+1 through EclipseLink
-     * Batchfetch See:
-     * {@link https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm}
+     * Batchfetch See <a href="https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm">eclipselink docs</a>
      * This method should be called if there are predicates added by the caller
      * , all predicate are 'AND'
      *

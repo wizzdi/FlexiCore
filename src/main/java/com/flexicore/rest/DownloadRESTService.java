@@ -55,6 +55,9 @@ public class DownloadRESTService implements RESTService {
      * @param authenticationkey authentication key
      * @param id id
      * @param securityContext security context
+     * @param offset offset to start reading from
+     * @param req request context
+     * @param size length to read
      * @return binary file data
      */
     @GET
@@ -75,9 +78,9 @@ public class DownloadRESTService implements RESTService {
     /**
      * zips list of fileResources and sends it
      *
-     * @param authenticationkey
-     * @param zipAndDownload
-     * @param securityContext
+     * @param authenticationkey authentication key
+     * @param zipAndDownload zip and download request
+     * @param securityContext security context
      * @return binary zip data
      */
     @POST

@@ -125,9 +125,9 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
      * Job. The created FC Job allows for a client tracking on {@link Job}
      * progress.
      *
-     * @param md5
-     * @param securityContext
-     * @param hint
+     * @param md5 md5 of the file to be finizalized
+     * @param securityContext security context
+     * @param hint hint for finalizing
      * @return job that was finalized
      */
 

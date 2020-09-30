@@ -97,10 +97,13 @@ public class CategoryRESTService implements RESTService {
     /**
      * associate a Baseclass with an existing Category, the server checks if the Category can be associated with the Clazz of the supplied Baseclass instance.
      *
-     * @param authenticationkey
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
+     * @param authenticationkey authentication key
+     * @param className class name
+     * @param securityContext security context
+     * @param catId category id
+     * @throws ClassNotFoundException when class not found
+     * @throws InstantiationException when class not found
+     * @throws IllegalAccessException when class not found
      */
 
     @SuppressWarnings("unchecked")
@@ -142,8 +145,9 @@ public class CategoryRESTService implements RESTService {
     /**
      * get all Categories of the supplied name
      *
-     * @param authenticationkey
-     * @param name
+     * @param authenticationkey authentication key
+     * @param name name
+     * @param securityContext security context
      * @return list of categories
      */
     @GET
@@ -176,7 +180,9 @@ public class CategoryRESTService implements RESTService {
     /**
      * get all Categories of the supplied name
      *
-     * @param authenticationkey
+     * @param authenticationkey authentication key
+     * @param securityContext security context
+     * @param className type
      * @return list of categories
      */
     @SuppressWarnings("unchecked")

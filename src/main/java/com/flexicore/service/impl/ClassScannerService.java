@@ -480,6 +480,7 @@ public class ClassScannerService {
 
     /**
      * Make sure that all classes annotated with {@code AnnotatedClazz} are registered in the database
+     * @return list of initialized classes
      */
     @Transactional
     public List<Clazz> InitializeClazzes() {

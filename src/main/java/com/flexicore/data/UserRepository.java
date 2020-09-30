@@ -91,7 +91,8 @@ public class UserRepository extends BaseclassRepository {
     /**
      * find user by email
      *
-     * @param email
+     * @param email email to search users for
+     * @param securityContext security context to use when searching users
      * @return users with the given emails
      */
     public List<User> findByEmail(String email, SecurityContext securityContext) {
@@ -107,8 +108,7 @@ public class UserRepository extends BaseclassRepository {
 
     /**
      * add this user to the database
-     *
-     * @param user
+     * @param user user to merge
      */
     public void register(User user) {
         em.merge(user);

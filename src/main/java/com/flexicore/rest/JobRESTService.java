@@ -42,9 +42,10 @@ public class JobRESTService implements RESTService {
 	/**
 	 * retreives Job object
 	 * 
-	 * @param authenticationkey
+	 * @param authenticationkey authentication key
 	 * @param jobID
 	 *            requested job id
+	 * @param securityContext security context
 	 * @return job object containing information
 	 */
 	@GET
@@ -77,7 +78,10 @@ public class JobRESTService implements RESTService {
 	/**
 	 * updates a Job property
 	 *
-	 * @param authenticationkey
+	 * @param authenticationkey authentication key
+	 * @param securityContext security context
+	 * @param key key
+	 * @param value value
 	 * @param jobID requested job id
 	 */
 	@PUT
@@ -94,7 +98,9 @@ public class JobRESTService implements RESTService {
 	/**
 	 * updates a Job property
 	 *
-	 * @param authenticationkey
+	 * @param authenticationkey authentication key
+	 * @param securityContext security context
+	 * @param phaseName phase name
 	 * @param jobID requested job id
 	 */
 	@PUT
@@ -110,7 +116,8 @@ public class JobRESTService implements RESTService {
 	/**
 	 * stops a Job
 	 *
-	 * @param authenticationkey
+	 * @param authenticationkey authentication key
+	 * @param securityContext security context
 	 * @param jobID requested job id
 	 */
 	@DELETE
