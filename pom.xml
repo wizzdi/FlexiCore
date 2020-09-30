@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>4.0.27-SNAPSHOT</version>
+    <version>4.0.27</version>
 
     <name>FlexiCore: WAR Module</name>
 
@@ -55,7 +55,7 @@
         <connection>scm:git:git://wizzdi/flexicore.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore</url>
-        <tag>flexicore-${version}</tag>
+        <tag>FlexiCore-4.0.27</tag>
     </scm>
 
 
