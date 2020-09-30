@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>4.0.26-SNAPSHOT</version>
+    <version>4.0.27-SNAPSHOT</version>
 
     <name>FlexiCore: WAR Module</name>
 
