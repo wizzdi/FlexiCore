@@ -27,14 +27,37 @@
     </properties>
 
     <distributionManagement>
-
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
         <repository>
-            <id>flexicore-local</id>
-            <name>FlexiCore</name>
-            <url>https://artifactory.wizzdi.com/artifactory/flexicore-local</url>
-
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/
+            </url>
         </repository>
     </distributionManagement>
+    <developers>
+        <developer>
+            <id>asafbennatan</id>
+            <name>Asaf Ben Natan</name>
+            <email>asaf@wizzdi.com</email>
+            <url>https://www.wizzdi.com</url>
+            <organization>Wizzdi</organization>
+            <organizationUrl>https://www.wizzdi.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Israel</timezone>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://wizzdi/flexicore.git</connection>
+        <developerConnection>scm:git:git@github.com:wizzdi/flexicore.git</developerConnection>
+        <url>https://github.com/wizzdi/flexicore</url>
+        <tag>flexicore-${version}</tag>
+    </scm>
 
     <repositories>
         <repository>
@@ -404,6 +427,63 @@
                 <version>2.22.2</version>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <localCheckout>true</localCheckout>
+                    <pushChanges>false</pushChanges>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>1.9.5</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <javadocExecutable>C:\Program Files\AdoptOpenJDK\jdk-8.0.212.03-hotspot\bin\javadoc.exe</javadocExecutable>
+                    <javadocVersion>1.8.0</javadocVersion>
+                </configuration>
+            </plugin>
 
 
         </plugins>
