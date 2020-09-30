@@ -4,10 +4,19 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>4.0.31-SNAPSHOT</version>
+    <version>4.0.30-SNAPSHOT</version>
 
-    <name>FlexiCore: WAR Module</name>
+    <name>FlexiCore</name>
+    <description>flexicore dependency</description>
+    <url>https://wizzdi.com</url>
 
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
     <properties>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
