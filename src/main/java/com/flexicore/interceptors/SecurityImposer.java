@@ -164,13 +164,6 @@ public class SecurityImposer  {
 	}
 
 
-	/**
-	 *
-	 * @param securityContext
-	 * @param context
-	 * @return
-	 * @throws Exception
-	 */
 	private Object procceed(SecurityContext securityContext,ProceedingJoinPoint proceedingJoinPoint,String methodName,Object[] parameters,long start) throws Throwable {
 		Object param=parameters[parameters.length-1];
 		if(param instanceof Session){

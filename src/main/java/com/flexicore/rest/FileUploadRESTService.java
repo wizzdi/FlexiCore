@@ -170,7 +170,7 @@ public class FileUploadRESTService implements RESTService {
      * @param authenticationkey
      * @param finallizeFileResource
      * @param securityContext
-     * @return
+     * @return finalized response
      */
     @POST
     @Path("finalize")

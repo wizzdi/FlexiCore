@@ -87,7 +87,7 @@ public class OperationService implements com.flexicore.service.OperationService 
 	 *
 	 * @param operation
 	 * @param tenant
-	 * @return
+	 * @return true if tenant is allowed to the operation
 	 */
 	@Override
 	public boolean tennantAllowed(Operation operation, Tenant tenant) {

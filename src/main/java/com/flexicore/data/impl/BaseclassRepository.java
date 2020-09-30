@@ -534,12 +534,12 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
      * get a list of instances filtered (for now) by access control, categories,
      * keywords, paged and sorted. The method handles n+1 through EclipseLink
      * Batchfetch See:
-     * {@see https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm}
+     * {@link https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm}
      * This method should be called only if there are no predicates added by the
      * caller
      *
-     * @param queryInformationHolder
-     * @return
+     * @param queryInformationHolder object containing all filters , and jpa criteria objects used
+     * @return list of filtered baseclasses
      */
 
     @Override
@@ -581,16 +581,16 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
      * get a list of instances filtered (for now) by access control, categories,
      * keywords, paged and sorted. The method handles n+1 through EclipseLink
      * Batchfetch See:
-     * {@see https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm}
+     * {@link https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm}
      * This method should be called if there are predicates added by the caller
      * , all predicate are 'AND'
      *
-     * @param queryInformationHolder
-     * @param existingPredicates
-     * @param cb
-     * @param q
-     * @param r
-     * @return
+     * @param queryInformationHolder object containing all filters , and jpa criteria objects used
+     * @param existingPredicates epredicates
+     * @param cb criteria builder
+     * @param q query
+     * @param r root
+     * @return filtered baseclass
      */
     @Override
     public <T extends Baseclass> List<T> getAllFiltered(QueryInformationHolder<T> queryInformationHolder,
@@ -609,16 +609,16 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
      * get a list of instances filtered (for now) by access control, categories,
      * keywords, paged and sorted. The method handles n+1 through EclipseLink
      * Batchfetch See:
-     * {@see https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm}
+     * {@link https://www.eclipse.org/eclipselink/documentation/2.5/jpa/extensions/a_batchfetch.htm}
      * This method should be called if there are predicates added by the caller
      * , all predicate are 'AND'
      *
-     * @param queryInformationHolder
-     * @param existingPredicates
-     * @param cb
-     * @param q
-     * @param r
-     * @return
+     * @param queryInformationHolder object containing all filters , and jpa criteria objects used
+     * @param existingPredicates predicates
+     * @param cb criteria builder
+     * @param q query
+     * @param r root
+     * @return list of filtered baseclasses
      */
     @Override
     public <T extends Baseclass, E> List<E> getAllFiltered(QueryInformationHolder<T> queryInformationHolder,
@@ -736,8 +736,8 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
      * adds hints for batch fetch (this is Eclipselink specific!, solves n+1
      * syndrome)
      *
-     * @param query
-     * @param list
+     * @param query query
+     * @param list list
      */
     private <T extends Baseclass> void setBatchFetch(TypedQuery<?> query, List<String> list) {
         if (list != null) {
@@ -753,10 +753,10 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     /**
      * adds all predicates to the query
      *
-     * @param r
-     * @param q
-     * @param preds
-     * @param cb
+     * @param r root
+     * @param q query
+     * @param preds predicates
+     * @param cb criteria builder
      */
     @Override
     public <T> void finalizeQuery(From<?, T> r, CriteriaQuery<T> q, List<Predicate> preds, CriteriaBuilder cb) {
@@ -767,10 +767,10 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     /**
      * adds all predicates to the query
      *
-     * @param r
-     * @param q
-     * @param preds
-     * @param cb
+     * @param r root
+     * @param q query
+     * @param preds predicates
+     * @param cb criteria builder
      */
     @Override
     public <T> void finalizeQuery(From<?, T> r, CriteriaDelete<T> q, List<Predicate> preds, CriteriaBuilder cb) {
@@ -781,10 +781,10 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     /**
      * adds all predicates to the query
      *
-     * @param r
-     * @param q
-     * @param preds
-     * @param cb
+     * @param r root
+     * @param q query
+     * @param preds predicates
+     * @param cb criteria builder
      */
     @Override
     public <T, E> void finalizeQuery(From<?, T> r, CriteriaQuery<E> q, List<Predicate> preds, CriteriaBuilder cb, Selection<? extends E> select) {
@@ -803,10 +803,10 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     /**
      * adds all predicates to the query
      *
-     * @param r
-     * @param q
-     * @param preds
-     * @param cb
+     * @param r root
+     * @param q query
+     * @param preds predicates
+     * @param cb criteria builder
      */
     @Override
     public <T, E> void finalizeQuery(From<?, T> r, CriteriaDelete<E> q, List<Predicate> preds, CriteriaBuilder cb, Selection<? extends E> select) {
@@ -1383,8 +1383,8 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
 
 
     /**
-     * @param user
-     * @param op
+     * @param user user
+     * @param op operation
      * @return a list of denied baseclasses  for user using Operation
      */
     @Override
@@ -1478,10 +1478,10 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
      * Add the Predicates for list of Categories, we will want only instances
      * linked with one of the categories.
      *
-     * @param existingPredicates
-     * @param r
-     * @param cb
-     * @param categories
+     * @param existingPredicates predicates
+     * @param r root
+     * @param cb criteria builder
+     * @param categories categories
      */
     @Override
     public <T extends Baseclass> void addCategoriesPredicate(List<Predicate> existingPredicates, From<?, T> r,

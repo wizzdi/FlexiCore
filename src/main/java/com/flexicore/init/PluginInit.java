@@ -88,6 +88,7 @@ public class PluginInit {
 
     /**
      * Starts the plug-in loader, uses a constant for its path
+     * @return PluginsLoadedEvent
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)

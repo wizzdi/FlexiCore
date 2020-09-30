@@ -128,7 +128,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
      * @param md5
      * @param securityContext
      * @param hint
-     * @return
+     * @return job that was finalized
      */
 
     public Job finalizeUpload(String md5, SecurityContext securityContext, String hint) {

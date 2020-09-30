@@ -68,6 +68,8 @@ public class Initializator  {
 
     /**
      * this is called by the container upon init.
+     * @return the starting context
+     * @throws Exception if there is any issue starting the context
      */
     @Bean
     public StartingContext getStartingContext() throws Exception {

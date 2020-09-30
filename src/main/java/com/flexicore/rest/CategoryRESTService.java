@@ -144,7 +144,7 @@ public class CategoryRESTService implements RESTService {
      *
      * @param authenticationkey
      * @param name
-     * @return
+     * @return list of categories
      */
     @GET
     @Path("/byname/{name}")
@@ -177,7 +177,7 @@ public class CategoryRESTService implements RESTService {
      * get all Categories of the supplied name
      *
      * @param authenticationkey
-     * @return
+     * @return list of categories
      */
     @SuppressWarnings("unchecked")
     @GET

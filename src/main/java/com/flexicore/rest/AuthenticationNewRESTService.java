@@ -50,7 +50,7 @@ public class AuthenticationNewRESTService implements RestServicePlugin {
      * further operations.
      *
      * @param authenticationRequest
-     * @return
+     * @return authentication response
      */
     @POST
     @Path("/login")

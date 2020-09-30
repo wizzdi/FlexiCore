@@ -65,10 +65,10 @@ public class OperationRepository extends BaseclassRepository {
     }
 
     /**
-     * @param operation
-     * @param user
-     * @param access
-     * @return
+     * @param operation operation
+     * @param user user
+     * @param access access
+     * @return if the user is allowed/denied (based on given access object) to the given operation
      */
     public boolean checkRole(Operation operation, User user, IOperation.Access access) {
 

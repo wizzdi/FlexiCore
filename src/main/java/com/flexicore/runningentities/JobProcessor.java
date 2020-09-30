@@ -52,7 +52,7 @@ public class JobProcessor implements ItemProcessor<Job, Job> {
      * find the correct FC PI to process the job.
      *
      * @param job
-     * @return
+     * @return true if job was found
      */
     private boolean processJob(com.flexicore.model.Job job) {
         Collection<?> analyzers = pluginService.getPlugins(job.getJobInformation().getHandler(), job.getJobInformation().getRequirments(), job);

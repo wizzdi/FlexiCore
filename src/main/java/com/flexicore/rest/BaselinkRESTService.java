@@ -77,7 +77,7 @@ public class 	BaselinkRESTService implements RESTService {
 	 * generic way of linking (M2M) of any ? extends Baseclass with another one.
 	 * The link should be instantiated
 	 * 
-	 * @return
+	 * @return created baselink
 	 */
 	@SuppressWarnings("unchecked")
 	@POST

@@ -282,7 +282,7 @@ public class UserService implements com.flexicore.service.UserService {
      * @param securityContext
      * @param tenant
      * @param <T>
-     * @return
+     * @return logged in user
      * @throws Exception
      * @deprecated replaced by {@link #createUser(UserCreate, SecurityContext)}
      */
@@ -333,10 +333,7 @@ public class UserService implements com.flexicore.service.UserService {
      * @param shouldlogin
      * @param securityContext
      * @param <T>
-     * @return
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
+     * @return logged in user
      * @deprecated replaced by {@link #createUserNoMerge(UserCreate, SecurityContext)}
      */
     @Override
@@ -355,10 +352,7 @@ public class UserService implements com.flexicore.service.UserService {
      * @param securityContext
      * @param tenant
      * @param <T>
-     * @return
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
+     * @return logged in user
      * @deprecated replaced by {@link #createUserNoMerge(UserCreate, SecurityContext)}
      */
     @Override
@@ -519,9 +513,7 @@ public class UserService implements com.flexicore.service.UserService {
      *
      * @param bundle
      * @param user
-     * @return
-     * @throws UserNotFoundException
-     * @throws CheckYourCredentialsException
+     * @return logged in user
      */
     @Override
     public RunningUser login(AuthenticationRequestHolder bundle, User user)
@@ -569,7 +561,7 @@ public class UserService implements com.flexicore.service.UserService {
      *
      * @param bundle
      * @param user
-     * @return
+     * @return user
      */
     @Override
     public User authenticate(AuthenticationRequestHolder bundle, User user) {

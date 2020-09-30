@@ -92,7 +92,7 @@ public class UserRepository extends BaseclassRepository {
      * find user by email
      *
      * @param email
-     * @return
+     * @return users with the given emails
      */
     public List<User> findByEmail(String email, SecurityContext securityContext) {
         CriteriaBuilder cb = em.getCriteriaBuilder();

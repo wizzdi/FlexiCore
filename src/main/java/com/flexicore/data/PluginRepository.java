@@ -186,7 +186,7 @@ public class PluginRepository {
      * copies jar from jarPath to project/lib folder ,changes persistence.xml
      * accordingly and refreshes entity manager
      *
-     * @param jarPath
+     * @param jarPath path to jar
      * @return file representing the copied jar
      * @throws ParserConfigurationException
      * @throws SAXException

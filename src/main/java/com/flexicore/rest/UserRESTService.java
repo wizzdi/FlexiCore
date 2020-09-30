@@ -132,7 +132,7 @@ public class UserRESTService implements RESTService {
      * @param authenticationkey
      * @param loginuponsuccess  - true if do login after creation
      * @param {@code            NewUser} object to create
-     * @return
+     * @return logged in user created
      */
     @POST
     @Path("/new")

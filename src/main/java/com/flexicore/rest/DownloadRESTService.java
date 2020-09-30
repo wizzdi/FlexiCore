@@ -52,10 +52,10 @@ public class DownloadRESTService implements RESTService {
     /**
      * download a file by its fileResource ID
      *
-     * @param authenticationkey
-     * @param id
-     * @param securityContext
-     * @return
+     * @param authenticationkey authentication key
+     * @param id id
+     * @param securityContext security context
+     * @return binary file data
      */
     @GET
     @Path("{authenticationkey}/{id}")
@@ -78,7 +78,7 @@ public class DownloadRESTService implements RESTService {
      * @param authenticationkey
      * @param zipAndDownload
      * @param securityContext
-     * @return
+     * @return binary zip data
      */
     @POST
     @Path("zipAndDownload")

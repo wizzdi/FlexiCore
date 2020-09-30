@@ -36,7 +36,7 @@ public class EntitiesProvider {
      * we make sure to limit the search so this wont cause the loading of unwanted classes with that loader
      * in fact if we did do that several app critical classes(direct FC dependencies) will be loaded by the Reflection library
      * causing ClassNotFound exceptions and making meta model classes fields types to be null
-     * @return
+     * @return entities discovered
      */
 
     @Bean

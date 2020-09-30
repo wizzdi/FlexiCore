@@ -53,7 +53,7 @@ public class AuthenticationRESTService implements RESTService {
      *
      * @param authenticationkey
      * @param bundle
-     * @return
+     * @return authentication bundle
      */
     @POST
     @Path("/login")
@@ -103,7 +103,7 @@ public class AuthenticationRESTService implements RESTService {
 
     /**
      * @param authenticationkey
-     * @return
+     * @return true if the user was logged out successfully or not
      */
     @POST
     @Path("/logout")

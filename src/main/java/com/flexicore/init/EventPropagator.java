@@ -50,7 +50,7 @@ public class EventPropagator {
     /**
      * the eventsInProcess set is required to prevent infinite recursion
      *
-     * @param event
+     * @param event event to send to all plugin contexts
      */
     @EventListener
     public void handleContextStart(EventObject event) {

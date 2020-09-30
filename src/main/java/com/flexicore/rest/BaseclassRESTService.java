@@ -388,7 +388,7 @@ public class BaseclassRESTService implements RESTService {
      * @param id
      * @param linkClazzName
      * @param securityContext
-     * @return
+     * @return list of connected baseclass
      */
     @POST
     @Path("connected/{wantedClazzName}/{id}/{linkClazzName}")
@@ -426,7 +426,7 @@ public class BaseclassRESTService implements RESTService {
      * @param id
      * @param linkClazzName
      * @param securityContext
-     * @return
+     * @return list of connected classes
      */
     @POST
     @Path("connectedClasses/{wantedClazzName}/{id}/{linkClazzName}")
@@ -498,7 +498,7 @@ public class BaseclassRESTService implements RESTService {
      * @param id
      * @param linkClazzName
      * @param securityContext
-     * @return
+     * @return number of connected baseclass
      */
     @POST
     @Path("countConnected/{wantedClazzName}/{id}/{linkClazzName}")
@@ -538,7 +538,7 @@ public class BaseclassRESTService implements RESTService {
      * @param id
      * @param linkClazzName
      * @param securityContext
-     * @return
+     * @return count of disconnected baseclass
      */
     @POST
     @Path("countDisconnected/{wantedClazzName}/{id}/{linkClazzName}")
@@ -605,7 +605,7 @@ public class BaseclassRESTService implements RESTService {
      * @param wantedClazzName
      * @param linkClazzName
      * @param securityContext
-     * @return
+     * @return list of disconnected baseclass
      */
     @POST
     @Path("disconnected/{wantedClazzName}/{id}/{linkClazzName}")
@@ -764,7 +764,7 @@ public class BaseclassRESTService implements RESTService {
      * @param clazz_name
      * @param updateContainer
      * @param securityContext
-     * @return
+     * @return true if baseclass was updated
      */
     @PUT
     @Path("/update/{clazz_name}/{id}")
@@ -786,7 +786,6 @@ public class BaseclassRESTService implements RESTService {
 
     /**
      * @param id
-     * @return
      */
     @DELETE
     @Path("{id}")
@@ -819,7 +818,6 @@ public class BaseclassRESTService implements RESTService {
 
     /**
      * @param id
-     * @return
      */
     @DELETE
     @Path("{class_name}/{id}")
