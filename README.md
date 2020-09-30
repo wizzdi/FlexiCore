@@ -70,6 +70,16 @@ Flexicore empowers [Spring Boot]([https://github.com/spring-projects/spring-boot
       }
 The first code snippet shows a **PersonService** plugin managing a person CRUD (only create is shown) . the second code sinppet shows an **AuthorService** plugin managing authors which is dependent on **PersonService** . both plugins are compiled separately. use by placing both of them in the FlexiCore plugin directory 
 
+## Debugging Plugins
+add the relevant debuggin line to your java properties
+for java 11: 
+-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8787
+
+for java 8:
+-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8787
+
+now from your IDE connect to the port specified in the above command (8787)
+
 
 ## Documentation
 
