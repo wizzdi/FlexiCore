@@ -40,10 +40,13 @@ public class ExternalStaticFilesConfig {
                 registry.addViewController("/notFound").setViewName("forward:/index.html");
 
                 String[] directories = listDirectories(externalStatic);
-                for (String subDir : directories){
-                    registry.addViewController(subDir).setViewName("redirect:/" + subDir + "/");
-                    registry.addViewController(subDir).setViewName("forward:/" + subDir + "/index.html");
+                if(directories!=null){
+                    for (String subDir : directories){
+                        registry.addViewController(subDir).setViewName("redirect:/" + subDir + "/");
+                        registry.addViewController(subDir).setViewName("forward:/" + subDir + "/index.html");
+                    }
                 }
+
             }
         };
     }
