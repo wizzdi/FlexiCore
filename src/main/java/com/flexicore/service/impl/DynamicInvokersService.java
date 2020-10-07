@@ -12,8 +12,6 @@ import com.flexicore.interfaces.dynamic.Invoker;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.FileResource;
 import com.flexicore.model.Operation;
-import com.flexicore.model.auditing.AuditingJob;
-import com.flexicore.model.auditing.DefaultAuditingTypes;
 import com.flexicore.model.dynamic.*;
 import com.flexicore.request.*;
 import com.flexicore.response.ExecuteInvokerResponse;
@@ -26,10 +24,13 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.lang3.StringUtils;
+import org.pf4j.PluginManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.BadRequestException;
@@ -38,12 +39,9 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.sql.Date;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Primary
@@ -52,8 +50,9 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
 
     private static List<InvokerInfo> equipmentHandlersListingCache = null;
 
+    @Lazy
     @Autowired
-    private PluginService pluginService;
+    private PluginManager pluginManager;
 
     @Autowired
     private DynamicInvokersRepository dynamicInvokersRepository;
@@ -67,7 +66,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
     private AuditingService auditingService;
 
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(DynamicInvokersService.class);
 
     @Override
     public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, List<String> batchString, SecurityContext securityContext) {
@@ -113,11 +112,8 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
 
     public List<InvokerInfo> getInvokers(Set<String> allowedOps) {
         if (equipmentHandlersListingCache == null) {
-            Collection<Invoker> plugins = (Collection<Invoker>) pluginService.getPlugins(Invoker.class, null, null);
+            Collection<Invoker> plugins = pluginManager.getExtensions(Invoker.class);
             equipmentHandlersListingCache = plugins.parallelStream().map(f -> new InvokerInfo(f)).sorted(Comparator.comparing(InvokerInfo::getDisplayName)).collect(Collectors.toList());
-            for (Invoker plugin : plugins) {
-                pluginService.cleanUpInstance(plugin);
-            }
         }
         return equipmentHandlersListingCache.parallelStream().map(f -> new InvokerInfo(f, allowedOps)).collect(Collectors.toList());
 
@@ -131,7 +127,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
 
 
     public ExecuteInvokersResponse executeInvoker(DynamicExecution dynamicExecution, ExecutionContext executionContext, SecurityContext securityContext) {
-        ExecuteInvokerRequest executeInvokerRequest = getExecuteInvokerRequest(dynamicExecution, executionContext,securityContext);
+        ExecuteInvokerRequest executeInvokerRequest = getExecuteInvokerRequest(dynamicExecution, executionContext, securityContext);
         return executeInvoker(executeInvokerRequest, securityContext);
 
     }
@@ -139,7 +135,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
 
     @Override
     public ExecuteInvokersResponse executeInvoker(ExecuteInvokerRequest executeInvokerRequest, SecurityContext securityContext) {
-        Collection<Invoker> plugins = (Collection<Invoker>) pluginService.getPlugins(Invoker.class, null, null);
+        Collection<Invoker> plugins = pluginManager.getExtensions(Invoker.class);
         Map<String, Invoker> invokerMap = plugins.parallelStream().collect(Collectors.toMap(f -> f.getClass().getCanonicalName(), f -> f, (a, b) -> a));
         Map<String, DynamicInvoker> dynamicInvokerMap = getAllInvokers(new InvokersFilter().setInvokerTypes(invokerMap.keySet()), null).getList().parallelStream().collect(Collectors.toMap(f -> f.getCanonicalName(), f -> f));
         Map<String, Map<String, Operation>> invokersOperations = getInvokerOperations(new InvokersOperationFilter().setInvokers(new ArrayList<>(dynamicInvokerMap.values())), null)
@@ -153,77 +149,70 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
         }
         ExecutionContext executionContext = executeInvokerRequest.getExecutionContext();
 
-        try {
-            for (String invokerName : executeInvokerRequest.getInvokerNames()) {
-                Map<String, Operation> operationMap = invokersOperations.get(invokerName);
-                if (operationMap == null) {
-                    logger.log(Level.SEVERE, "invoker " + invokerName + " has no registered operations - will not execute");
+        for (String invokerName : executeInvokerRequest.getInvokerNames()) {
+            Map<String, Operation> operationMap = invokersOperations.get(invokerName);
+            if (operationMap == null) {
+                logger.error( "invoker " + invokerName + " has no registered operations - will not execute");
+                continue;
+            }
+            try {
+                Invoker invoker = invokerMap.get(invokerName);
+                if (invoker == null) {
+                    String msg = "No Handler " + invokerName;
+                    logger.error(msg);
+                    responses.add(new ExecuteInvokerResponse(invokerName, false, msg));
                     continue;
                 }
-                try {
-                    Invoker invoker = invokerMap.get(invokerName);
-                    if (invoker == null) {
-                        String msg = "No Handler " + invokerName;
-                        logger.severe(msg);
-                        responses.add(new ExecuteInvokerResponse(invokerName, false, msg));
+                Class<? extends Invoker> clazz = invoker.getClass();
+
+                Method[] methods = clazz.getMethods();
+                for (Method method : methods) {
+                    if (method.isBridge()) {
                         continue;
                     }
-                    Class<? extends Invoker> clazz = invoker.getClass();
+                    Class<?>[] parameterTypes = method.getParameterTypes();
 
-                    Method[] methods = clazz.getMethods();
-                    for (Method method : methods) {
-                        if (method.isBridge()) {
-                            continue;
+                    if (method.getName().equals(executeInvokerRequest.getInvokerMethodName()) && parameterTypes.length > 0 && parameterTypes[0].isAssignableFrom(executionParametersHolder.getClass())) {
+
+                        String operationId = Baseclass.generateUUIDFromString(method.toString());
+                        Operation operation = operationMap.get(operationId);
+                        if (operation == null) {
+                            logger.error( "invoker " + invokerName + " has no registered operation with id " + operationId + " - will not execute");
+                            break;
                         }
-                        Class<?>[] parameterTypes = method.getParameterTypes();
+                        securityContext.setOperation(operation);
 
-                        if (method.getName().equals(executeInvokerRequest.getInvokerMethodName()) && parameterTypes.length > 0 && parameterTypes[0].isAssignableFrom(executionParametersHolder.getClass())) {
-
-                            String operationId = Baseclass.generateUUIDFromString(method.toString());
-                            Operation operation = operationMap.get(operationId);
-                            if (operation == null) {
-                                logger.log(Level.SEVERE, "invoker " + invokerName + " has no registered operation with id " + operationId + " - will not execute");
-                                break;
-                            }
-                            securityContext.setOperation(operation);
-
-                            if (securityService.checkIfAllowed(securityContext)) {
-                                long start = System.currentTimeMillis();
-                                Object[] parameters = new Object[parameterTypes.length];
-                                parameters[0] = executionParametersHolder;
-                                for (int i = 1; i < parameterTypes.length; i++) {
-                                    Class<?> parameterType = parameterTypes[i];
-                                    if(SecurityContext.class.equals(parameterType)){
-                                        parameters[i]=securityContext;
-                                    }
-                                    if(executionContext!=null&&parameterType.isAssignableFrom(executionContext.getClass())){
-                                        parameters[i]= executionContext;
-                                    }
+                        if (securityService.checkIfAllowed(securityContext)) {
+                            long start = System.currentTimeMillis();
+                            Object[] parameters = new Object[parameterTypes.length];
+                            parameters[0] = executionParametersHolder;
+                            for (int i = 1; i < parameterTypes.length; i++) {
+                                Class<?> parameterType = parameterTypes[i];
+                                if (SecurityContext.class.equals(parameterType)) {
+                                    parameters[i] = securityContext;
                                 }
-                                Object ret = method.invoke(invoker, parameters);
-
-                                //auditingService.addAuditingJob(new AuditingJob(securityContext,null,ret,System.currentTimeMillis()-start, Date.from(Instant.now()), DefaultAuditingTypes.REST.name()));
-
-                                responses.add(new ExecuteInvokerResponse(invokerName, true, ret));
-                                break;
-
-                            } else {
-                                throw new NotAuthorizedException("user is not authorized for this resource");
+                                if (executionContext != null && parameterType.isAssignableFrom(executionContext.getClass())) {
+                                    parameters[i] = executionContext;
+                                }
                             }
+                            Object ret = method.invoke(invoker, parameters);
 
+                            //auditingService.addAuditingJob(new AuditingJob(securityContext,null,ret,System.currentTimeMillis()-start, Date.from(Instant.now()), DefaultAuditingTypes.REST.name()));
+
+                            responses.add(new ExecuteInvokerResponse(invokerName, true, ret));
+                            break;
+
+                        } else {
+                            throw new NotAuthorizedException("user is not authorized for this resource");
                         }
+
                     }
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, "failed executing " + invokerName, e);
-                    responses.add(new ExecuteInvokerResponse(invokerName, false, e));
                 }
-
+            } catch (Exception e) {
+                logger.error( "failed executing " + invokerName, e);
+                responses.add(new ExecuteInvokerResponse(invokerName, false, e));
             }
 
-        } finally {
-            for (Invoker equipmentInvoker : plugins) {
-                pluginService.cleanUpInstance(equipmentInvoker);
-            }
         }
 
 
@@ -237,9 +226,10 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
     public void massMerge(List<?> toMerge) {
         dynamicInvokersRepository.massMerge(toMerge);
     }
+
     @Override
     public ExecuteInvokerRequest getExecuteInvokerRequest(DynamicExecution dynamicExecution, SecurityContext securityContext) {
-        return getExecuteInvokerRequest(dynamicExecution,null,securityContext);
+        return getExecuteInvokerRequest(dynamicExecution, null, securityContext);
     }
 
 
@@ -374,13 +364,13 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
 
     @Override
     public void validate(DynamicExecutionFilter dynamicExecutionFilter, SecurityContext securityContext) {
-        String executionParameterHolderCanonicalName=dynamicExecutionFilter.getExecutionParameterHolderCanonicalName();
-        if(executionParameterHolderCanonicalName!=null){
+        String executionParameterHolderCanonicalName = dynamicExecutionFilter.getExecutionParameterHolderCanonicalName();
+        if (executionParameterHolderCanonicalName != null) {
             try {
-                Class<? extends ExecutionParametersHolder> c= (Class<? extends ExecutionParametersHolder>) Class.forName(executionParameterHolderCanonicalName);
+                Class<? extends ExecutionParametersHolder> c = (Class<? extends ExecutionParametersHolder>) Class.forName(executionParameterHolderCanonicalName);
                 dynamicExecutionFilter.setExecutionParameterHolderType(c);
             } catch (Throwable e) {
-                logger.log(Level.SEVERE,"cannot find execution parameter holder type "+executionParameterHolderCanonicalName);
+                logger.error( "cannot find execution parameter holder type " + executionParameterHolderCanonicalName);
             }
         }
 
@@ -439,7 +429,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
                 out.write(ByteOrderMark.UTF_BOM);
 
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "failed writing UTF-8 BOM", e);
+                logger.error( "failed writing UTF-8 BOM", e);
             }
 
 
@@ -456,7 +446,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
             }
             csvPrinter.flush();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "unable to create csv");
+            logger.error( "unable to create csv");
         }
         FileResource fileResource = fileResourceService.createDontPersist(file.getAbsolutePath(), securityContext);
         fileResource.setKeepUntil(OffsetDateTime.now().plusMinutes(30));
@@ -470,7 +460,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
         if (!collection.isEmpty()) {
             Class<?> c = collection.iterator().next().getClass();
             List<Object> list = new ArrayList<>();
-            Set<String> failed=new HashSet<>();
+            Set<String> failed = new HashSet<>();
 
             for (Object o : collection) {
                 for (String field : fieldToName.keySet()) {
@@ -479,7 +469,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
                     Object current = o;
                     Class<?> currentClass = c;
                     for (String s : split) {
-                        if(failed.contains(s)){
+                        if (failed.contains(s)) {
                             list.add("");
                             continue;
                         }
@@ -493,8 +483,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
                             if (method == null) {
                                 try {
                                     method = currentClass.getMethod("is" + StringUtils.capitalize(s));
-                                }
-                                catch (Exception ignored){
+                                } catch (Exception ignored) {
                                     failed.add(s);
                                     list.add("");
                                     continue;
@@ -535,42 +524,42 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
 
     @Override
     public void validate(DynamicExecutionExampleRequest dynamicExecutionExampleRequest, SecurityContext securityContext) {
-        String id=dynamicExecutionExampleRequest.getId();
-        DynamicExecution dynamicExecution=id!=null?getByIdOrNull(id,DynamicExecution.class,null,securityContext):null;
-        if(dynamicExecution==null){
-            throw new BadRequestException("No DynamicExectuion with id "+id);
+        String id = dynamicExecutionExampleRequest.getId();
+        DynamicExecution dynamicExecution = id != null ? getByIdOrNull(id, DynamicExecution.class, null, securityContext) : null;
+        if (dynamicExecution == null) {
+            throw new BadRequestException("No DynamicExectuion with id " + id);
         }
         String methodName = dynamicExecution.getMethodName();
-        if(methodName ==null || methodName.isEmpty()){
+        if (methodName == null || methodName.isEmpty()) {
             throw new BadRequestException("No method name for dynamic execution");
         }
-        List<ServiceCanonicalName> serviceCanonicalNames=dynamicInvokersRepository.getAllServiceCanonicalNames(dynamicExecution);
-        if(serviceCanonicalNames.isEmpty()){
-            throw new BadRequestException("No Invoker Canonical Names with dynamic execution "+id);
+        List<ServiceCanonicalName> serviceCanonicalNames = dynamicInvokersRepository.getAllServiceCanonicalNames(dynamicExecution);
+        if (serviceCanonicalNames.isEmpty()) {
+            throw new BadRequestException("No Invoker Canonical Names with dynamic execution " + id);
         }
 
         Set<String> invokerNames = serviceCanonicalNames.parallelStream().map(f -> f.getServiceCanonicalName()).collect(Collectors.toSet());
         List<InvokerInfo> list = getAllInvokersInfo(new InvokersFilter().setInvokerTypes(invokerNames), null).getList();
-        Set<String> returnTypes=new HashSet<>();
+        Set<String> returnTypes = new HashSet<>();
         for (InvokerInfo invokerInfo : list) {
             for (InvokerMethodInfo method : invokerInfo.getMethods()) {
-                if(methodName.equals(method.getName())){
+                if (methodName.equals(method.getName())) {
                     String returnType = PaginationResponse.class.getCanonicalName().equals(method.getReturnType()) ? invokerInfo.getHandlingType().getCanonicalName() : method.getReturnType();
                     returnTypes.add(returnType);
                 }
             }
         }
-        if(returnTypes.isEmpty()){
-            throw new BadRequestException("No method "+ methodName +" for invokers "+invokerNames);
+        if (returnTypes.isEmpty()) {
+            throw new BadRequestException("No method " + methodName + " for invokers " + invokerNames);
         }
-        String returnType=null;
-        long inheritingClasses=0;
+        String returnType = null;
+        long inheritingClasses = 0;
         for (String inspectedReturnType : returnTypes) {
 
             long inheriting = InheritanceUtils.listInheritingClassesWithFilter(new GetClassInfo().setClassName(inspectedReturnType)).getTotalRecords();
-            if(returnType==null ||inheritingClasses < inheriting){
-                returnType=inspectedReturnType;
-                inheritingClasses=inheriting;
+            if (returnType == null || inheritingClasses < inheriting) {
+                returnType = inspectedReturnType;
+                inheritingClasses = inheriting;
             }
         }
         dynamicExecutionExampleRequest.setClassName(returnType);

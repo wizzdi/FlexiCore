@@ -15,6 +15,7 @@ import com.flexicore.service.impl.PluginService;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Named;

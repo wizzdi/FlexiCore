@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -22,10 +23,12 @@ public class PluginsHealthCheck implements HealthIndicator {
 
     private static final Logger logger = LoggerFactory.getLogger(PluginsHealthCheck.class);
 
+    @Lazy
     @Autowired
     private PluginService pluginService;
 
     @Autowired
+    @Lazy
     private PluginManager pluginManager;
 
     @PostConstruct

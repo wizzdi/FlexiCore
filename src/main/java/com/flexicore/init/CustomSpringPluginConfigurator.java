@@ -1,6 +1,5 @@
 package com.flexicore.init;
 
-import com.flexicore.interceptors.DynamicResourceInjector;
 import com.flexicore.interceptors.SecurityImposer;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.BeansException;
@@ -28,8 +27,6 @@ public class CustomSpringPluginConfigurator extends ServerEndpointConfig.Configu
         AspectJProxyFactory factory = new AspectJProxyFactory(bean);
         SecurityImposer securityImposer = applicationContext.getBean(SecurityImposer.class);
         factory.addAspect(securityImposer);
-        DynamicResourceInjector dynamicResourceInjector = applicationContext.getBean(DynamicResourceInjector.class);
-        factory.addAspect(dynamicResourceInjector);
         factory.setProxyTargetClass(true);
         return factory.getProxy(clazz.getClassLoader());
     }

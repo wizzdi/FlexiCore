@@ -5,7 +5,6 @@ import com.flexicore.annotations.plugins.TestsInside;
 import com.flexicore.data.TestsRepository;
 import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
 import com.flexicore.events.PluginsLoadedEvent;
-import com.flexicore.interceptors.DynamicResourceInjector;
 import com.flexicore.interceptors.SecurityImposer;
 import com.flexicore.interfaces.Plugin;
 import com.flexicore.interfaces.RestServicePlugin;
@@ -107,8 +106,6 @@ public class PluginInit {
                     AspectJProxyFactory factory = new AspectJProxyFactory(plugin);
                     SecurityImposer securityImposer = applicationContext.getBean(SecurityImposer.class);
                     factory.addAspect(securityImposer);
-                    DynamicResourceInjector dynamicResourceInjector = applicationContext.getBean(DynamicResourceInjector.class);
-                    factory.addAspect(dynamicResourceInjector);
                     factory.setProxyTargetClass(true);
                     Object proxy = factory.getProxy(plugin.getClass().getClassLoader());
                     JaxRsActivator.addSingletones(proxy);
@@ -178,17 +175,5 @@ public class PluginInit {
         filesCleaner.stop();
     }
 
-   /* @EventListener
-    public void onContextRefresh(ContextRefreshedEvent contextRefreshedEvent) {
-        String contextId = contextRefreshedEvent.getApplicationContext().getId()+"("+System.identityHashCode(contextRefreshedEvent.getApplicationContext())+")";
-        if(handledContext.add(contextId)){
-            logger.info("Loading plugins for context "+contextId);
-            initThreads();
-        }
-        else{
-            logger.info("Already loaded plugins for context "+contextId);
-        }
-
-    }*/
 
 }
