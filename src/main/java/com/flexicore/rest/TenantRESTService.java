@@ -73,7 +73,7 @@ public class TenantRESTService implements RESTService {
     @Path("getAllTenants")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "getTenants", Description = "returns all tenants", relatedClazzes = {Tenant.class},noOtherLicenseRequired = true)
+    @IOperation(access = Access.allow, Name = "getTenants", Description = "returns all tenants", relatedClazzes = {Tenant.class})
     public PaginationResponse<Tenant> getAllTenants(@HeaderParam("authenticationkey") String authenticationkey,
                                                     TenantFilter filteringInformationHolder,
                                                     @Context SecurityContext securityContext) {
@@ -121,7 +121,7 @@ public class TenantRESTService implements RESTService {
     @Path("createTenant")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "createTenant", Description = "creates tenant", relatedClazzes = {Tenant.class, User.class},noOtherLicenseRequired = true)
+    @IOperation(access = Access.allow, Name = "createTenant", Description = "creates tenant", relatedClazzes = {Tenant.class, User.class})
     public Tenant createTenant(@HeaderParam("authenticationkey") String authenticationkey,
                                TenantCreate tenantCreate,
                                @Context SecurityContext securityContext) {

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.BadRequestException;
 
 import com.flexicore.annotations.Baseclassroot;
-import com.flexicore.annotations.HasFeature;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.annotations.rest.Delete;
@@ -36,7 +35,6 @@ public class SecurityService implements com.flexicore.service.SecurityService {
      *
      */
     private static final long serialVersionUID = 460083370640407824L;
-    private static HasFeature flexiCoreFeature;
     @Autowired
     @Baseclassroot
     BaseclassRepository baseclassrpository;
@@ -54,13 +52,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
 
     @Autowired
     private TenantService tenantService;
-    public static HasFeature getFlexiCoreFeature() {
-        return com.flexicore.service.impl.SecurityService.flexiCoreFeature;
-    }
 
-    public static void setFlexiCoreFeature(HasFeature flexiCoreFeature) {
-        SecurityService.flexiCoreFeature = flexiCoreFeature;
-    }
 
     @Override
     public boolean checkIfAllowed(SecurityContext securityContext) {

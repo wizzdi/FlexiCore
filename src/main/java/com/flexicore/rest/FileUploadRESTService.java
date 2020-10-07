@@ -81,7 +81,7 @@ public class FileUploadRESTService implements RESTService {
     @GET
     @Path("{md5}")
     @Produces(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "gets file resource", Description = "gets a fileResource by MD5",noOtherLicenseRequired = true)
+    @IOperation(access = Access.allow, Name = "gets file resource", Description = "gets a fileResource by MD5")
 
     public FileResource getFileResource(@HeaderParam("authenticationkey") String authenticationkey,
                                         @PathParam("md5") String md5, @Context SecurityContext securityContext) {
@@ -108,7 +108,7 @@ public class FileUploadRESTService implements RESTService {
     @Path("/upload")
     @Produces("application/json")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
-    @IOperation(access = Access.allow, Name = "uploadOctet", Description = "uploads a file octat way",noOtherLicenseRequired = true)
+    @IOperation(access = Access.allow, Name = "uploadOctet", Description = "uploads a file octat way")
     public FileResource uploadFile(@HeaderParam("authenticationkey") String authenticationkey,
                                    @HeaderParam("md5") String md5, @HeaderParam("name") String name,
                                    @HeaderParam("chunkMd5") String chunkMd5,
@@ -148,7 +148,7 @@ public class FileUploadRESTService implements RESTService {
     @GET
     @Path("finalize/{md5}")
     @Produces(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "Create New User", Description = "Create new user in the system",noOtherLicenseRequired = true)
+    @IOperation(access = Access.allow, Name = "Create New User", Description = "Create new user in the system")
     @Operation(summary = "finalize", description = "finalize FileResource , sending it for processing")
     public Job finalizeUpload(@HeaderParam("authenticationkey") String authenticationkey, @PathParam("md5") String md5,
                               @HeaderParam("hint") @DefaultValue("") String hint,

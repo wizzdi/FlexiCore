@@ -52,7 +52,7 @@ public class TenantToUserRESTService implements RESTService {
     @Path("getAllTenantToUsers")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "getTenantToUsers", Description = "returns all tenantToUsers", relatedClazzes = {TenantToUser.class},noOtherLicenseRequired = true)
+    @IOperation(access = Access.allow, Name = "getTenantToUsers", Description = "returns all tenantToUsers", relatedClazzes = {TenantToUser.class})
     public PaginationResponse<TenantToUser> getAllTenantToUsers(@HeaderParam("authenticationkey") String authenticationkey,
                                                                 TenantToUserFilter filteringInformationHolder,
                                                                 @Context SecurityContext securityContext) {
@@ -66,7 +66,7 @@ public class TenantToUserRESTService implements RESTService {
     @Path("createTenantToUser")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "createTenantToUser", Description = "creates tenantToUser", relatedClazzes = {TenantToUser.class, User.class,Tenant.class},noOtherLicenseRequired = true)
+    @IOperation(access = Access.allow, Name = "createTenantToUser", Description = "creates tenantToUser", relatedClazzes = {TenantToUser.class, User.class,Tenant.class})
     public TenantToUser createTenantToUser(@HeaderParam("authenticationkey") String authenticationkey,
                                TenantToUserCreate tenantToUserCreate,
                                @Context SecurityContext securityContext) {

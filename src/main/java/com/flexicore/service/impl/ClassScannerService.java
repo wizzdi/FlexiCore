@@ -11,8 +11,6 @@ import com.flexicore.interfaces.dynamic.InvokerInfo;
 import com.flexicore.interfaces.dynamic.InvokerMethodInfo;
 import com.flexicore.model.*;
 import com.flexicore.model.dynamic.DynamicInvoker;
-import com.flexicore.model.licensing.LicensingFeature;
-import com.flexicore.model.licensing.LicensingProduct;
 import com.flexicore.provider.EntitiesHolder;
 import com.flexicore.request.*;
 import com.flexicore.security.SecurityContext;
@@ -67,10 +65,7 @@ public class ClassScannerService {
     @Autowired
     BaselinkRepository baselinkrepository;
     private Logger logger = Logger.getLogger(getClass().getCanonicalName());
-    @Autowired
-    LicensingFeatureService featureService;
-    @Autowired
-    LicensingProductService licensingProductService;
+
     @Autowired
     private SecurityService securityService;
 
@@ -247,40 +242,10 @@ public class ClassScannerService {
 
     }
 
-    public void registerFlexiCoreLicense() {
-        logger.info("creating FC Feature");
-        HasFeature flexicoreFeature = getHasFeature(FC_FEATURE, FC_PRODUCT);
-        SecurityService.setFlexiCoreFeature(flexicoreFeature);
-        SecurityContext securityContext = securityService.getAdminUserSecurityContext();
-        addFeature(flexicoreFeature);
-
-    }
-
-    private HasFeature getHasFeature(String featureName, String productName) {
-        return new HasFeature() {
-            @Override
-            public String canonicalName() {
-                return featureName;
-            }
-
-            @Override
-            public String productCanonicalName() {
-                return productName;
-            }
-
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return HasFeature.class;
-            }
-        };
-    }
 
     public void registerOperationsInclass(Class<?> clazz) {
         List<Object> toMerge = new ArrayList<>();
         OperationsInside operationsInside = clazz.getAnnotation(OperationsInside.class);
-        for (HasFeature hasFeature : operationsInside.features()) {
-            addFeature(hasFeature);
-        }
         Map<String, IOperation> toHandle = new HashMap<>();
         Map<String, Class<? extends Baseclass>[]> opIdToRelated = new HashMap<>();
         Map<String, Operation> ops = new HashMap<>();
@@ -366,16 +331,6 @@ public class ClassScannerService {
             }
 
             @Override
-            public HasFeature[] features() {
-                return ioperation.features();
-            }
-
-            @Override
-            public boolean noOtherLicenseRequired() {
-                return false;
-            }
-
-            @Override
             public Class<? extends Annotation> annotationType() {
                 return IOperation.class;
             }
@@ -383,24 +338,7 @@ public class ClassScannerService {
     }
 
 
-    private void addFeature(HasFeature hasFeature) {
-        String canonicalName = hasFeature.canonicalName();
-        List<LicensingFeature> licensingFeatures = featureService.listAllLicensingFeatures(new LicensingFeatureFiltering().setCanonicalNames(Collections.singleton(canonicalName)), null);
 
-        LicensingFeature licensingFeature = licensingFeatures.isEmpty() ? null : licensingFeatures.get(0);
-        if (licensingFeature == null) {
-            logger.info("registering feature: " + canonicalName);
-            List<LicensingProduct> licensingProducts = licensingProductService.listAllLicensingProducts(new LicensingProductFiltering().setCanonicalNames(Collections.singleton(hasFeature.productCanonicalName())), null);
-            LicensingProduct licensingProduct = licensingProducts.isEmpty() ? null : licensingProducts.get(0);
-            if (licensingProduct == null) {
-                logger.info("registering product: " + hasFeature.productCanonicalName());
-
-                licensingProduct = licensingProductService.createLicensingProduct(new LicensingProductCreate().setCanonicalName(hasFeature.productCanonicalName()).setName(hasFeature.productCanonicalName()), null);
-            }
-            licensingFeature = featureService.createLicensingFeature(new LicensingFeatureCreate().setLicensingProduct(licensingProduct).setCanonicalName(canonicalName).setName(canonicalName), null);
-        }
-
-    }
 
 
     private Operation addOperation(IOperation ioperation, String id, List<Object> toMerge, Map<String, Operation> existing) {
@@ -426,9 +364,6 @@ public class ClassScannerService {
 
         }
 
-        for (HasFeature hasFeature : ioperation.features()) {
-            addFeature(hasFeature);
-        }
 
 
         return operation;
@@ -532,14 +467,6 @@ public class ClassScannerService {
 
         if (annotatedclazz == null) {
             annotatedclazz = generateAnnotatedClazz(claz);
-        }
-        HasFeature hasFeature = claz.getAnnotation(HasFeature.class);
-        if (hasFeature != null) {
-            String canonicalName = hasFeature.canonicalName();
-            if (canonicalName.isEmpty()) {
-                hasFeature = getHasFeature(classname, hasFeature.productCanonicalName());
-            }
-            addFeature(hasFeature);
         }
         String ID = Baseclass.generateUUIDFromString(classname);
 

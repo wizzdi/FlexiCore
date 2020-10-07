@@ -55,7 +55,7 @@ public class DownloadUnsecureRESTService implements RESTService {
 
     @GET
     @Path("{id}")
-    @IOperation(access = Access.allow, Name = "downloadFile", Description = "downloads file by its fileResource ID", noOtherLicenseRequired = true)
+    @IOperation(access = Access.allow, Name = "downloadFile", Description = "downloads file by its fileResource ID")
     public Response download(@Parameter(description = "id of the FileResource Object to Download")
             @HeaderParam("offset") @DefaultValue("0") long offset,
             @HeaderParam("size") @DefaultValue("0") long size,

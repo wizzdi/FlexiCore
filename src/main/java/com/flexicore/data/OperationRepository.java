@@ -26,7 +26,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import com.flexicore.annotations.HasFeature;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.InheritedComponent;
 import com.flexicore.data.impl.BaseclassRepository;
@@ -151,15 +150,6 @@ public class OperationRepository extends BaseclassRepository {
                 return Access.allow;
             }
 
-            @Override
-            public HasFeature[] features() {
-                return new HasFeature[0];
-            }
-
-            @Override
-            public boolean noOtherLicenseRequired() {
-                return false;
-            }
 
             @Override
             public Class<? extends Annotation> annotationType() {

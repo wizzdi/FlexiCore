@@ -62,7 +62,7 @@ public class DownloadRESTService implements RESTService {
      */
     @GET
     @Path("{authenticationkey}/{id}")
-    @IOperation(access = Access.allow, Name = "downloadFile", Description = "downloads file by its fileResource ID", noOtherLicenseRequired = true)
+    @IOperation(access = Access.allow, Name = "downloadFile", Description = "downloads file by its fileResource ID")
     public Response download(@PathParam("authenticationkey") String authenticationkey,
                              @Parameter(description = "id of the FileResource Object to Download")
                              @HeaderParam("offset") @DefaultValue("0") long offset,
