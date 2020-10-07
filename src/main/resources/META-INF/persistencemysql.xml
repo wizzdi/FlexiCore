@@ -48,12 +48,6 @@
 		<class>com.flexicore.model.PermissionGroup</class>
 		<class>com.flexicore.model.PermissionGroupToBaseclass</class>
 		<class>com.flexicore.model.SecurityWildcard</class>
-		<class>com.flexicore.model.ui.UIContainer</class>
-		<class>com.flexicore.model.ui.UIComponent</class>
-		<class>com.flexicore.model.ui.plugins.UIInterface</class>
-		<class>com.flexicore.model.ui.plugins.UIPlugin</class>
-		<class>com.flexicore.model.ui.plugins.UIPluginToFileResource</class>
-		<class>com.flexicore.model.ui.plugins.UIPluginToUIInterface</class>
 		<class>com.flexicore.model.FilteringInformationHolder</class>
 		<class>com.flexicore.model.SortParameter</class>
 		<class>com.flexicore.model.CategoryIdFiltering</class>

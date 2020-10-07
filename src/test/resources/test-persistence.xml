@@ -62,20 +62,8 @@
 		<class>com.flexicore.model.licensing.LicensingEntity</class>
 		<class>com.flexicore.model.licensing.LicensingFeature</class>
 		<class>com.flexicore.model.licensing.LicensingProduct</class>
-		<class>com.flexicore.model.licensing.RequestToProduct</class>
-		<class>com.flexicore.model.licensing.RequestToFeature</class>
-		<class>com.flexicore.model.licensing.RequestToLicenseEntity</class>
-		<class>com.flexicore.model.SettingsMetadata</class>
-		<class>com.flexicore.model.Settings</class>
-		<class>com.flexicore.model.SettingsMetadata</class>
-		<class>com.flexicore.model.PropertyToSettingsMetadata</class>
 		<class>com.flexicore.model.TimedLink</class>
-		<class>com.flexicore.model.ui.plugins.UIPlugin</class>
-		<class>com.flexicore.model.ui.plugins.UIInterface</class>
-		<class>com.flexicore.model.ui.plugins.UIPluginToUIInterface</class>
-		<class>com.flexicore.model.ui.UIContainer</class>
 		<class>com.flexicore.model.ui.UIComponent</class>
-		<class>com.flexicore.model.ui.plugins.UIPluginToFileResource</class>
 		<class>com.flexicore.model.PermissionGroup</class>
 		<class>com.flexicore.model.PermissionGroupToBaseclass</class>
 		<class>com.flexicore.model.SecurityWildcard</class>
