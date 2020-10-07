@@ -23,8 +23,8 @@
         <version.eclipselink>2.7.7</version.eclipselink>
 
         <!-- maven-compiler-plugin -->
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
         <swagger.version>2.1.2</swagger.version>
         <pf4j-spring.version>0.6.0</pf4j-spring.version>
 
@@ -387,9 +387,19 @@
     <build>
 
 
+
         <!-- Maven will append the version to the finalName (which is the name
             given to the generated war, and hence the context root) -->
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

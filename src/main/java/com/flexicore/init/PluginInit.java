@@ -13,7 +13,6 @@ import com.flexicore.rest.JaxRsActivator;
 import com.flexicore.runningentities.FilesCleaner;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.ClassScannerService;
-import com.flexicore.service.impl.LicenseEnforcer;
 import com.flexicore.service.impl.SecurityService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,9 +45,6 @@ public class PluginInit {
 
     private static final Logger logger = LoggerFactory.getLogger(PluginInit.class);
     private static final Comparator<PluginWrapper> PLUGIN_COMPARATOR_FOR_REST = Comparator.comparing(f -> f.getDescriptor().getVersion());
-    @Autowired
-    private LicenseEnforcer licenseEnforcer;
-
 
     @Autowired
     private PluginManager pluginManager;
@@ -75,7 +71,6 @@ public class PluginInit {
     private void initThreads() {
         initPluginLoader();
         initFilesCleaner();
-        licenseEnforcer.onStart();
 
     }
 

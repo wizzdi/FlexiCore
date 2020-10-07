@@ -36,25 +36,12 @@
 		<class>com.flexicore.model.TenantToUser</class>
 		<class>com.flexicore.model.User</class>
 		<class>com.flexicore.model.UserToBaseClass</class>
-		<class>com.flexicore.model.View</class>
-		<class>com.flexicore.model.ViewToClazz</class>
-		<class>com.flexicore.model.resource.Resource</class>
-		<class>com.flexicore.model.resource.ResourceConsumption</class>
-		<class>com.flexicore.model.resource.ResourceToResourceConsumption</class>
-		<class>com.flexicore.model.media.Video</class>
-		<class>com.flexicore.model.media.Media</class>
-		<class>com.flexicore.model.media.Image</class>
-		<class>com.flexicore.model.licensing.LicenseRequest</class>
-		<class>com.flexicore.model.licensing.LicensingEntity</class>
-		<class>com.flexicore.model.licensing.LicensingFeature</class>
-		<class>com.flexicore.model.licensing.LicensingProduct</class>
 		<class>com.flexicore.model.TimedLink</class>
 		<class>com.flexicore.model.PermissionGroup</class>
 		<class>com.flexicore.model.PermissionGroupToBaseclass</class>
 		<class>com.flexicore.model.SecurityWildcard</class>
 		<class>com.flexicore.model.FilteringInformationHolder</class>
 		<class>com.flexicore.model.SortParameter</class>
-		<class>com.flexicore.model.CategoryIdFiltering</class>
 		<class>com.flexicore.model.BaseclassLongFiltering</class>
 		<class>com.flexicore.model.dynamic.ExecutionParametersHolder</class>
 		<class>com.flexicore.model.dynamic.DynamicInvoker</class>

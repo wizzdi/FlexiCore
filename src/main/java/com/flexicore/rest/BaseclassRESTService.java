@@ -85,7 +85,6 @@ import java.util.stream.Collectors;
         @Tag(name = "Tenants", description = "Manage Tenants"),
         @Tag(name = "Upload", description = "Upload Files"),
         @Tag(name = "Download", description = "Download Files"),
-        @Tag(name = "License", description = "Licensing Services"),
         @Tag(name = "tokenBased", description = "Token Based Api"),
         @Tag(name = "Operations", description = "Operations Api"),
         @Tag(name = "UIPlugin", description = "UIPlugin Api"),

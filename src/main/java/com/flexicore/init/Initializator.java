@@ -62,7 +62,6 @@ public class Initializator  {
     }
 
 
-    private static final boolean FLEXICORE_LICENSE = false;
 
     /**
      * this is called by the container upon init.
@@ -87,9 +86,6 @@ public class Initializator  {
             classScannerService.InitializeOperations();
             try {
                 classScannerService.createDefaultObjects();
-                if (FLEXICORE_LICENSE) {
-                    classScannerService.registerFlexiCoreLicense();
-                }
                 classScannerService.createSwaggerTags();
                 classScannerService.initializeInvokers();
 
