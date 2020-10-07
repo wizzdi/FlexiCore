@@ -85,6 +85,15 @@ public class RoleRESTService implements RESTService {
 	}
 
 
+	/**
+	 * @deprecated replace with {@link #getAllRoles(String, RoleFilter, SecurityContext)}
+	 * list all roles
+	 * @param authenticationkey token
+	 * @param filteringInformationHolder filter info
+	 * @param securityContext security context
+	 * @return roles
+	 */
+	@Deprecated
 	@POST
 	@Path("list")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -92,10 +101,8 @@ public class RoleRESTService implements RESTService {
 	@IOperation(access=Access.allow,Name="list all roles",Description="lists all Roles",relatedClazzes = {Role.class})
 	public List<Role> listAllRoles(@HeaderParam("authenticationkey") String authenticationkey,
 								   FilteringInformationHolder filteringInformationHolder,
-								   @HeaderParam("pagesize") @DefaultValue(value="-1") Integer pagesize,
-								   @HeaderParam("currentpage") @DefaultValue(value="-1")Integer currentpage,
 								   @Context SecurityContext securityContext) {
-		QueryInformationHolder<Role> queryInformationHolder = new QueryInformationHolder<>(filteringInformationHolder,pagesize,currentpage,Role.class,securityContext);
+		QueryInformationHolder<Role> queryInformationHolder = new QueryInformationHolder<>(filteringInformationHolder,Role.class,securityContext);
         return roleService.getAllFiltered(queryInformationHolder);
 	}
 

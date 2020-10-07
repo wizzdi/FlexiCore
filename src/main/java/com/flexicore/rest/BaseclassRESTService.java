@@ -704,8 +704,6 @@ public class BaseclassRESTService implements RESTService {
     public <T extends Baseclass> List<T> nameLike(@HeaderParam("authenticationkey") String authenticationkey,
                                                   @PathParam("classname") final String classname,
                                                   FilteringInformationHolder filteringInformationHolder,
-                                                  @HeaderParam("pagesize") @DefaultValue("-1") Integer pagesize,
-                                                  @HeaderParam("currentpage") @DefaultValue("-1") Integer currentpage,
                                                   @Context SecurityContext securityContext) {
 
 
@@ -713,7 +711,7 @@ public class BaseclassRESTService implements RESTService {
         try {
             clazz = (Class<T>) Class.forName(classname);
             long start = System.currentTimeMillis();
-            QueryInformationHolder<T> queryInformationHolder = new QueryInformationHolder<>(filteringInformationHolder, pagesize, currentpage, clazz, securityContext);
+            QueryInformationHolder<T> queryInformationHolder = new QueryInformationHolder<>(filteringInformationHolder, clazz, securityContext);
             List<T> baseclass = baseclassService.getAllByKeyWordAndCategory(queryInformationHolder);
             log.log(Level.INFO, "Find by name took: " + (System.currentTimeMillis() - start) + " MS");
             return baseclass;

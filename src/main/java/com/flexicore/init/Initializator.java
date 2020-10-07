@@ -7,10 +7,8 @@
 package com.flexicore.init;
 
 import com.flexicore.constants.Constants;
-import com.flexicore.model.Category;
 import com.flexicore.model.Clazz;
 import com.flexicore.model.Tenant;
-import com.flexicore.request.CategoryFilter;
 import com.flexicore.request.ClazzFilter;
 import com.flexicore.request.TenantFilter;
 import com.flexicore.service.BaseclassService;
@@ -110,7 +108,6 @@ public class Initializator  {
 
 
     private void registerFilterClasses() {
-        BaseclassService.registerFilterClass(CategoryFilter.class, Category.class);
         BaseclassService.registerFilterClass(TenantFilter.class, Tenant.class);
         BaseclassService.registerFilterClass(ClazzFilter.class, Clazz.class);
 

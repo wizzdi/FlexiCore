@@ -102,7 +102,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     public <T extends Baseclass> long count(Class<T> clazz, FilteringInformationHolder filteringInformationHolder, SecurityContext securityContext) {
-        QueryInformationHolder<T> queryInformationHolder = new QueryInformationHolder<>(filteringInformationHolder, -1, -1, clazz, securityContext);
+        QueryInformationHolder<T> queryInformationHolder = new QueryInformationHolder<>(filteringInformationHolder, clazz, securityContext);
         return baseclassRepository.countAllFiltered(queryInformationHolder);
     }
 

@@ -57,23 +57,21 @@ public class UserRESTService implements RESTService {
 
     /**
      * Retrieves a list of all users
-     *
+     * @deprecated replace with {@link #getAllUsers(String, UserFiltering, SecurityContext)}
      * @param authenticationkey authentication key
-     * @param pagesize page size
-     * @param currentpage current page
      * @param securityContext securiy context
      * @param getAllOfType filtering
      * @return {@code List<User>} at current page by page size
      */
+    @Deprecated
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @IOperation(access = Access.allow, Name = "listUsers", Description = "gets all users", relatedClazzes = {User.class})
     public List<User> listAllUsers(@HeaderParam("authenticationkey") String authenticationkey,
-                                   @HeaderParam("pagesize") @DefaultValue(value = "-1") Integer pagesize,
-                                   @HeaderParam("currentpage") @DefaultValue(value = "-1") Integer currentpage, FilteringInformationHolder getAllOfType
+                                 FilteringInformationHolder getAllOfType
             , @Context SecurityContext securityContext) {
-        QueryInformationHolder<User> queryInformationHolder = new QueryInformationHolder<>(getAllOfType, pagesize, currentpage, User.class, securityContext);
+        QueryInformationHolder<User> queryInformationHolder = new QueryInformationHolder<>(getAllOfType,  User.class, securityContext);
         long start = System.currentTimeMillis();
         List<User> users = userService.getAllFiltered(queryInformationHolder);
         logger.log(Level.INFO, "got page at " + (System.currentTimeMillis() - start) + " millisecs");

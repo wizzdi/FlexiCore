@@ -17,34 +17,20 @@
 		<class>com.flexicore.converters.OffsetDateTimeConverter</class>
 		<class>com.flexicore.model.Baseclass</class>
 		<class>com.flexicore.model.Baselink</class>
-		<class>com.flexicore.model.Category</class>
-		<class>com.flexicore.model.CategoryToBaseClass</class>
-		<class>com.flexicore.model.CategoryToClazz</class>
+
 		<class>com.flexicore.model.Clazz</class>
 		<class>com.flexicore.model.ClazzLink</class>
 		<class>com.flexicore.model.DocumentationTag</class>
 		<class>com.flexicore.model.FileResource</class>
-		<class>com.flexicore.model.FileResourceBundle</class>
 		<class>com.flexicore.model.FileType</class>
-		<class>com.flexicore.model.ImageMetaData</class>
-		<class>com.flexicore.model.KeyWord</class>
-		<class>com.flexicore.model.KeyWordToBaseclass</class>
-		<class>com.flexicore.model.MediaToBundle</class>
-		<class>com.flexicore.model.Metadata</class>
 		<class>com.flexicore.model.Operation</class>
 		<class>com.flexicore.model.OperationCategory</class>
 		<class>com.flexicore.model.OperationToClazz</class>
-		<class>com.flexicore.model.Property</class>
-		<class>com.flexicore.model.PropertyToBaseclass</class>
-		<class>com.flexicore.model.PropertyToClazz</class>
-		<class>com.flexicore.model.PropertyType</class>
+
 		<class>com.flexicore.model.Role</class>
 		<class>com.flexicore.model.RoleToBaseclass</class>
 		<class>com.flexicore.model.RoleToUser</class>
 		<class>com.flexicore.model.SecurityLink</class>
-		<class>com.flexicore.model.FlexiCoreServer</class>
-		<class>com.flexicore.model.FlexiCoreServerToBaseclass</class>
-		<class>com.flexicore.model.TemplateMetaData</class>
 		<class>com.flexicore.model.Tenant</class>
 		<class>com.flexicore.model.TenantToBaseClassPremission</class>
 		<class>com.flexicore.model.TenantToUser</class>

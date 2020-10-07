@@ -410,7 +410,6 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
         if (queryInformationHolder.getFilteringInformationHolder() == null) {
             queryInformationHolder.setFilteringInformationHolder(new FilteringInformationHolder());
         }
-        List<CategoryIdFiltering> categories = queryInformationHolder.getFilteringInformationHolder().getCategories();
         List<SortParameter> sort = queryInformationHolder.getFilteringInformationHolder().getSort();
         String likeName = queryInformationHolder.getFilteringInformationHolder().getNameLike();
         String permissionContextLike = queryInformationHolder.getFilteringInformationHolder().getPermissionContextLike();
@@ -428,8 +427,8 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
 
         Operation operation = securityContext != null ? securityContext.getOperation() : null;
         boolean fetchSoftDelete = queryInformationHolder.getFilteringInformationHolder().isFetchSoftDelete();
-        int pagesize = queryInformationHolder.getPageSize();
-        int currentPage = queryInformationHolder.getCurrentPage();
+        Integer pagesize = queryInformationHolder.getFilteringInformationHolder().getPageSize();
+        Integer currentPage = queryInformationHolder.getFilteringInformationHolder().getCurrentPage();
 
         if (sort == null || sort.isEmpty()) {
             sort = new ArrayList<>();
@@ -437,10 +436,6 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
                 sort.add(new SortParameter("name", SortingOrder.ASCENDING));
 
             }
-        }
-
-        if (categories != null) {
-            addCategoriesPredicate(existingPredicates, r, cb, categories);
         }
         List<TenantIdFiltering> tenantIds = queryInformationHolder.getFilteringInformationHolder().getTenantIds();
         if (tenantIds != null && !tenantIds.isEmpty()) {
@@ -647,15 +642,15 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             orders = new ArrayList<>();
         }
         prepareQuery(queryInformationHolder, existingPredicates, cb, q, r);
-        int pagesize = queryInformationHolder.getPageSize();
-        int currentPage = queryInformationHolder.getCurrentPage();
+        Integer pagesize = queryInformationHolder.getFilteringInformationHolder().getPageSize();
+        Integer currentPage = queryInformationHolder.getFilteringInformationHolder().getCurrentPage();
         finalizeQuery(r, q, existingPredicates, cb, select);
        // q.getGroupList().add(r.get(Baseclass_.id));
 
         TypedQuery<E> query = em.createQuery(q);
 
         setBatchFetch(query, queryInformationHolder.getBatchFetchString());
-        if (pagesize != -1) {
+        if (pagesize!=null&&currentPage!=null&&pagesize>0&&currentPage>-1) {
             setPageQuery(pagesize, currentPage, query);
         }
         return getResultList(query);
@@ -687,13 +682,13 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             existingPredicates = new ArrayList<>();
         }
         prepareQuery(queryInformationHolder, existingPredicates, cb, q, r);
-        int pagesize = queryInformationHolder.getPageSize();
-        int currentPage = queryInformationHolder.getCurrentPage();
+        Integer pagesize = queryInformationHolder.getFilteringInformationHolder().getPageSize();
+        Integer currentPage = queryInformationHolder.getFilteringInformationHolder().getCurrentPage();
         finalizeQuery(r, q, existingPredicates, cb);
         TypedQuery<T> query = em.createQuery(q);
         setBatchFetch(query, queryInformationHolder.getBatchFetchString());
 
-        if (pagesize > 0) {
+        if (pagesize!=null&&currentPage!=null&&pagesize>0&&currentPage>-1) {
             setPageQuery(pagesize, currentPage, query);
         }
         return getSingleResult(query);
@@ -717,13 +712,13 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             existingPredicates = new ArrayList<>();
         }
         prepareQuery(queryInformationHolder, existingPredicates, cb, q, r);
-        int pagesize = queryInformationHolder.getPageSize();
-        int currentPage = queryInformationHolder.getCurrentPage();
+        Integer pagesize = queryInformationHolder.getFilteringInformationHolder().getPageSize();
+        Integer currentPage = queryInformationHolder.getFilteringInformationHolder().getCurrentPage();
         finalizeQuery(r, q, existingPredicates, cb, select);
         TypedQuery<E> query = em.createQuery(q);
         setBatchFetch(query, queryInformationHolder.getBatchFetchString());
 
-        if (pagesize > 0) {
+        if (pagesize!=null&&currentPage!=null&&pagesize>0&&currentPage>-1) {
             setPageQuery(pagesize, currentPage, query);
         }
         return getSingleResult(query);
@@ -1471,48 +1466,6 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
 
     }
 
-    /**
-     * Add the Predicates for list of Categories, we will want only instances
-     * linked with one of the categories.
-     *
-     * @param existingPredicates predicates
-     * @param r root
-     * @param cb criteria builder
-     * @param categories categories
-     */
-    @Override
-    public <T extends Baseclass> void addCategoriesPredicate(List<Predicate> existingPredicates, From<?, T> r,
-                                                             CriteriaBuilder cb, List<CategoryIdFiltering> categories) {
-        Join<CategoryToBaseClass, Baseclass> categoryToBaseClassJoin = null;
-        if (categories != null && !categories.isEmpty()) {
-            Join<T, CategoryToBaseClass> baseclassCategoryJoin = r.join(Baseclass_.categories);
-            categoryToBaseClassJoin = baseclassCategoryJoin.join(CategoryToBaseClass_.rightside);
-        }
-
-        List<Predicate> categoriesPredicates = new ArrayList<>();
-
-        if (categories != null) {
-            for (CategoryIdFiltering category : categories) {
-                categoriesPredicates.add(cb.equal(categoryToBaseClassJoin.get(Baseclass_.id), category.getId()));
-            }
-        }
-
-        Predicate catPred = null;
-        Predicate[] pr;
-        if (!categoriesPredicates.isEmpty()) {
-
-            pr = new Predicate[categoriesPredicates.size()];
-            pr = categoriesPredicates.toArray(pr);
-            catPred = cb.or(pr);
-        }
-
-        if (existingPredicates == null) {
-            existingPredicates = new ArrayList<>();
-        }
-        if (catPred != null) {
-            existingPredicates.add(catPred);
-        }
-    }
 
 
     @Override

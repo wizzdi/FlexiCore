@@ -1,10 +1,12 @@
 package com.flexicore.rest;
 
-import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.init.FlexiCoreApplication;
-import com.flexicore.model.Category;
 import com.flexicore.model.Role;
-import com.flexicore.request.*;
+import com.flexicore.model.User;
+import com.flexicore.request.AuthenticationRequest;
+import com.flexicore.request.MassDeleteRequest;
+import com.flexicore.request.RoleCreate;
+import com.flexicore.request.UserCreate;
 import com.flexicore.response.AuthenticationResponse;
 import com.flexicore.response.MassDeleteResponse;
 import org.junit.jupiter.api.*;
@@ -12,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,7 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
@@ -47,11 +47,11 @@ public class BaseclassRESTServiceTest {
                 }));
     }
 
-    private Category createCategory() {
+    private Role createRole() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("categoryName",System.currentTimeMillis()+"");
-        HttpEntity<?> request=new HttpEntity<>(null,headers);
-        ResponseEntity<Category> createCategory = this.restTemplate.exchange("/FlexiCore/rest/category",HttpMethod.POST, request, Category.class);
+        HttpEntity<?> request=new HttpEntity<>(new RoleCreate().setName("test"),headers);
+        ResponseEntity<Role> createCategory = this.restTemplate.exchange("/FlexiCore/rest/roles/createRole",HttpMethod.POST, request, Role.class);
         return createCategory.getBody();
 
 
@@ -62,7 +62,7 @@ public class BaseclassRESTServiceTest {
     @Order(1)
     public void testMassDelete() {
         String name = UUID.randomUUID().toString();
-        Category category = createCategory();
+        Role category = createRole();
         MassDeleteRequest request = new MassDeleteRequest()
                 .setIds(Collections.singleton(category.getId()));
         ResponseEntity<MassDeleteResponse> roleResponse = this.restTemplate.postForEntity("/FlexiCore/rest/baseclass/massDelete", request, MassDeleteResponse.class);
@@ -70,7 +70,7 @@ public class BaseclassRESTServiceTest {
         MassDeleteResponse body = roleResponse.getBody();
         Assertions.assertNotNull(body);
         Assertions.assertEquals(body.getDeletedIds(),request.getIds());
-        ResponseEntity<Category> categoryResponse = this.restTemplate.getForEntity("/FlexiCore/rest/baseclass/getbyid/"+category.getId()+"/"+Category.class.getCanonicalName(), Category.class);
+        ResponseEntity<User> categoryResponse = this.restTemplate.getForEntity("/FlexiCore/rest/baseclass/getbyid/"+category.getId()+"/"+User.class.getCanonicalName(), User.class);
         Assertions.assertEquals(400,categoryResponse.getStatusCodeValue());
 
        roleResponse = this.restTemplate.postForEntity("/FlexiCore/rest/baseclass/massDelete", request, MassDeleteResponse.class);

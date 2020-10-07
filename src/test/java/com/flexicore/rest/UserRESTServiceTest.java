@@ -192,7 +192,7 @@ private String login(String email,String password){
         Assertions.assertNotNull(userProfile);
         Assertions.assertEquals(userProfile.getTenants().stream().map(f->f.getId()).collect(Collectors.toSet()),new HashSet<>(Arrays.asList(defaultTenant.getId(),tenant.getId())));
 
-        Category categoryBeforeImpersonate=createCategory();
+        User categoryBeforeImpersonate=createUser();
         Assertions.assertEquals(tenant.getId(),categoryBeforeImpersonate.getTenant().getId());
 
         ImpersonateRequest impersonateRequest=new ImpersonateRequest()
@@ -204,7 +204,7 @@ private String login(String email,String password){
         ImpersonateResponse impersonateResponse = impersonateResponseResponseEntity.getBody();
         Assertions.assertNotNull(impersonateResponse);
         this.authenticationKey=impersonateResponse.getAuthenticationKey();
-        Category categoryAfterImpersonate=createCategory();
+        User categoryAfterImpersonate=createUser();
         Assertions.assertEquals(defaultTenant.getId(),categoryAfterImpersonate.getTenant().getId());
 
 
@@ -216,15 +216,16 @@ private String login(String email,String password){
         Assertions.assertNotNull(tenantLinkResponse.getBody());
     }
 
-    private Category createCategory() {
+    private User createUser() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("categoryName",System.currentTimeMillis()+"");
-        HttpEntity<?> request=new HttpEntity<>(null,headers);
-        ResponseEntity<Category> createCategory = this.restTemplate.exchange("/FlexiCore/rest/category",HttpMethod.POST, request, Category.class);
+        HttpEntity<?> request=new HttpEntity<>(new UserCreate().setPassword("test").setEmail(UUID.randomUUID().toString()+"@test.com").setName("test"),headers);
+        ResponseEntity<User> createCategory = this.restTemplate.exchange("/FlexiCore/rest/users/createUser",HttpMethod.POST, request, User.class);
         return createCategory.getBody();
 
 
 
     }
+
 
 }

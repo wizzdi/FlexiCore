@@ -560,9 +560,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
     }
 
-    public List<FileResource> listOfType(FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, OffsetDateTime start, String type, SecurityContext securityContext) {
-        return fileResourceRepository.listOfType(filteringInformationHolder, pagesize, currentPage, start, type, securityContext);
-    }
+
 
     @Override
     public void massMerge(List<?> resources) {

@@ -96,20 +96,6 @@ public class FileResourceRepository extends BaseclassRepository {
 
     }
 
-    public List<FileResource> listOfType(FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, OffsetDateTime start, String type, SecurityContext securityContext) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<FileResource> q = cb.createQuery(FileResource.class);
-        Root<FileResource> r = q.from(FileResource.class);
-        Join<FileResource, FileType> join = r.join(FileResource_.type);
-        Predicate pred = cb.equal(join.get(FileType_.name), type.toLowerCase());
-        if (start != null) {
-            pred = cb.and(pred, cb.greaterThanOrEqualTo(r.get(FileResource_.creationDate), start));
-        }
-        List<Predicate> preds = new ArrayList<>();
-        preds.add(pred);
-        QueryInformationHolder<FileResource> queryInformationHolder = new QueryInformationHolder<>(filteringInformationHolder, pagesize, currentPage, FileResource.class, securityContext);
-        return getAllFiltered(queryInformationHolder, preds, cb, q, r);
-    }
 
 
     public void persist(Object o) {
