@@ -6,6 +6,7 @@ import com.flexicore.data.TestsRepository;
 import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
 import com.flexicore.events.PluginsLoadedEvent;
 import com.flexicore.interceptors.SecurityImposer;
+import com.flexicore.interfaces.AspectPlugin;
 import com.flexicore.interfaces.Plugin;
 import com.flexicore.interfaces.RestServicePlugin;
 import com.flexicore.interfaces.dynamic.InvokerInfo;
@@ -90,9 +91,12 @@ public class PluginInit {
         SecurityContext securityContext = securityService.getAdminUserSecurityContext();
         CrossLoaderResolver.registerClassLoader( pluginManager.getStartedPlugins().stream().map(f->f.getPluginClassLoader()).collect(Collectors.toList()));
         List<PluginWrapper> startedPlugins = pluginManager.getStartedPlugins().stream().sorted(PLUGIN_COMPARATOR_FOR_REST).collect(Collectors.toList());
+        List<? extends AspectPlugin> aspects = pluginManager.getExtensions(AspectPlugin.class);
+
         //makes sure older versions are loaded first so default version for apis is being taken from oldest plugin
         for (PluginWrapper startedPlugin : startedPlugins) {
             logger.info("REST Registration handling plugin: " + startedPlugin);
+
             List<? extends RestServicePlugin> restPlugins = pluginManager.getExtensions(RestServicePlugin.class, startedPlugin.getPluginId());
             for (RestServicePlugin plugin : restPlugins) {
 
@@ -101,6 +105,9 @@ public class PluginInit {
                     AspectJProxyFactory factory = new AspectJProxyFactory(plugin);
                     SecurityImposer securityImposer = applicationContext.getBean(SecurityImposer.class);
                     factory.addAspect(securityImposer);
+                    for (AspectPlugin aspect : aspects) {
+                        factory.addAspect(aspect);
+                    }
                     factory.setProxyTargetClass(true);
                     Object proxy = factory.getProxy(plugin.getClass().getClassLoader());
                     JaxRsActivator.addSingletones(proxy);

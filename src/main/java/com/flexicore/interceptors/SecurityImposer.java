@@ -22,6 +22,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.CloseReason;
@@ -47,6 +48,7 @@ import java.util.stream.Stream;
 
 @Aspect
 @Component
+@Order(0)
 public class SecurityImposer  {
 	
 
