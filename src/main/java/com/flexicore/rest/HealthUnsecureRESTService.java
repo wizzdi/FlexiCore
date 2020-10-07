@@ -6,6 +6,7 @@ import com.flexicore.response.HealthStatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.Status;
@@ -28,12 +29,24 @@ public class HealthUnsecureRESTService implements RESTService {
 
     @Autowired
     private HealthEndpoint healthEndpoint;
+    private HealthComponent healthComponent;
+    @Value("${flexicore.health.minInterval:30000}")
+    private long minInterval;
+    private long time;
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "health", description = "health")
     public HealthStatusResponse healthCheck() {
-        return new HealthStatusResponse(healthEndpoint.health());
+        return new HealthStatusResponse(getHealth());
 
+    }
+
+    private HealthComponent getHealth() {
+        if(healthComponent==null||System.currentTimeMillis() - time >minInterval ){
+            healthComponent= healthEndpoint.health();
+            time=System.currentTimeMillis();
+        }
+        return healthComponent;
     }
 
 
@@ -42,7 +55,7 @@ public class HealthUnsecureRESTService implements RESTService {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "healthOrFail", description = "healthOrFail")
     public boolean healthOrFail() {
-        boolean down=healthEndpoint.health().getStatus()== Status.DOWN;
+        boolean down=getHealth().getStatus()== Status.DOWN;
         if(down){
             throw new ServiceUnavailableException("Health check failed");
         }

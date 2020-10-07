@@ -21,7 +21,7 @@ public class IndexRepository {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createIndex(Index index, String tableName, boolean singleTable) {
 
-        String columnsList = singleTable?tableName:Arrays.stream(index.columnList().split(",")).filter(f->!"dtype".equalsIgnoreCase(f)).collect(Collectors.joining(","));
+        String columnsList = singleTable?index.columnList():Arrays.stream(index.columnList().split(",")).filter(f->!"dtype".equalsIgnoreCase(f)).collect(Collectors.joining(","));
         if(columnsList.isEmpty()){
             return;
         }
