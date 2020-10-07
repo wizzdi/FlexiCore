@@ -63,7 +63,6 @@
 		<class>com.flexicore.model.licensing.LicensingFeature</class>
 		<class>com.flexicore.model.licensing.LicensingProduct</class>
 		<class>com.flexicore.model.TimedLink</class>
-		<class>com.flexicore.model.ui.UIComponent</class>
 		<class>com.flexicore.model.PermissionGroup</class>
 		<class>com.flexicore.model.PermissionGroupToBaseclass</class>
 		<class>com.flexicore.model.SecurityWildcard</class>
