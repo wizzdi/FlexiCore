@@ -60,18 +60,11 @@
 		<class>com.flexicore.model.BaseclassLongFiltering</class>
 		<class>com.flexicore.model.dynamic.ExecutionParametersHolder</class>
 		<class>com.flexicore.model.dynamic.DynamicInvoker</class>
-		<class>com.flexicore.model.tree.Tree</class>
-		<class>com.flexicore.model.tree.TreeNode</class>
 		<class>com.flexicore.model.TenantIdFiltering</class>
-		<class>com.flexicore.model.tree.TreeNodeToUser</class>
-		<class>com.flexicore.model.FlexiCoreServer</class>
 		<class>com.flexicore.model.CurrentDatabaseTenant</class>
 		<class>com.flexicore.model.ClazzIdFiltering</class>
 		<class>com.flexicore.model.dynamic.DynamicExecution</class>
 		<class>com.flexicore.model.dynamic.ServiceCanonicalName</class>
-		<class>com.flexicore.model.UnRegisteredFlexiCoreServer</class>
-		<class>com.flexicore.model.FlexiCoreServerToNoSQLBaseclass</class>
-		<class>com.flexicore.model.SyncLink</class>
 
 
 
