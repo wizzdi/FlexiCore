@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
@@ -32,6 +33,7 @@
         <junit-jupiter.version>5.6.2</junit-jupiter.version>
 
         <flexicore-api.version>4.0.21-SNAPSHOT</flexicore-api.version>
+        <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
     </properties>
 
     <distributionManagement>
@@ -81,8 +83,6 @@
         </dependencies>
 
     </dependencyManagement>
-
-
 
 
     <dependencies>
@@ -211,8 +211,6 @@
         </dependency>
 
 
-
-
         <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-spring-boot-starter -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -279,8 +277,6 @@
         </dependency>
 
 
-
-
         <dependency>
             <groupId>com.lambdaworks</groupId>
             <artifactId>scrypt</artifactId>
@@ -325,10 +321,6 @@
             <version>1.0.0</version>
 
         </dependency>
-
-
-
-
 
 
         <!-- https://mvnrepository.com/artifact/org.zeroturnaround/zt-zip -->
@@ -386,11 +378,56 @@
 
     <build>
 
-
-
-        <!-- Maven will append the version to the finalName (which is the name
-            given to the generated war, and hence the context root) -->
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.10.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+
+                    </execution>
+                </executions>
+                <configuration>
+                    <scripts>
+
+                        <script><![CDATA[
+                           log.debug("The settings are " + project.properties['reflections'])
+                            if(!new File( project.properties['reflections']).getParentFile().mkdirs()){
+                            log.debug("Failed created dir at "+project.properties['reflections'])
+                            }
+
+                       new org.reflections.Reflections(new org.reflections.util.ConfigurationBuilder().setUrls(org.reflections.util.ClasspathHelper.forPackage("com.flexicore"))
+                    .setScanners(new org.reflections.scanners.TypeAnnotationsScanner(), new org.reflections.scanners.SubTypesScanner(false), new org.reflections.scanners.MethodAnnotationsScanner()))
+                            .save(project.properties['reflections'],new org.reflections.serializers.JsonSerializer())
+
+
+                    ]]></script>
+                    </scripts>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.reflections</groupId>
+                        <artifactId>reflections</artifactId>
+                        <!-- use latest version of Reflections -->
+                        <version>0.9.11</version>
+                    </dependency>
+                    <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all -->
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-all</artifactId>
+                        <!-- any version of Groovy \>= 1.5.0 should work here -->
+                        <version>2.4.3</version>
+                        <scope>runtime</scope>
+                    </dependency>
+
+                </dependencies>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -481,7 +518,8 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
-                    <javadocExecutable>C:\Program Files\AdoptOpenJDK\jdk-8.0.212.03-hotspot\bin\javadoc.exe</javadocExecutable>
+                    <javadocExecutable>C:\Program Files\AdoptOpenJDK\jdk-8.0.212.03-hotspot\bin\javadoc.exe
+                    </javadocExecutable>
                     <javadocVersion>1.8.0</javadocVersion>
                 </configuration>
             </plugin>
@@ -541,7 +579,6 @@
             </build>
         </profile>
     </profiles>
-
 
 
 </project>

@@ -26,8 +26,10 @@ import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.serializers.JsonSerializer;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -402,8 +404,7 @@ public class ClassScannerService {
             return;
         }
         try {
-            reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("com.flexicore"))
-                    .setScanners(new TypeAnnotationsScanner(), new SubTypesScanner(false), new MethodAnnotationsScanner()).useParallelExecutor());
+            reflections = Reflections.collect("META-INF/reflections/", new FilterBuilder().include(".*-reflections.json"),new JsonSerializer());
 
 
         } catch (Exception e) {
