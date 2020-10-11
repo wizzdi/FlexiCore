@@ -19,14 +19,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.client.ResponseExtractor;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 @ExtendWith(SpringExtension.class)
@@ -63,7 +69,8 @@ public class FileUploadRESTServiceTest {
         byte[] data = new byte[FILE_LENGTH];
         rd.nextBytes(data);
         String md5=Hex.encodeHexString(Md5Utils.computeMD5Hash(data));
-        String name="test-"+System.currentTimeMillis();
+        String name="test-"+System.currentTimeMillis()+".js";
+        String id=null;
         // chunk size to divide
         for(int i=0;i<data.length;i+=CHUNK_SIZE){
             byte[] chunk=Arrays.copyOfRange(data, i, Math.min(data.length,i+CHUNK_SIZE));
@@ -86,7 +93,15 @@ public class FileUploadRESTServiceTest {
             FileResource fileResource=response.getBody();
             Assertions.assertNotNull(fileResource);
             Assertions.assertEquals(fileResource.isDone(),lastChunk);
+            id=fileResource.getId();
+
         }
+
+        this.restTemplate.execute("/FlexiCore/rest/downloadUnsecure/" + id, HttpMethod.GET, null, (ResponseExtractor<Object>) clientHttpResponse -> {
+            File ret = File.createTempFile("download", "tmp");
+            StreamUtils.copy(clientHttpResponse.getBody(), new FileOutputStream(ret));
+            return ret;
+        });
 
     }
 

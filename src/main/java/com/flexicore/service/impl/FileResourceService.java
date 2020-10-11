@@ -715,7 +715,9 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
                     int available = inputStream.available();
                     long contentLength = size > 0 ? Math.min(available, size) : available;
                     response.header("Content-Length", contentLength);
-                    response.header("Content-Disposition", "attachment; filename=\"" + name + "\"");
+                    if(mimeType==null){
+                        response.header("Content-Disposition", "attachment; filename=\"" + name + "\"");
+                    }
                     response.header("fileName", name);
 
                     return response.build();

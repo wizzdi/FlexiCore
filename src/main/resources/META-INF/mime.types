@@ -18,7 +18,7 @@ type=audio/x-epac                                exts=pae
 type=audio/x-liveaudio                           exts=lam
 type=model/gltf+json                             exts=gltf
 type=drawing/x-dwf                               exts=dwf
-
+type=application/javascript                             exts=js
 type=image/fif                                   exts=fif
 type=image/x-icon                                exts=ico
 type=image/gif                                   exts=gif
