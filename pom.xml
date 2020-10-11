@@ -423,6 +423,12 @@
                         <version>2.4.3</version>
                         <scope>runtime</scope>
                     </dependency>
+                    <dependency>
+                        <groupId>com.wizzdi</groupId>
+                        <artifactId>flexicore-api</artifactId>
+                        <version>4.1.0</version>
+                        <scope>runtime</scope>
+                    </dependency>
 
                 </dependencies>
             </plugin>
