@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>4.1.0</version>
+    <version>4.1.0-SNAPSHOT</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -421,12 +421,6 @@
                         <artifactId>groovy-all</artifactId>
                         <!-- any version of Groovy \>= 1.5.0 should work here -->
                         <version>2.4.3</version>
-                        <scope>runtime</scope>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.wizzdi</groupId>
-                        <artifactId>flexicore-api</artifactId>
-                        <version>4.1.0</version>
                         <scope>runtime</scope>
                     </dependency>
 
