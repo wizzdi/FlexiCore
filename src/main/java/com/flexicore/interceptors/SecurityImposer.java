@@ -95,7 +95,7 @@ public class SecurityImposer  {
 
 				OperationsInside operationsInside = method.getDeclaringClass().getAnnotation(OperationsInside.class);
 
-				if (operationInfo.getiOperation() != null && user != null && tenants != null) {
+				if (operationInfo.getiOperation() != null && user != null && tenants != null && operation!=null) {
 
 					if (securityService.checkIfAllowed(user, tenants, operation, operationInfo.getiOperation().access())) {
 						Object procceed = procceed(securityContext, joinPoint, methodName, parameters, start);
