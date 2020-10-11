@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.1.0</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -384,7 +384,7 @@
                 <version>1.10.1</version>
                 <executions>
                     <execution>
-                        <phase>generate-resources</phase>
+                        <phase>process-classes</phase>
                         <goals>
                             <goal>execute</goal>
                         </goals>
