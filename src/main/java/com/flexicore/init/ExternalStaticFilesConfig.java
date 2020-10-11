@@ -42,8 +42,8 @@ public class ExternalStaticFilesConfig {
                 String[] directories = listDirectories(externalStatic);
                 if(directories!=null){
                     for (String subDir : directories){
-                        registry.addViewController(subDir).setViewName("redirect:/" + subDir + "/");
-                        registry.addViewController(subDir).setViewName("forward:/" + subDir + "/index.html");
+                        registry.addViewController("/"+subDir).setViewName("redirect:/" + subDir + "/");
+                        registry.addViewController("/"+subDir+"/").setViewName("forward:/" + subDir + "/index.html");
                     }
                 }
 
