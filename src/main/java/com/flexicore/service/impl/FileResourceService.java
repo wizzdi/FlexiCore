@@ -7,11 +7,9 @@
 package com.flexicore.service.impl;
 
 import com.flexicore.annotations.IOperation;
-import com.flexicore.constants.Constants;
 import com.flexicore.data.BaselinkRepository;
 import com.flexicore.data.FileResourceRepository;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
-import com.flexicore.enums.ProcessPhase;
 import com.flexicore.interfaces.AnalyzerPlugin;
 import com.flexicore.model.*;
 import com.flexicore.request.*;
@@ -23,15 +21,16 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.zip.ZipUtil;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.batch.operations.JobOperator;
 import javax.batch.runtime.BatchRuntime;
-import org.springframework.beans.factory.annotation.Autowired;
-import javax.inject.Named;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.Response;
@@ -43,8 +42,6 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,7 +57,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
     //private String folder = "c:/temp/";
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(FileResourceService.class);
 
     @Autowired
     private FileResourceRepository fileResourceRepository;
@@ -77,6 +74,9 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
     @Autowired
     private JobService jobService;
 
+    @Value("${flexicore.upload:/home/flexicore/upload}")
+    private String uploadPath;
+
     public FileResource getExistingFileResource(String md5, SecurityContext securityContext) {
         List<FileResource> existing = fileResourceRepository.listAllFileResources(new FileResourceFilter().setMd5s(Collections.singleton(md5)), securityContext);
         return existing.isEmpty() ? null : existing.get(0);
@@ -86,24 +86,31 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
         FileResource fileResource = getExistingFileResource(md5, securityContext);
         if (fileResource == null) {
-            fileResource = fileResourceRepository.create(filename, securityContext, md5);
+            String ext = filename.endsWith("tar.gz") ? "tar.gz" : FilenameUtils.getExtension(filename);
+            String actualFilename = !ext.isEmpty() ? UUID.randomUUID().toString() + "." + ext : UUID.randomUUID().toString();
+            FileResourceCreate fileResourceCreate = new FileResourceCreate()
+                    .setActualFilename(actualFilename)
+                    .setFullPath(uploadPath+ actualFilename)
+                    .setMd5(md5)
+                    .setOffset(0L)
+                    .setOriginalFilename(filename);
+            fileResource=createNoMerge(fileResourceCreate, securityContext);
 
         }
         if (!fileResource.isDone()) {
-            saveFile(fileInputStream,chunkMd5, fileResource);
-            if(lastChunk){
+            saveFile(fileInputStream, chunkMd5, fileResource);
+            if (lastChunk) {
                 File file = new File(fileResource.getFullPath());
-                String calculatedFileMd5=generateMD5(file);
-                if(!md5.equals(calculatedFileMd5)){
-                    if(file.delete()){
+                String calculatedFileMd5 = generateMD5(file);
+                if (!md5.equals(calculatedFileMd5)) {
+                    if (file.delete()) {
                         fileResource.setOffset(0L);
                         fileResourceRepository.merge(fileResource);
-                    }
-                    else{
-                        logger.warning("Could not delete bad md5 file "+file);
+                    } else {
+                        logger.warn("Could not delete bad md5 file " + file);
 
                     }
-                    throw new ClientErrorException("File Total MD5 is "+calculatedFileMd5 +" expected "+md5, Response.Status.EXPECTATION_FAILED);
+                    throw new ClientErrorException("File Total MD5 is " + calculatedFileMd5 + " expected " + md5, Response.Status.EXPECTATION_FAILED);
                 }
                 fileResource.setDone(true);
                 fileResourceRepository.merge(fileResource);
@@ -125,9 +132,9 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
      * Job. The created FC Job allows for a client tracking on {@link Job}
      * progress.
      *
-     * @param md5 md5 of the file to be finizalized
+     * @param md5             md5 of the file to be finizalized
      * @param securityContext security context
-     * @param hint hint for finalizing
+     * @param hint            hint for finalizing
      * @return job that was finalized
      */
 
@@ -148,7 +155,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
             utb.setSimplevalue(IOperation.Access.allow.name());
             merge(utb);
         } catch (NoSuchMethodException | SecurityException e) {
-            logger.log(Level.SEVERE, "unable to create security link for fileResource: " + fileResource, e);
+            logger.error("unable to create security link for fileResource: " + fileResource, e);
         }
     }
 
@@ -172,7 +179,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
     }
 
     public Job finalizeUpload(String md5, SecurityContext securityContext, String hint, Properties prop) {
-        Job job=null;
+        Job job = null;
 
         FileResource fileResource = getExistingFileResource(md5, securityContext);
 
@@ -189,14 +196,6 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
                 throw new BadRequestException("file " + file.getAbsolutePath() + " failed md5 check , actual md5: " + actualMd5 + " expected: " + md5 + ", file has been deleted , please upload again");
             }
             fileResource.setDone(true);
-            if (prop != null) {
-                String type = prop.getProperty("fileType");
-                if (type != null && !type.isEmpty()) {
-                    fileResource.setType(new FileType(type));
-                }
-
-
-            }
             if (prop != null && Boolean.parseBoolean(prop.getProperty("dontProcess", "false"))) {
                 return null;
             }
@@ -215,14 +214,14 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
             if (hint != null && !hint.isEmpty()) {
                 prop.setProperty("hint", hint);
             }
-            job=jobService.startJob(fileResource,AnalyzerPlugin.class,prop,null,securityContext);
+            job = jobService.startJob(fileResource, AnalyzerPlugin.class, prop, null, securityContext);
 
 
             merge(fileResource);
 
 
         } else {
-            logger.severe("No file resource found for MD5:  " + md5);
+            logger.error("No file resource found for MD5:  " + md5);
             throw new ClientErrorException("the MD5 on finalize was not found in the database", Response.Status.BAD_REQUEST);
 
         }
@@ -231,23 +230,24 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
     @Override
     public void saveFile(InputStream is, FileResource file) {
-        saveFile(is,null,file);
+        saveFile(is, null, file);
     }
+
     @Override
-    public void saveFile(InputStream is,String chunkMd5, FileResource file) {
+    public void saveFile(InputStream is, String chunkMd5, FileResource file) {
         try {
             byte[] data = IOUtils.toByteArray(is);
-            if(chunkMd5!=null){
-                String calculatedChunkMd5=generateMD5(new ByteArrayInputStream(data));
-                if(!chunkMd5.equals(calculatedChunkMd5)){
-                    throw new ClientErrorException("Chunk MD5 was "+calculatedChunkMd5 +" expected "+chunkMd5, Response.Status.PRECONDITION_FAILED);
+            if (chunkMd5 != null) {
+                String calculatedChunkMd5 = generateMD5(new ByteArrayInputStream(data));
+                if (!chunkMd5.equals(calculatedChunkMd5)) {
+                    throw new ClientErrorException("Chunk MD5 was " + calculatedChunkMd5 + " expected " + chunkMd5, Response.Status.PRECONDITION_FAILED);
                 }
             }
 
             saveFile(data, file.getOffset(), file);
 
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "unable to read data from received input stream", e);
+            logger.error("unable to read data from received input stream", e);
         }
     }
 
@@ -257,12 +257,12 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
         File f = new File(file.getFullPath());
         File parentFile = f.getParentFile();
         if (parentFile == null) {
-            logger.log(Level.SEVERE, "unable to save file at " + file.getFullPath());
+            logger.error("unable to save file at " + file.getFullPath());
             return false;
         }
         if (!parentFile.exists()) {
             if (!parentFile.mkdirs()) {
-                logger.warning("Failed Creating dir " + parentFile);
+                logger.warn("Failed Creating dir " + parentFile);
                 return false;
             }
         }
@@ -276,7 +276,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
 
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "unable to upload , truncating file to last known good location", e);
+            logger.error("unable to upload , truncating file to last known good location", e);
             long orig = file.getOffset();
             long fileOffset = trimToSize(f, orig);
             file.setOffset(fileOffset);
@@ -294,7 +294,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
             fc.truncate(orig);
             return orig;
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "failed truncating file to orig", e);
+            logger.error("failed truncating file to orig", e);
         }
         return file.length();
     }
@@ -305,12 +305,28 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
         FileResource fileResource = null;
         File file = new File(pathToFileResource);
         if (file.exists()) {
-            String s = file.isFile()?generateMD5(file):null;
-            fileResource = fileResourceRepository.create(file.getName(), securityContext, s, pathToFileResource);
-
+            String md5 = file.isFile() ? generateMD5(file) : null;
+            String fileName = file.getName();
+            String ext = fileName.endsWith("tar.gz") ? "tar.gz" : FilenameUtils.getExtension(fileName);
+            String actualFilename = !ext.isEmpty() ? UUID.randomUUID().toString() + "." + ext : UUID.randomUUID().toString();
+            fileResource = new FileResource(fileName, securityContext);
+            FileResourceCreate fileResourceCreate = new FileResourceCreate()
+                    .setFullPath(pathToFileResource)
+                    .setMd5(md5)
+                    .setOffset(0L)
+                    .setActualFilename(actualFilename)
+                    .setOriginalFilename(fileName);
+            updateFileResourceNoMerge(fileResourceCreate, fileResource);
         }
         return fileResource;
 
+    }
+
+    @Override
+    public FileResource createFileResource(FileResourceCreate fileResourceCreate, SecurityContext securityContext) {
+        FileResource fileResource=createNoMerge(fileResourceCreate,securityContext);
+        merge(fileResource);
+        return fileResource;
     }
 
     @Override
@@ -320,8 +336,8 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
     @Override
     public FileResource createDontPersist(String pathToFileResource, SecurityContext securityContext) {
-        File file=new File(pathToFileResource);
-        String filename=file.getName();
+        File file = new File(pathToFileResource);
+        String filename = file.getName();
         String ext = filename.endsWith("tar.gz") ? "tar.gz" : FilenameUtils.getExtension(filename);
         String md5 = generateMD5(pathToFileResource);
 
@@ -330,69 +346,48 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
                 .setMd5(md5)
                 .setOffset(0L)
                 .setActualFilename(UUID.randomUUID().toString() + "." + ext)
-                .setUrl(md5!=null?Constants.UPLOAD_URL+md5:null)
                 .setOriginalFilename(filename);
-        return createNoMerge(fileResourceCreate,securityContext);
+        return createNoMerge(fileResourceCreate, securityContext);
     }
 
 
     @Override
-    public FileResource createNoMerge(FileResourceCreate fileResourceCreate, SecurityContext securityContext){
-        FileResource fileResource=new FileResource(fileResourceCreate.getName(),securityContext);
-        updateFileResourceNoMerge(fileResourceCreate,fileResource);
+    public FileResource createNoMerge(FileResourceCreate fileResourceCreate, SecurityContext securityContext) {
+        FileResource fileResource = new FileResource(fileResourceCreate.getName(), securityContext);
+        updateFileResourceNoMerge(fileResourceCreate, fileResource);
         return fileResource;
     }
 
     @Override
     public boolean updateFileResourceNoMerge(FileResourceCreate fileResourceCreate, FileResource fileResource) {
-        boolean update=baseclassNewService.updateBaseclassNoMerge(fileResourceCreate,fileResource);
-        if(fileResourceCreate.getMd5()!=null && !fileResourceCreate.getMd5().equals(fileResource.getMd5())){
+        boolean update = baseclassNewService.updateBaseclassNoMerge(fileResourceCreate, fileResource);
+        if (fileResourceCreate.getMd5() != null && !fileResourceCreate.getMd5().equals(fileResource.getMd5())) {
             fileResource.setMd5(fileResourceCreate.getMd5());
-            update=true;
+            update = true;
         }
 
-        if(fileResourceCreate.getFullPath()!=null && !fileResourceCreate.getFullPath().equals(fileResource.getFullPath())){
+        if (fileResourceCreate.getFullPath() != null && !fileResourceCreate.getFullPath().equals(fileResource.getFullPath())) {
             fileResource.setFullPath(fileResourceCreate.getFullPath());
-            update=true;
+            update = true;
         }
 
-        if(fileResourceCreate.getActualFilename()!=null && !fileResourceCreate.getActualFilename().equals(fileResource.getActualFilename())){
+        if (fileResourceCreate.getActualFilename() != null && !fileResourceCreate.getActualFilename().equals(fileResource.getActualFilename())) {
             fileResource.setActualFilename(fileResourceCreate.getActualFilename());
-            update=true;
+            update = true;
         }
 
-        if(fileResourceCreate.getOriginalFilename()!=null && !fileResourceCreate.getOriginalFilename().equals(fileResource.getOriginalFilename())){
+        if (fileResourceCreate.getOriginalFilename() != null && !fileResourceCreate.getOriginalFilename().equals(fileResource.getOriginalFilename())) {
             fileResource.setOriginalFilename(fileResourceCreate.getOriginalFilename());
-            update=true;
+            update = true;
         }
 
-        if(fileResourceCreate.getUrl()!=null && !fileResourceCreate.getUrl().equals(fileResource.getUrl())){
-            fileResource.setUrl(fileResourceCreate.getUrl());
-            update=true;
-        }
-
-        if(fileResourceCreate.getOffset()!=null && fileResourceCreate.getOffset()!=fileResource.getOffset()){
+        if (fileResourceCreate.getOffset() != null && fileResourceCreate.getOffset() != fileResource.getOffset()) {
             fileResource.setOffset(fileResourceCreate.getOffset());
-            update=true;
+            update = true;
         }
 
 
         return update;
-
-    }
-
-
-    @Override
-    @Deprecated
-    public <T extends FileResource> T createDontPersist(Class<T> c, String pathToFileResource, SecurityContext securityContext) {
-        T fileResource = null;
-        File file = new File(pathToFileResource);
-        if (file.exists()) {
-            String s = generateMD5(file);
-            fileResource = fileResourceRepository.createDontPersist(c, file.getName(), securityContext, s, pathToFileResource);
-
-        }
-        return fileResource;
 
     }
 
@@ -414,12 +409,12 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
             is.close();
 
         } catch (NoSuchAlgorithmException | IOException e) {
-            logger.log(Level.WARNING, "unable to generate MD5", e);
+            logger.warn("unable to generate MD5", e);
             if (is != null) {
                 try {
                     is.close();
                 } catch (IOException e1) {
-                    logger.log(Level.WARNING, "unable to close is", e1);
+                    logger.warn("unable to close is", e1);
                 }
             }
 
@@ -429,9 +424,9 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
     @Override
     public String generateMD5(String filePath) {
-        if(filePath!=null){
-            File file=new File(filePath);
-            if(file.exists()){
+        if (filePath != null) {
+            File file = new File(filePath);
+            if (file.exists()) {
                 return generateMD5(file);
             }
         }
@@ -439,15 +434,15 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
     }
 
 
-        @Override
-        public String generateMD5(File file) {
+    @Override
+    public String generateMD5(File file) {
 
         FileInputStream is;
         try {
             is = new FileInputStream(file);
             return generateMD5(is);
         } catch (FileNotFoundException e) {
-            logger.log(Level.SEVERE, "could not open stream", e);
+            logger.error("could not open stream", e);
         }
         return null;
 
@@ -459,17 +454,6 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
     }
 
 
-    public FileType getFileType(String fileType, SecurityContext securityContext) {
-        return fileResourceRepository.getFileType(fileType,
-                new QueryInformationHolder<>(FileType.class, securityContext));
-
-    }
-
-    public List<FileType> getAllFileType(SecurityContext securityContext) {
-        return fileResourceRepository.getAllFiltered(new QueryInformationHolder<>(FileType.class, securityContext));
-
-    }
-
     public FileResource getFileResource(String id, SecurityContext securityContext) {
         return baselinkRepository.getByIdOrNull(id, FileResource.class, null, securityContext);
     }
@@ -479,15 +463,15 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
     }
 
     @Override
-    public PaginationResponse<FileResource> getAllFileResources(FileResourceFilter fileResourceFilter,SecurityContext securityContext){
-        List<FileResource> fileResources=listAllFileResources(fileResourceFilter,securityContext);
-        long count=fileResourceRepository.countAllFileResources(fileResourceFilter,securityContext);
-        return new PaginationResponse<>(fileResources,fileResourceFilter,count);
+    public PaginationResponse<FileResource> getAllFileResources(FileResourceFilter fileResourceFilter, SecurityContext securityContext) {
+        List<FileResource> fileResources = listAllFileResources(fileResourceFilter, securityContext);
+        long count = fileResourceRepository.countAllFileResources(fileResourceFilter, securityContext);
+        return new PaginationResponse<>(fileResources, fileResourceFilter, count);
     }
 
     @Override
     public List<FileResource> listAllFileResources(FileResourceFilter fileResourceFilter, SecurityContext securityContext) {
-        return fileResourceRepository.listAllFileResources(fileResourceFilter,securityContext);
+        return fileResourceRepository.listAllFileResources(fileResourceFilter, securityContext);
     }
 
     public void deleteFileResource(FileResource fr, User user, List<Tenant> tenant) {
@@ -561,7 +545,6 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
     }
 
 
-
     @Override
     public void massMerge(List<?> resources) {
         fileResourceRepository.massMerge(resources);
@@ -594,7 +577,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
             if (zipAndDownloadRequest.isFailOnMissing() || fileResourceMap.isEmpty()) {
                 throw new BadRequestException(message);
             } else {
-                logger.warning(message);
+                logger.warn(message);
             }
         }
         zipAndDownloadRequest.setFileResources(new ArrayList<>(fileResourceMap.values()));
@@ -611,7 +594,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
                 data = Arrays.copyOf(data, read);
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "unable to read file part", e);
+            logger.error("unable to read file part", e);
         }
         return data;
     }
@@ -669,7 +652,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
         return zipFileToFileResource;
     }
 
-    public Response download( long offset,long size,  String id, String remoteIp,  SecurityContext securityContext) {
+    public Response download(long offset, long size, String id, String remoteIp, SecurityContext securityContext) {
         FileResource fileResource = getFileResource(id, securityContext);
         if (fileResource == null) {
             throw new BadRequestException("No File resource with id " + id);
@@ -680,8 +663,8 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
         }
         if (fileResource.getOnlyFrom() != null) {
             Set<String> allowedIps = Stream.of(fileResource.getOnlyFrom().split(",")).collect(Collectors.toSet());
-            if(!allowedIps.contains(remoteIp)){
-                throw new BadRequestException("File is not allowed to be downloaded from "+remoteIp);
+            if (!allowedIps.contains(remoteIp)) {
+                throw new BadRequestException("File is not allowed to be downloaded from " + remoteIp);
             }
 
 
@@ -715,14 +698,14 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
                     int available = inputStream.available();
                     long contentLength = size > 0 ? Math.min(available, size) : available;
                     response.header("Content-Length", contentLength);
-                    if(mimeType==null){
+                    if (mimeType == null) {
                         response.header("Content-Disposition", "attachment; filename=\"" + name + "\"");
                     }
                     response.header("fileName", name);
 
                     return response.build();
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE, "failed opening file", e);
+                    logger.error("failed opening file", e);
                 }
 
             }

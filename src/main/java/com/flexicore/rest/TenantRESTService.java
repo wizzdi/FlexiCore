@@ -83,40 +83,6 @@ public class TenantRESTService implements RESTService {
 
     }
 
-    @GET
-    @Path("{apiKey}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "getUserTenants", Description = "returns tenant by apikey", relatedClazzes = {Tenant.class})
-    public Tenant getTenant(@HeaderParam("authenticationkey") String authenticationkey, @PathParam("apiKey") String apikey, @Context SecurityContext securityContext) {
-        return tenantService.getTenantByApiKey(apikey);
-
-    }
-
-    @POST
-    @Path("{tenant_name}/{apiKey}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "createTenant", Description = "creates tenant", relatedClazzes = {Tenant.class, User.class})
-    public Tenant createTenant(@HeaderParam("authenticationkey") String authenticationkey, NewUser tenantAdmin, @PathParam("tenant_name") String name, @PathParam("apiKey") String apiKey, @Context SecurityContext securityContext) {
-        userService.validateAndpopulateNewUser(tenantAdmin);
-        return tenantService.createNewTenant(tenantAdmin, name, apiKey, securityContext);
-
-
-    }
-
-
-    @POST
-    @Path("createTenantNoUser/{tenant_name}/{apiKey}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "createTencreateTenantNoUserant", Description = "creates tenant without user", relatedClazzes = {Tenant.class})
-    public Tenant createTenantNoUser(@HeaderParam("authenticationkey") String authenticationkey, @PathParam("tenant_name") String name, @PathParam("apiKey") String apiKey, @Context SecurityContext securityContext) {
-
-        return tenantService.createTenantNoUser(name, apiKey, securityContext);
-
-
-    }
-
     @POST
     @Path("createTenant")
     @Produces(MediaType.APPLICATION_JSON)

@@ -6,31 +6,32 @@
  ******************************************************************************/
 package com.flexicore.service.impl;
 
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import com.flexicore.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import javax.ws.rs.BadRequestException;
-
 import com.flexicore.data.BaselinkRepository;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
-import com.flexicore.data.jsoncontainers.LinkContainer;
+import com.flexicore.model.Baseclass;
+import com.flexicore.model.Baselink;
+import com.flexicore.model.FilteringInformationHolder;
 import com.flexicore.request.BaselinkCreate;
 import com.flexicore.request.BaselinkFilter;
 import com.flexicore.request.BaselinkMassCreate;
 import com.flexicore.request.BaselinkUpdate;
 import com.flexicore.security.SecurityContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+
+import javax.ws.rs.BadRequestException;
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Primary
 @Component
 public class BaselinkService implements com.flexicore.service.BaselinkService {
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private Logger logger = LoggerFactory.getLogger(getClass().getCanonicalName());
     @Autowired
     private BaselinkRepository repository;
     @Autowired
@@ -67,27 +68,14 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
 
     @Override
     public <T extends Baselink> T linkEntitiesNoCheck(Baseclass left, Baseclass right, Baseclass value, String simpleVal, Class<T> clazz, SecurityContext securityContext) {
-        T t;
-        try {
-            t = clazz.newInstance().Create("link", securityContext);
-            t.setLeftside(left);
-            t.setRightside(right);
-            t.setValue(value);
-            t.setSimplevalue(simpleVal);
-            repository.merge(t);
-            return t;
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            logger.log(Level.SEVERE, "unable to create", e);
-        }
-        return null;
-
+        return createBaselink(new BaselinkCreate().setLeftside(left).setRightside(right).setLinkClass(clazz).setValue(value).setSimpleValue(simpleVal),securityContext);
     }
+
 
     @Override
     public <T extends Baselink> T linkEntities(Baseclass left, Baseclass right, Class<T> clazz, Baseclass value, String simpleVal) {
         SecurityContext securityContext=securityService.getAdminUserSecurityContext();
-        T baselink = createBaselink(new BaselinkCreate().setLeftside(left).setRightside(right).setLinkClass(clazz).setValue(value).setSimpleValue(simpleVal),securityContext);
-        return baselink;
+        return linkEntitiesNoCheck(left,right,value,simpleVal,clazz,securityContext);
     }
 
     @Override
@@ -143,17 +131,6 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
                                                        SecurityContext securityContext) {
         return listAllBaselinks(new BaselinkFilter().setLinkClass(type).setLeftside(Collections.singletonList(left)).setRightside(Collections.singletonList(right)), securityContext);
 
-    }
-
-    @Override
-    public <T extends Baselink> List<LinkContainer> findAllBySidesAndValueContainers(Class<T> type, Baseclass left, Baseclass right, Baseclass value, String simpleValue, FilteringInformationHolder filter,
-                                                                                     int pagesize, int current, SecurityContext securityContext) {
-        List<LinkContainer> ret = new ArrayList<>();
-        List<T> links = findAllBySidesAndValue(type, left, right, value, simpleValue, filter, pagesize, current, securityContext);
-        for (T link : links) {
-            ret.add(new LinkContainer(link, link.getLeftside(), link.getRightside(), link.getValue(), simpleValue));
-        }
-        return ret;
     }
 
 
@@ -294,7 +271,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
         try {
             return (Class<? extends Baseclass>) linkClass.getMethod(name).getReturnType();
         } catch (Exception e) {
-            logger.severe("failed getting type of "+name +" to determine type");
+            logger.error("failed getting type of "+name +" to determine type");
         }
         return Baseclass.class;
     }
@@ -367,10 +344,19 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
 
     @Override
     public <T extends Baselink> T createBaselinkNoMerge(BaselinkCreate baselinkCreate, SecurityContext securityContext) {
-        Class<T> c = (Class<T>) baselinkCreate.getLinkClass();
-        T link = Baseclass.createUnchecked(c, baselinkCreate.getName(), securityContext);
-        updateBaselinkNoMerge(link,baselinkCreate);
-        return link;
+        try {
+            Class<T> c = (Class<T>) baselinkCreate.getLinkClass();
+            Constructor<T> constructor = c.getConstructor(String.class, SecurityContext.class);
+            T link = constructor.newInstance(baselinkCreate.getName(), securityContext);
+            updateBaselinkNoMerge(link,baselinkCreate);
+            return link;
+        }
+        catch (Exception e){
+            logger.error("failed creating baselink",e);
+            return null;
+        }
+
+
     }
 
 	private <T extends Baselink> boolean updateBaselinkNoMerge(T link, BaselinkCreate baselinkCreate) {
@@ -415,7 +401,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
 
     @Override
     public <T extends Baselink> List<T> listAllBaselinks(BaselinkFilter baselinkFilter, SecurityContext securityContext) {
-        return (List<T>) repository.getAllBaselinks((Class<Baselink>) baselinkFilter.getLinkClass(), baselinkFilter, securityContext);
+        return repository.getAllBaselinks((Class<T>) baselinkFilter.getLinkClass(), baselinkFilter, securityContext);
     }
 
 

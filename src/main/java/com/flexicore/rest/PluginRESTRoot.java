@@ -9,8 +9,8 @@ package com.flexicore.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.data.jsoncontainers.PluginInformationHolder;
-import com.flexicore.interceptors.SecurityImposer;
+
+import com.flexicore.data.jsoncontainers.PluginType;
 import com.flexicore.interfaces.RESTService;
 import com.flexicore.model.ModuleManifest;
 import com.flexicore.security.SecurityContext;
@@ -18,6 +18,10 @@ import com.flexicore.service.impl.PluginService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
+
+import org.pf4j.PluginManager;
+import org.pf4j.PluginWrapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.flexicore.annotations.Protected;
@@ -47,7 +51,8 @@ public class PluginRESTRoot implements RESTService {
     //TODO:REST to return logs
     //TODO:REST get plugin description
     @Autowired
-    private PluginService pluginService;
+    @Lazy
+    private PluginManager pluginManager;
 
     public PluginRESTRoot() {
         // TODO Auto-generated constructor stub
@@ -57,8 +62,12 @@ public class PluginRESTRoot implements RESTService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @IOperation(access = Access.allow, Name = "listAllLoadedPlugins", Description = "lists all plugins")
-    public List<PluginInformationHolder> listAllLoadedPlugins(@HeaderParam("authenticationkey") String authenticationkey, @Context SecurityContext securityContext) {
-        return pluginService.getAll();
+    public List<ModuleManifest> listAllLoadedPlugins(@HeaderParam("authenticationkey") String authenticationkey, @Context SecurityContext securityContext) {
+        List<ModuleManifest> moduleManifests=new ArrayList<>(com.flexicore.service.PluginService.externalModules);
+        moduleManifests.addAll(
+                pluginManager.getStartedPlugins().stream().map(f->new ModuleManifest(f.getPluginId(),f.getDescriptor().getVersion(),"","",null,null,PluginType.Service)).collect(Collectors.toList())
+        );
+        return moduleManifests;
 
     }
 
@@ -67,8 +76,12 @@ public class PluginRESTRoot implements RESTService {
     @Produces(MediaType.APPLICATION_JSON)
     @IOperation(access = Access.allow, Name = "listAllModules", Description = "lists all modules")
     public List<ModuleManifest> listAllModules(@HeaderParam("authenticationkey") String authenticationkey, @Context SecurityContext securityContext) {
-        Map<String, ModuleManifest> map = pluginService.getAll().parallelStream().collect(Collectors.toMap(f -> f.getModuleManifest().getUuid(), f -> f.getModuleManifest(), (a, b) -> a));
-        return new ArrayList<>(map.values());
+        List<ModuleManifest> moduleManifests=new ArrayList<>(com.flexicore.service.PluginService.externalModules);
+        moduleManifests.addAll(
+                pluginManager.getStartedPlugins().stream().map(f->new ModuleManifest(f.getPluginId(),f.getDescriptor().getVersion(),"","",null,null,PluginType.Service)).collect(Collectors.toList())
+        );
+        return moduleManifests;
+
 
     }
 

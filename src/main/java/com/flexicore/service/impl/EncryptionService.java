@@ -1,13 +1,11 @@
 package com.flexicore.service.impl;
 
-import com.flexicore.constants.Constants;
 import com.google.crypto.tink.*;
 import com.google.crypto.tink.aead.AeadFactory;
 import com.google.crypto.tink.aead.AeadKeyTemplates;
 import com.google.crypto.tink.config.TinkConfig;
 import com.google.crypto.tink.proto.KeyTemplate;
-
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +24,9 @@ public class EncryptionService implements com.flexicore.service.EncryptionServic
     @Autowired
     private  Logger logger;
 
+    @Value("${flexicore.security.encryption.tinkKeySetPath:/home/flexicore/keyset.json}")
+    private String tinkKeySetPath;
+
 
 
     private static AtomicBoolean init=new AtomicBoolean(false);
@@ -35,7 +36,7 @@ public class EncryptionService implements com.flexicore.service.EncryptionServic
         if(init.compareAndSet(false,true)){
             try {
                 TinkConfig.register();
-                File keysetFile = new File(Constants.keySetFilePath);
+                File keysetFile = new File(tinkKeySetPath);
                 KeysetHandle keysetHandle;
                 if (!keysetFile.exists()) {
                     KeyTemplate keyTemplate = AeadKeyTemplates.AES128_GCM;

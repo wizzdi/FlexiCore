@@ -6,51 +6,37 @@
  ******************************************************************************/
 package com.flexicore.rest;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.enterprise.context.RequestScoped;
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.flexicore.annotations.Protected;
-import javax.persistence.NoResultException;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-
-import javax.ws.rs.core.Response;
-
-import com.flexicore.interfaces.RESTService;
-import com.flexicore.request.FinallizeFileResource;
-import com.flexicore.response.FinalizeFileResourceResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
-
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.exceptions.UnexpectedFileUploadFormat;
-import com.flexicore.interceptors.SecurityImposer;
+import com.flexicore.annotations.Protected;
+import com.flexicore.interfaces.RESTService;
 import com.flexicore.model.FileResource;
 import com.flexicore.model.Job;
 import com.flexicore.model.Tenant;
 import com.flexicore.model.User;
+import com.flexicore.request.FinallizeFileResource;
+import com.flexicore.response.FinalizeFileResourceResponse;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.FileResourceService;
 import com.flexicore.service.impl.UserService;
-
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.enterprise.context.RequestScoped;
+import javax.persistence.NoResultException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Path("/resources")
 @RequestScoped

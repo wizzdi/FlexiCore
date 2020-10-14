@@ -12,8 +12,6 @@ import com.flexicore.annotations.FullTextSearch;
 import com.flexicore.annotations.FullTextSearchOptions;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.rest.All;
-import com.flexicore.data.jsoncontainers.BaseclassCreationContainer;
-import com.flexicore.data.jsoncontainers.FieldSetContainer;
 import com.flexicore.data.jsoncontainers.SortingOrder;
 import com.flexicore.events.BaseclassCreated;
 import com.flexicore.events.BaseclassUpdated;
@@ -473,10 +471,6 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
         if (onlyIds != null && !onlyIds.isEmpty()) {
             Set<String> ids=onlyIds.stream().map(f->f.getId()).collect(Collectors.toSet());
             existingPredicates.add(r.get(Baseclass_.id).in(ids));
-        }
-
-        if (permissionContextLike != null && !permissionContextLike.isEmpty()) {
-            existingPredicates.add(cb.like(cb.lower(r.get(Baseclass_.permissionContext)), permissionContextLike.toLowerCase()));
         }
         if (likeName != null && !likeName.isEmpty()) {
             Predicate like;
@@ -1045,7 +1039,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
         roleDenied.addAll(userDenied);
 
 
-        Clazz clazz = Baseclass.getClazzbyname(c.getCanonicalName());
+        Clazz clazz = Baseclass.getClazzByName(c.getCanonicalName());
         Subquery<String> sub = getBaseclassSpecificSubQeury(query, cb, roles, user, tenants, op, clazz, userDenied, roleDenied);
         Subquery<String> subPermissionGroup = getPermissionGroupSubQuery(query, cb, roles, user, tenants, op, clazz, userDenied, roleDenied);
 
@@ -1313,7 +1307,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
                     tenantToBaseClassPremissionRoot.get(TenantToBaseClassPremission_.leftside).in(tenants));
         }
 
-        Clazz securityWildcard = Baseclass.getClazzbyname(SecurityWildcard.class.getCanonicalName());
+        Clazz securityWildcard = Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName());
         Predicate premissive = cb.and(
                 cb.or(cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), op), cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), allOpId)),
                 cb.equal(securityLinkRootPremissive.get(SecurityLink_.rightside), securityWildcard),
@@ -1489,31 +1483,6 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     @Override
     public void setEm(EntityManager em) {
         this.em = em;
-    }
-
-    @Override
-    public <T extends Baseclass> T createBaseclass(BaseclassCreationContainer container,
-                                                   SecurityContext securityContext) {
-        T created = null;
-        try {
-            String className = container.getClazzName();
-
-            created = Baseclass.newInstance(className, container.getNameOfInstance(), securityContext);
-            Class<?> c = created.getClass();
-            List<FieldSetContainer<?>> fields = container.getFields();
-            for (FieldSetContainer<?> field : fields) {
-                try {
-                    c.getField(field.getName()).set(created, field.getValue());
-                } catch (NoSuchFieldException e) {
-                    logger.log(Level.WARNING, "field " + field.getName() + " doesn't exists", e);
-                }
-
-            }
-
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SecurityException e) {
-            logger.log(Level.SEVERE, "unable to create instance of: " + container.getClazzName(), e);
-        }
-        return created;
     }
 
     @Override

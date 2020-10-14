@@ -61,18 +61,6 @@ public class TenantRepository extends BaseclassRepository {
 	
 
 	
-	public Tenant getTenantByApiKey(String apiKey){
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Tenant> q = cb.createQuery(Tenant.class);
-		Root<Tenant> r = q.from(Tenant.class);
-		Predicate pred=cb.equal(r.get(Tenant_.apiKey), apiKey);
-		List<Predicate> preds= new ArrayList<>();
-		preds.add(pred);
-		finalizeQuery(r, q, preds,cb);
-		TypedQuery<Tenant> query=em.createQuery(q);
-		return getSingleResult(query);
-	}
-	
 
 	public TenantRepository() {
 		// TODO Auto-generated constructor stub
@@ -99,11 +87,6 @@ public class TenantRepository extends BaseclassRepository {
 	}
 
 	public static <T extends Tenant> void addTenantFiltering(TenantFilter tenantFilter, CriteriaBuilder cb, Root<T> r, List<Predicate> preds) {
-		if(tenantFilter.getApiKey()!=null){
-			preds.add(cb.equal(r.get(Tenant_.apiKey),tenantFilter.getApiKey()));
-		}
-
-
 
 	}
 }

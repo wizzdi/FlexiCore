@@ -25,7 +25,6 @@ package com.flexicore.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.flexicore.constants.Constants;
 import com.flexicore.data.BaselinkRepository;
 import com.flexicore.data.TenantRepository;
 import com.flexicore.data.UserRepository;
@@ -86,10 +85,24 @@ public class UserService implements com.flexicore.service.UserService {
 
     @Autowired
     private TokenService tokenService;
+    public static final String systemAdminId="UEKbB6XlQhKOtjziJoUQ8w";
 
-    private static final int scryptN = 16384;
-    private static final int scryptR = 8;
-    private static final int scryptP = 1;
+
+    @Value("${flexicore.users.rootDirPath:/home/flexicore/users/}")
+    private String usersRootHomeDir;
+    @Value("${flexicore.users.cache.size:10}")
+    private int usersMaxCacheSize;
+    @Value("${flexicore.security.jwt.secondsValid:86400}")
+    private long jwtSecondsValid;
+    @Value("${flexicore.users.verificationLink.minutesValid:30}")
+    private int verificationLinkValidInMin;
+
+    @Value("${flexicore.security.password.scryptN:16384}")
+    private int scryptN;
+    @Value("${flexicore.security.password.scryptR:8}")
+    private int scryptR;
+    @Value("${flexicore.security.password.scryptP:1}")
+    private int scryptP;
 
 
     @Override
@@ -109,7 +122,7 @@ public class UserService implements com.flexicore.service.UserService {
      */
 
 
-    private Cache<String, RunningUser> loggedusers = CacheBuilder.newBuilder().expireAfterAccess(6, TimeUnit.MINUTES).maximumSize(Constants.userCacheMaxSize).build();
+    private Cache<String, RunningUser> loggedusers = CacheBuilder.newBuilder().expireAfterAccess(6, TimeUnit.MINUTES).maximumSize(usersMaxCacheSize).build();
     private Cache<String, String> blacklist = CacheBuilder.newBuilder().expireAfterAccess(6, TimeUnit.HOURS).maximumSize(10000).build();
 
 
@@ -155,23 +168,7 @@ public class UserService implements com.flexicore.service.UserService {
         userrepository.massMerge(toMerge);
     }
 
-    /**
-     * @param newuser new user
-     * @param securityContext secuirty contexts
-     * @return AuthenticationKey
-     * @throws ClassNotFoundException when user type class is not found
-     * @throws InstantiationException instantiating the class is not possible
-     * @throws IllegalAccessException instantiating the class is not possible
-     * @throws Exception instantiating the class is not possible
-     */
 
-    @Override
-    public <T extends User> RunningUser register(NewUser<T> newuser, boolean shouldlogin, SecurityContext securityContext)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
-        Tenant tenant = tenantRepository.getTenantByApiKey(newuser.getApikey());
-        return register(newuser, shouldlogin, securityContext, tenant);
-
-    }
 
     @Override
     public User createUser(UserCreate userCreate, SecurityContext securityContext) {
@@ -216,6 +213,7 @@ public class UserService implements com.flexicore.service.UserService {
     @Override
     public User createUserNoMerge(UserCreate createUser, SecurityContext securityContext) {
         User user = new User(createUser.getName(), securityContext);
+        user.setHomeDir(usersRootHomeDir+user.getName()+user.getId());
         updateUserNoMerge(user, createUser);
         return user;
     }
@@ -276,150 +274,6 @@ public class UserService implements com.flexicore.service.UserService {
         return SCryptUtil.scrypt(plain, scryptN, scryptR, scryptP);
     }
 
-    /**
-     * @param newuser new user to register
-     * @param shouldlogin login after register
-     * @param securityContext security context of the administrator user registrating the user
-     * @param tenant tenant to register the user in
-     * @param <T> type of the user
-     * @return logged in user
-     * @throws Exception when failed creating the user
-     * @deprecated replaced by {@link #createUser(UserCreate, SecurityContext)}
-     */
-    @Override
-    @Deprecated
-    public <T extends User> RunningUser register(NewUser<T> newuser, boolean shouldlogin, SecurityContext securityContext, Tenant tenant)
-            throws Exception {
-
-        User existing = newuser.getEmail() != null ? userrepository.findByEmail(newuser.getEmail()) : (newuser.getPhonenumber() != null ? findUserByPhoneNumberOrNull(newuser.getPhonenumber(), null) : null);
-        if (existing == null) {
-
-            T user = newuser.getClazz().newInstance().Create(newuser.getName(), securityContext);
-            user.setTenant(tenant);
-            if (newuser.getApikey() == null) {
-                newuser.setApikey("");
-            }
-            userrepository.addUserToTenantNoPersist(user, tenant, securityContext, true);
-            userrepository.register(user);
-            userrepository.flush();
-
-            AuthenticationRequestHolder bundle = new AuthenticationRequestHolder(newuser.getEmail(), newuser.getPhonenumber(), newuser.getPassword(),
-                    newuser.getApikey());
-            RunningUser runninguser;
-            if (shouldlogin) {
-                runninguser = login(bundle, user);
-
-                return runninguser;
-            } else {
-                runninguser = new RunningUser();
-                runninguser.setUser(user);
-
-                return runninguser;
-            }
-
-        } else {
-            if (newuser.getEmail() != null) {
-                throw new UserCannotBeRegisteredException("Email already taken");
-
-            } else {
-                throw new UserCannotBeRegisteredException("PhoneNumber already taken");
-
-            }
-        }
-    }
-
-    /**
-     * @param newuser new user
-     * @param shouldlogin login after register or not
-     * @param securityContext security context of admin user
-     * @param <T> type of user
-     * @return logged in user
-     * @deprecated replaced by {@link #createUserNoMerge(UserCreate, SecurityContext)}
-     */
-    @Override
-    @Deprecated
-    public <T extends User> RunningUser registerNoMerge(NewUser<T> newuser, boolean shouldlogin, SecurityContext securityContext)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        Tenant tenant = tenantRepository.getTenantByApiKey(newuser.getApikey());
-        return registerNoMerge(newuser, shouldlogin, securityContext, tenant);
-
-    }
-
-
-    /**
-     * @param newuser new user
-     * @param shouldlogin login after register
-     * @param securityContext security context of admin user
-     * @param tenant tenant to register in
-     * @param <T> type of user
-     * @return logged in user
-     * @deprecated replaced by {@link #createUserNoMerge(UserCreate, SecurityContext)}
-     */
-    @Override
-    @Deprecated
-    public <T extends User> RunningUser registerNoMerge(NewUser<T> newuser, boolean shouldlogin, SecurityContext securityContext, Tenant tenant)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-
-        User existing = userrepository.findByEmail(newuser.getEmail());
-        if (existing == null) {
-
-            T user = newuser.getClazz().newInstance().Create(newuser.getName(), securityContext);
-            user.setTenant(tenant);
-            if (newuser.getApikey() == null) {
-                newuser.setApikey("");
-            }
-            user.setPassword(SCryptUtil.scrypt(newuser.getPassword(), scryptN, scryptR, scryptP));
-            user.setPhoneNumber(newuser.getPhonenumber());
-            user.setEmail(newuser.getEmail());
-            user.setSurName(newuser.getSurname());
-            userrepository.addUserToTenantNoPersist(user, tenant, securityContext, true);
-
-
-            AuthenticationRequestHolder bundle = new AuthenticationRequestHolder(newuser.getEmail(), newuser.getPhonenumber(), newuser.getPassword(),
-                    newuser.getApikey());
-            RunningUser runninguser;
-            if (shouldlogin) {
-                runninguser = login(bundle, user);
-
-                return runninguser;
-            } else {
-                runninguser = new RunningUser();
-                runninguser.setUser(user);
-
-                return runninguser;
-            }
-
-        } else {
-            throw (new UserCannotBeRegisteredException("Email already taken"));
-        }
-    }
-
-    public int multipleCreate(int number, SecurityContext securityContext) {
-        return userrepository.multipleCreate(number, securityContext);
-
-    }
-
-    @Override
-    public boolean attachTenant(String authenticationKey, String apiKey, SecurityContext securityContext) {
-/*
-        Tenant tenant = tenantRepository.getTenantByApiKey(apiKey);
-        User user = securityContext.getUser();
-        if (tenant != null && user != null) {
-            Baselink link = baselinkRepository.findBySides(tenant, user);
-            if (link == null) {
-                userrepository.addUserToTenant(user, tenant, securityContext, false);
-
-
-            }
-            RunningUser runningUser = loggedusers.getIfPresent(authenticationKey);
-            if (runningUser != null) {
-                runningUser.getTenants().add(tenant);
-                return true;
-            }
-        }*/
-        return false;
-
-    }
 
     @Override
     public RunningUser getRunningUser(String authenticationKey) {
@@ -541,7 +395,7 @@ public class UserService implements com.flexicore.service.UserService {
 
     @Override
     public RunningUser registerUserIntoSystem(User user) {
-        OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(Constants.JWTSecondsValid);
+        OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(jwtSecondsValid);
         return registerUserIntoSystem(user, expirationDate);
     }
 
@@ -579,29 +433,9 @@ public class UserService implements com.flexicore.service.UserService {
 
                 }
             }
-            if (bundle.getFacebookUserId() != null && bundle.getFacebookToken() != null) {
-                FacebookResponseContainer container = null;//facebookLogin(bundle.getFacebookToken());
-                if (container == null || !bundle.getFacebookUserId().equals(container.getData().getUserId()) || !container.getData().isIsValid()) {
-                    throw new CheckYourCredentialsException("facebook login failed");
-                }
-                expiresAt = container.getData().getExpiresAt();
-
-            } else {
-                if (isScrypt(user.getPassword())) {
-                    if (!SCryptUtil.check(bundle.getPassword(), user.getPassword())) {
-                        throw (new CheckYourCredentialsException("Please check your credentials"));
-                    }
-                } else {
-                    if (!MD5Calculator.getMD5(bundle.getPassword()).equals(user.getPassword())) {
-                        throw (new CheckYourCredentialsException("Please check your credentials"));
-                    } else {
-                        user.setdecryptedPassword(bundle.getPassword());
-                        userrepository.merge(user);
-                    }
-                }
-
+            if (!SCryptUtil.check(bundle.getPassword(), user.getPassword())) {
+                throw (new CheckYourCredentialsException("Please check your credentials"));
             }
-
         }
         return user;
     }
@@ -651,18 +485,21 @@ public class UserService implements com.flexicore.service.UserService {
 
     public ResetPasswordResponse resetUserPassword(ResetUserPasswordRequest resetUserPasswordRequest, SecurityContext securityContext) {
         User user = resetUserPasswordRequest.getUser();
-        user.setdecryptedPassword(resetUserPasswordRequest.getPassword());
-        userrepository.merge(user);
+        UserUpdate userUpdate=new UserUpdate()
+                .setUser(user)
+                .setPassword(resetUserPasswordRequest.getPassword());
+        updateUser(userUpdate,securityContext);
         return new ResetPasswordResponse();
 
     }
+
 
     @Override
     public ResetPasswordResponse resetPasswordViaMailPrepare(ResetUserPasswordRequest resetUserPasswordRequest) {
         User user = resetUserPasswordRequest.getUser();
         String verification = getVerificationToken();
         user.setForgotPasswordToken(verification);
-        user.setForgotPasswordTokenValid(OffsetDateTime.now().plusMinutes(Constants.verificationLinkValidInMin));
+        user.setForgotPasswordTokenValid(OffsetDateTime.now().plusMinutes(verificationLinkValidInMin));
         userrepository.merge(user);
         return new ResetPasswordResponse(verification);
 
@@ -685,7 +522,7 @@ public class UserService implements com.flexicore.service.UserService {
         if (user.getForgotPasswordTokenValid() == null || OffsetDateTime.now().isAfter(user.getForgotPasswordTokenValid())) {
             throw new BadRequestCustomException("Token has expired", ResetPasswordResponse.TOKEN_EXPIRED);
         }
-        user.setdecryptedPassword(resetPasswordWithVerification.getPassword());
+        user.setPassword(hashPassword(resetPasswordWithVerification.getPassword()));
         user.setForgotPasswordTokenValid(null);
         user.setForgotPasswordToken(null);
         userrepository.merge(user);
@@ -729,45 +566,13 @@ public class UserService implements com.flexicore.service.UserService {
         userrepository.refrehEntityManager();
     }
 
-    /**
-     * @param tenantAdmin new user
-     * @deprecated 2.2.0 replaced by {@link #validateUser(UserCreate, SecurityContext)}
-     */
-    @Override
-    @Deprecated
-    public void validateAndpopulateNewUser(NewUser tenantAdmin) {
-        populateNewUser(tenantAdmin);
-        validateNewUser(tenantAdmin);
-    }
 
     @Override
     public User getAdminUser() {
-        return userrepository.findById(Constants.systemAdminId);
+        return userrepository.findById(systemAdminId);
     }
 
 
-    private void validateNewUser(NewUser tenantAdmin) {
-        if (tenantAdmin.getEmail() == null && tenantAdmin.getPhonenumber() == null) {
-            throw new BadRequestException("email and phone number cant both be null");
-        }
-        if (tenantAdmin.getApikey() == null) {
-            throw new BadRequestException("api key cannot be null");
-        }
-    }
-
-    private void populateNewUser(NewUser tenantAdmin) {
-        if (tenantAdmin.getType() != null) {
-            try {
-                Class<?> c = Class.forName(tenantAdmin.getType());
-                tenantAdmin.setClazz(c);
-            } catch (ClassNotFoundException e) {
-                log.log(Level.SEVERE, "no class by name " + tenantAdmin.getType());
-                throw new BadRequestException("no type " + tenantAdmin.getType());
-            }
-        } else {
-            tenantAdmin.setClazz(User.class);
-        }
-    }
 
     @Override
     public void validateUserForCreate(UserCreate userCreate, SecurityContext securityContext) {
@@ -919,7 +724,7 @@ public class UserService implements com.flexicore.service.UserService {
         if (!SCryptUtil.check(authenticationRequest.getPassword(), user.getPassword())) {
             throw (new CheckYourCredentialsException("Please check your credentials"));
         }
-        OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(authenticationRequest.getSecondsValid() != 0 ? authenticationRequest.getSecondsValid() : Constants.JWTSecondsValid);
+        OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(authenticationRequest.getSecondsValid() != 0 ? authenticationRequest.getSecondsValid() : jwtSecondsValid);
         String jwtToken = tokenService.getJwtToken(user, expirationDate);
         return new AuthenticationResponse().setAuthenticationKey(jwtToken).setTokenExpirationDate(expirationDate).setUserId(user.getId());
 
@@ -948,7 +753,7 @@ public class UserService implements com.flexicore.service.UserService {
     @Override
     public ImpersonateResponse impersonate(ImpersonateRequest impersonateRequest, SecurityContext securityContext) {
         User user = securityContext.getUser();
-        OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(Constants.JWTSecondsValid);
+        OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(jwtSecondsValid);
         String writeTenant = impersonateRequest.getCreationTenant().getId();
         Set<String> readTenants = impersonateRequest.getReadTenants().parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
         String jwtToken = tokenService.getJwtToken(user, expirationDate, writeTenant, readTenants);

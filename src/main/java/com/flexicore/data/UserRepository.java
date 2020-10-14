@@ -50,28 +50,6 @@ public class UserRepository extends BaseclassRepository {
 
 
 
-    public int multipleCreate(int number, SecurityContext securityContext) {
-        NewUser rUser;
-        String random = UUID.randomUUID().toString().replace("-", "");
-        for (int i = 0; i < number; i++) {
-
-
-            rUser = new NewUser();
-            rUser.setEmail(random + i + "@test.com");
-            rUser.setPassword(random);
-            rUser.setPhonenumber("0522504363");
-            rUser.setName("Name" + i);
-            User user= new User("Name" + i, securityContext);
-            user.setPassword(SCryptUtil.scrypt(rUser.getPassword(), scryptN, scryptR, scryptP));
-            user.setPhoneNumber(rUser.getPhonenumber());
-            user.setEmail(rUser.getEmail());
-            user.setSurName(rUser.getSurname());
-            em.persist(user);
-
-        }
-        return number;
-    }
-
     public List<User> unsecureGet(int pagesize, int page) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<User> criteria = cb.createQuery(User.class);

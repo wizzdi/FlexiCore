@@ -257,7 +257,7 @@ public class OperationService implements com.flexicore.service.OperationService 
 			OperationToClazz operationToClazz = existingMap.get(linkId);
 			if (operationToClazz == null) {
 					operationToClazz = new OperationToClazz("OperationToClazz", null);
-					operationToClazz.setClazz(Baseclass.getClazzbyname(relatedClazz.getCanonicalName()));
+					operationToClazz.setClazz(Baseclass.getClazzByName(relatedClazz.getCanonicalName()));
 					operationToClazz.setOperation(operation);
 					operationToClazz.setId(linkId);
 					operationToClazz.setSystemObject(true);

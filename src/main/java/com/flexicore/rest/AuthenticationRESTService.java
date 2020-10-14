@@ -80,7 +80,7 @@ public class AuthenticationRESTService implements RESTService {
             log.log(Level.WARNING, "unable to log in", e);
         }
         if (runninguser != null) {
-            AuthenticationBundle bundleRet = new AuthenticationBundle(bundle.getMail(), runninguser.getTenants().isEmpty() ? null : runninguser.getTenants().get(0).getApiKey());
+            AuthenticationBundle bundleRet = new AuthenticationBundle(bundle.getMail());
             bundleRet.setAuthenticationkey(runninguser.getAuthenticationkey().getKey());
             return bundleRet;
 

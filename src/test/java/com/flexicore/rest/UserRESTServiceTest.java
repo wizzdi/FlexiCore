@@ -133,7 +133,6 @@ public class UserRESTServiceTest {
                 .setPhoneNumber(name+"_phone")
                 .setName(name+"_user");
         TenantCreate request = new TenantCreate()
-                .setApiKey(name)
                 .setTenantAdmin(userCreate)
                 .setName(name);
         ResponseEntity<Tenant> tenantResponse = this.restTemplate.postForEntity("/FlexiCore/rest/tenant/createTenant", request, Tenant.class);

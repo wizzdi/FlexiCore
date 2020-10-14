@@ -6,12 +6,10 @@
  ******************************************************************************/
 package com.flexicore.service.impl;
 
-import com.flexicore.data.jsoncontainers.PluginInformationHolder;
 import com.flexicore.data.jsoncontainers.PluginType;
 import com.flexicore.interfaces.Plugin;
 import com.flexicore.model.Job;
 import com.flexicore.model.ModuleManifest;
-import com.flexicore.model.PluginRequirement;
 import org.pf4j.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -43,16 +41,6 @@ public class PluginService implements com.flexicore.service.PluginService {
     private PluginManager pluginManager;
 
 
-    /**
-     * @param pluginType plugin type
-     * @param requirements requirements
-     * @return a list of instances which implement pluginType
-     */
-    @Override
-    public Collection<?> getPlugins(Class<? extends Plugin> pluginType,
-                                    HashMap<String, PluginRequirement> requirements, Job orderObject) {
-        return pluginManager.getExtensions(pluginType);
-    }
 
     @Override
     public List<ModuleManifest> getModelListing() {
@@ -61,25 +49,10 @@ public class PluginService implements com.flexicore.service.PluginService {
 
 
 
-
-    @Override
-    public <T> T instansiate(Class<T> type, Map<String, PluginRequirement> reqs) {
-        List<T> extensions = pluginManager.getExtensions(type);
-        return extensions.isEmpty()?null:extensions.get(0);
-
-    }
-
     @Override
     public Set<ModuleManifest> getPluginModuleListing(){
         return Collections.unmodifiableSet(Collections.unmodifiableMap(pluginListing).keySet());
     }
-
-    @Override
-    public List<PluginInformationHolder> getAll() {
-        return new ArrayList<>();
-
-    }
-
 
     @Override
     public ModuleManifest readModule(File jar, Logger logger) {
@@ -111,17 +84,6 @@ public class PluginService implements com.flexicore.service.PluginService {
         }
         return moduleManifest;
     }
-
-
-
-    @Override
-    public boolean cleanUpInstance(Object o) {
-        return true;
-    }
-
-
-
-
 
 
 

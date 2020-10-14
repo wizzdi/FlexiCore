@@ -23,10 +23,7 @@ import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.rest.*;
-import com.flexicore.data.jsoncontainers.ClazzLinkContainer;
-import com.flexicore.data.jsoncontainers.FieldContainer;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
-import com.flexicore.interceptors.SecurityImposer;
 import com.flexicore.interfaces.RESTService;
 import com.flexicore.model.*;
 import com.flexicore.security.SecurityContext;
@@ -80,24 +77,6 @@ public class ClazzRESTService implements RESTService {
 
 
     @GET
-    @Path("fields/{clazzName}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "getClazzFields", Description = "returns all fields of clazz", relatedClazzes = {Clazz.class})
-    @Operation(summary = "Get Field Containers per class", description = "get a list of all FieldContainers per class, use it for the creation of a new instance and for updating one")
-    public List<FieldContainer> getFields(@HeaderParam("authenticationkey") String authenticationkey,
-                                          @Parameter(description = "The canonical name of the Class for which the list is to be obtained") @PathParam("clazzName") String clazzName, @Context SecurityContext securityContext) {
-        Clazz c = clazzService.getclazz(clazzName);
-        List<FieldContainer> fields = clazzService.getFields(c, securityContext);
-        if (fields != null) {
-            log.log(Level.INFO, "Fields returned: " + fields.size());
-        } else {
-            log.log(Level.INFO, "NULL Fields returned ");
-        }
-        return fields;
-
-    }
-
-    @GET
     @Path("/{clazzName}")
     @Produces(MediaType.APPLICATION_JSON)
     @IOperation(access = Access.allow, Name = "getClazzFromName", Description = "returns a Clazz instance for the supplied name", relatedClazzes = {Clazz.class})
@@ -106,17 +85,6 @@ public class ClazzRESTService implements RESTService {
                           @Parameter(description = "The canonical class name for which the instance is required") @PathParam("clazzName") String clazzName, @Context SecurityContext securityContext) {
 
         return clazzService.getclazz(clazzName);
-
-    }
-
-    @GET
-    @Path("associations/{clazzName}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "get Clazz Associated Clazzes", Description = "returns all classes associated with a given class, classes are associated if they have a ? extends Baselink between them", relatedClazzes = {Clazz.class})
-    @Operation(summary = "Get a list of all associations ", description = "Returns a list of ClazzLinkContainer instances of the given link(!) canonical name")
-    public List<ClazzLinkContainer> getAssociations(@HeaderParam("authenticationkey") String authenticationkey, @PathParam("clazzName") String clazzName, @Context SecurityContext securityContext) {
-        Clazz c = clazzService.getclazz(clazzName);
-        return clazzService.getAssociations(c, securityContext);
 
     }
 

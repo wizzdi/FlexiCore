@@ -58,6 +58,7 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 
     @Override
     public void init() {
+        long start = System.currentTimeMillis();
         try {
             this.loadPlugins();
         }
@@ -70,6 +71,8 @@ public class FlexiCorePluginManager extends SpringPluginManager {
         AbstractAutowireCapableBeanFactory beanFactory = (AbstractAutowireCapableBeanFactory) getApplicationContext().getAutowireCapableBeanFactory();
         FlexiCoreExtensionsInjector extensionsInjector = new FlexiCoreExtensionsInjector(this, beanFactory);
         extensionsInjector.injectExtensions();
+        logger.debug("loading and starting plugins took "+(System.currentTimeMillis()-start)+"ms");
+
     }
 
     private String getWrongDependencyString(DependencyResolver.WrongDependencyVersion wrongDependencyVersion) {

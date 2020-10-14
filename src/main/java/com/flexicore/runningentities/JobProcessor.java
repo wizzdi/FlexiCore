@@ -6,19 +6,17 @@
  ******************************************************************************/
 package com.flexicore.runningentities;
 
-import com.flexicore.enums.ExecutionPolicy;
 import com.flexicore.enums.ProcessPhase;
 import com.flexicore.interfaces.ProccessPlugin;
 import com.flexicore.model.Job;
 import com.flexicore.model.Result;
 import com.flexicore.service.impl.PluginService;
+import org.pf4j.PluginManager;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Named;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -28,7 +26,8 @@ import java.util.logging.Logger;
 public class JobProcessor implements ItemProcessor<Job, Job> {
 
     @Autowired
-    private PluginService pluginService;
+    @Lazy
+    private PluginManager pluginManager;
 
     private Logger logger = Logger.getLogger(getClass().getCanonicalName());
 
@@ -56,14 +55,13 @@ public class JobProcessor implements ItemProcessor<Job, Job> {
      * @return true if job was found
      */
     private boolean processJob(com.flexicore.model.Job job) {
-        Collection<?> analyzers = pluginService.getPlugins(job.getJobInformation().getHandler(), job.getJobInformation().getRequirments(), job);
+        Collection<?> analyzers = pluginManager.getExtensions(job.getJobInformation().getHandler());
         int size = analyzers.size();
         int i = 1;
         Result res = null;
         boolean found = false;
         ProccessPlugin plugin;
         Iterator<?> iter = analyzers.iterator();
-        ExecutionPolicy exec = job.getJobInformation().getExecutionPolicy();
         while (iter.hasNext() && !found) { //by definition, all PI run unless otherwise set by one of them.
             Object p = iter.next();
             if (p instanceof ProccessPlugin) {
@@ -76,7 +74,7 @@ public class JobProcessor implements ItemProcessor<Job, Job> {
                 }
 
                 job.setCurrentPhasePrecentage((float) i / size);
-                if (res != null && res.isSucceeded() && exec == ExecutionPolicy.First) {
+                if (res != null && res.isSucceeded() ) {
                     found = true; //PI has succeeded and it wants to be the only one who process the job
                     job.setCurrentPhasePrecentage(1);
                 }
@@ -85,10 +83,6 @@ public class JobProcessor implements ItemProcessor<Job, Job> {
 
 
         }
-        for (Object object : analyzers) {
-            pluginService.cleanUpInstance(object);
-        }
-
         if (res == null || !res.isSucceeded()) {
             job.setCurrentPhase(ProcessPhase.Error.getName());
             job.setCurrentPhasePrecentage(1);

@@ -73,19 +73,13 @@ public class SecurityImposer  {
 			String methodName = method.getName();
 			logger.info("Method is: " + methodName + " , on Thread " + Thread.currentThread().getName());
 			String authenticationkey = (String) parameters[0];
-			String tenantApi = null;
 			websocketSession=getWebsocketSession(parameters);
 
 
 			if (authenticationkey != null && !authenticationkey.isEmpty()) {
-				if (authenticationkey.contains("|")) {
-					String[] l = authenticationkey.split("\\|");
-					authenticationkey = l[0];
-					tenantApi = l[1];
-				}
 				OperationInfo operationInfo = securityService.getIOperation(method);
 
-				SecurityContext securityContext = securityService.getSecurityContext(authenticationkey, tenantApi, operationInfo.getOperationId());
+				SecurityContext securityContext = securityService.getSecurityContext(authenticationkey, operationInfo.getOperationId());
 				if (securityContext == null) {
 					return deny(websocketSession);
 				}

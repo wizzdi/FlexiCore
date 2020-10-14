@@ -9,7 +9,7 @@ import java.io.File;
 @Configuration
 public class PluginLoaderConfig {
 
-    @Value("${flexicore.plugins}")
+    @Value("${flexicore.plugins:/home/flexicore/plugins}")
     private String pluginsDir;
 
     @Bean

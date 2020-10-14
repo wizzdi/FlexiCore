@@ -134,7 +134,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
     }
 
     @Override
-    public SecurityContext getSecurityContext(String authenticationkey, String tenantApi, String operationId) {
+    public SecurityContext getSecurityContext(String authenticationkey,  String operationId) {
 
         RunningUser runningUser = userservice.getRunningUser(authenticationkey);
         if (runningUser == null) {
@@ -144,19 +144,6 @@ public class SecurityService implements com.flexicore.service.SecurityService {
         User user = runningUser.getUser();
         List<Tenant> tenants = runningUser.getTenants();
         boolean impersonated = runningUser.isImpersonated();
-        if (tenantApi != null) {
-            Optional<Tenant> impersonateTenantOptional = tenants.parallelStream().filter(f -> tenantApi.equals(f.getApiKey())).findFirst();
-            if (impersonateTenantOptional.isPresent()) {
-                Tenant impersonateTenant = impersonateTenantOptional.get();
-                logger.info("Will impersonate tenant " + impersonateTenant.getId() + "(" + impersonateTenant.getApiKey() + ")");
-                tenants = Collections.singletonList(impersonateTenant);
-                tenantToCreateIn = impersonateTenant;
-                impersonated = true;
-            } else {
-                logger.warning("Could not find target impersonate tenant with api key " + tenantApi);
-            }
-
-        }
 
         Operation operation = operationrepository.findById(operationId);
         return new SecurityContext(tenants, user, operation, tenantToCreateIn).setImpersonated(impersonated);
@@ -209,7 +196,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
         User user = userservice.getAdminUser();
         String token = userservice.registerUserIntoSystem(user).getAuthenticationkey().getKey();
         String opId = Baseclass.generateUUIDFromString(Read.class.getCanonicalName());
-        return getSecurityContext(token, null, opId);
+        return getSecurityContext(token, opId);
     }
 
     @Override
@@ -219,7 +206,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
         if (user != null) {
             String token = userservice.registerUserIntoSystem(user).getAuthenticationkey().getKey();
             String opId = Baseclass.generateUUIDFromString(Read.class.getCanonicalName());
-            return getSecurityContext(token, null, opId);
+            return getSecurityContext(token, opId);
         }
         return null;
 
@@ -232,7 +219,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
 
         String token = userservice.registerUserIntoSystem(user).getAuthenticationkey().getKey();
         String opId = Baseclass.generateUUIDFromString(Read.class.getCanonicalName());
-        return getSecurityContext(token, null, opId);
+        return getSecurityContext(token, opId);
 
     }
 
@@ -277,7 +264,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
         List<TenantToUser> tenantToUsers = baselinkService.listAllBaselinks(new BaselinkFilter().setLinkClass(TenantToUser.class).setRightside(permissionSummaryRequest.getUsers().parallelStream().collect(Collectors.toList())), securityContext);
         Map<String,List<TenantToUser>> tenantMap= tenantToUsers.parallelStream().collect(Collectors.groupingBy(f->f.getRightside().getId()));
         List<Baseclass> baseclasses = permissionSummaryRequest.getBaseclasses();
-        Clazz securityWildcard = Baseclass.getClazzbyname(SecurityWildcard.class.getCanonicalName());
+        Clazz securityWildcard = Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName());
 
         Map<String,Map<String,Baseclass>> relatedBaseclass=new HashMap<>();
         for (Baseclass baseclass : baseclasses) {

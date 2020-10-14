@@ -1,9 +1,10 @@
 package com.flexicore.service.impl;
 
-import com.flexicore.annotations.*;
-import com.flexicore.annotations.IOperation.Access;
+import com.flexicore.annotations.AnnotatedClazz;
+import com.flexicore.annotations.AnnotatedClazzWithName;
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.rest.*;
-import com.flexicore.constants.Constants;
 import com.flexicore.data.BaselinkRepository;
 import com.flexicore.data.ClazzRegistration;
 import com.flexicore.data.ClazzRepository;
@@ -20,24 +21,16 @@ import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.reflections.Reflections;
-import org.reflections.scanners.MethodAnnotationsScanner;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.serializers.JsonSerializer;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -50,9 +43,6 @@ import java.util.stream.Collectors;
 @Component
 public class ClassScannerService {
 
-    public static final String FC_FEATURE = "FlexiCore";
-    public static final String FC_PRODUCT = "com.flexicore";
-    private static final String API_KEY = "Default_Tenant";
     private static final String DEFAULT_TENANT_ID = "jgV8M9d0Qd6owkPPFrbWIQ";
     private static final String TENANT_TO_USER_ID = "Xk5siBx+TyWv+G6V+XuSdw";
     private static final String SUPER_ADMIN_ROLE_ID = "HzFnw-nVR0Olq6WBvwKcQg";
@@ -85,6 +75,10 @@ public class ClassScannerService {
     private EntitiesHolder entitiesHolder;
 
     private Reflections reflections;
+    @Value("${flexicore.users.firstRunPath:/home/flexicore/firstRun.txt}")
+    private String firstRunFilePath;
+    @Value("${flexicore.users.adminEmail:admin@flexicore.com}")
+    private String adminEmail;
 
 
     public void initializeInvokers() {
@@ -380,7 +374,7 @@ public class ClassScannerService {
                 try {
                     operationToClazz = new OperationToClazz("OperationToClazz", null);
                     operationToClazz.setOperation(operation);
-                    operationToClazz.setClazz(Baseclass.getClazzbyname(relatedClazz.getCanonicalName()));
+                    operationToClazz.setClazz(Baseclass.getClazzByName(relatedClazz.getCanonicalName()));
                     operationToClazz.setId(linkId);
                     operationToClazz.setSystemObject(true);
                     toMerge.add(operationToClazz);
@@ -595,8 +589,8 @@ public class ClassScannerService {
 
     }
 
-    private static String readFromFirstRunFile() {
-        File file = new File(Constants.FIRST_RUN_FILE);
+    private String readFromFirstRunFile() {
+        File file = new File(firstRunFilePath);
         if (!file.getParentFile().exists()) {
             if (!file.getParentFile().mkdirs()) {
                 System.out.println("cannot create first run file parent dir");
@@ -613,8 +607,8 @@ public class ClassScannerService {
 
     }
 
-    private static void writeToFirstRunFile(String pass) {
-        File file = new File(Constants.FIRST_RUN_FILE);
+    private void writeToFirstRunFile(String pass) {
+        File file = new File(firstRunFilePath);
         if (!file.getParentFile().exists()) {
             if (!file.getParentFile().mkdirs()) {
                 System.out.println("cannot create first run file parent dir");
@@ -703,7 +697,6 @@ public class ClassScannerService {
     public TenantAndUserInit createAdminAndDefaultTenant(List<Object> toMerge) {
         boolean tenantUpdated=false;
         TenantCreate tenantCreate=new TenantCreate()
-                .setApiKey(API_KEY)
                 .setName("Default Tenant")
                 .setDescription("Default Tenant");
         Tenant defaultTenant = baselinkrepository.findByIdOrNull(Tenant.class, DEFAULT_TENANT_ID);
@@ -726,17 +719,17 @@ public class ClassScannerService {
             writeToFirstRunFile(pass);
         }
         UserCreate userCreate=new UserCreate()
-                .setEmail(Constants.adminEmail)
+                .setEmail(adminEmail)
                 .setPassword(pass)
                 .setLastName("Admin")
                 .setTenant(defaultTenant)
                 .setName("Admin");
-        User admin = baselinkrepository.findByIdOrNull(User.class, Constants.systemAdminId);
+        User admin = baselinkrepository.findByIdOrNull(User.class, UserService.systemAdminId);
         if(admin==null){
             logger.fine("Creating Admin User");
             admin=userService.createUserNoMerge(userCreate,null);
             admin.setCreator(admin);
-            admin.setId(Constants.systemAdminId);
+            admin.setId(UserService.systemAdminId);
             toMerge.add(admin);
         }
         else{
@@ -758,8 +751,8 @@ public class ClassScannerService {
 
 
     private static class TenantAndUserInit {
-        private Tenant defaultTenant;
-        private User admin;
+        private final Tenant defaultTenant;
+        private final User admin;
 
 
         public TenantAndUserInit(User admin,Tenant defaultTenant) {

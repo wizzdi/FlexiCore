@@ -1,10 +1,10 @@
 package com.flexicore.data.jsoncontainers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.flexicore.constants.Constants;
 import com.flexicore.exceptions.ExceptionHolder;
 import com.flexicore.interfaces.ErrorCodeException;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -36,6 +36,10 @@ public class BadRequestExceptionMapper implements ExceptionMapper<Exception>  {
 
     @Context
     private HttpServletRequest request;
+    @Value("${flexicore.http.showExceptions:false}")
+    private boolean showExceptionsInHttpResponse;
+    @Value("${flexicore.http.exceptionPlaceHolder:Contact Your System Administrator}")
+    private String exceptionPlaceHolder;
 
     @Override
     public Response toResponse(Exception exception) {
@@ -63,7 +67,7 @@ public class BadRequestExceptionMapper implements ExceptionMapper<Exception>  {
 
 
         Response.ResponseBuilder builder=response!=null?Response.fromResponse(response):(bad?badBuilder:internalBuilder);
-        return  builder.entity(new ExceptionHolder(statusCode,errorCode, Constants.showExceptionsInHttpResponse||bad?exception.getMessage(): Constants.hiddenHttpExceptionMessage)).build();
+        return  builder.entity(new ExceptionHolder(statusCode,errorCode, showExceptionsInHttpResponse||bad?exception.getMessage(): exceptionPlaceHolder)).build();
     }
 
     private boolean isJsonMediaType(){

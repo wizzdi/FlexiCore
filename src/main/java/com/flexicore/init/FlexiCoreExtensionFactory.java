@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
+
     private final FlexiCorePluginManager pluginManager;
     private final Map<String, FlexiCoreApplicationContext> contextCache = new ConcurrentHashMap<>();
     private final Queue<ApplicationContext> pluginsApplicationContexts = new LinkedBlockingQueue<>();
@@ -43,6 +44,7 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
         String pluginId = pluginWrapper!=null?pluginWrapper.getPluginId():"core-extensions";
         FlexiCoreApplicationContext applicationContext = contextCache.get(pluginId);
         if (applicationContext == null) {
+            long start=System.currentTimeMillis();
             applicationContext = createApplicationContext(pluginWrapper);
             contextCache.put(pluginId, applicationContext);
             List<String> dependencies = pluginWrapper!=null?pluginWrapper.getDescriptor().getDependencies().parallelStream().map(f -> f.getPluginId()).sorted().collect(Collectors.toList()):new ArrayList<>();
@@ -50,6 +52,8 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
             applicationContext.getAutowireCapableBeanFactory().addDependenciesContext(dependenciesContexts);
             applicationContext.refresh();
             pluginsApplicationContexts.add(applicationContext);
+            logger.debug("creating context for "+pluginId +" took "+(System.currentTimeMillis()-start)+"ms");
+
         }
         return applicationContext;
     }

@@ -1,7 +1,5 @@
 package com.flexicore.service.impl;
 
-import com.flexicore.constants.Constants;
-import com.flexicore.interfaces.FlexiCoreService;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.User;
 import com.flexicore.response.JWTClaims;
@@ -11,14 +9,18 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.io.FileUtils;
-
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,13 +29,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-
 @Primary
 @Component
 public class TokenService implements com.flexicore.service.TokenService {
 
 
-    private static String cachedJWTSecret=null;
+    @Autowired
+    private String cachedJWTSecret;
+
+
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public String cachedJWTSecret(){
+        return getJWTSecret();
+    }
+    @Value("${flexicore.security.jwt.secretLocation:/home/flexicore/jwt.secret}")
+    private String jwtTokenSecretLocation;
 
     @Override
     public String getJwtToken(User user, OffsetDateTime expirationDate){
@@ -59,12 +70,12 @@ public class TokenService implements com.flexicore.service.TokenService {
                 .compact();
     }
 
-    private static String getJWTSecret() {
+    private String getJWTSecret() {
         if(cachedJWTSecret==null){
-            File file=new File(Constants.jwtTokenSecretLocation);
+            File file=new File(jwtTokenSecretLocation);
             if(file.exists()){
                 try {
-                    cachedJWTSecret=FileUtils.readFileToString(file);
+                    cachedJWTSecret=FileUtils.readFileToString(file, StandardCharsets.UTF_8);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -72,7 +83,7 @@ public class TokenService implements com.flexicore.service.TokenService {
             if(cachedJWTSecret==null||cachedJWTSecret.isEmpty()){
                 cachedJWTSecret= Baseclass.getBase64ID();
                 try {
-                    FileUtils.write(file,cachedJWTSecret);
+                    FileUtils.write(file,cachedJWTSecret,StandardCharsets.UTF_8);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

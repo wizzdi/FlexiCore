@@ -12,8 +12,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flexicore.annotations.Baseclassroot;
 import com.flexicore.data.BaseclassRepository;
 import com.flexicore.data.BaselinkRepository;
-import com.flexicore.data.jsoncontainers.*;
-import com.flexicore.interfaces.dynamic.IdRefFieldInfo;
+import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
+import com.flexicore.data.jsoncontainers.PaginationResponse;
+import com.flexicore.data.jsoncontainers.SetBaseclassTenantRequest;
+import com.flexicore.data.jsoncontainers.Views;
 import com.flexicore.interfaces.dynamic.ListFieldInfo;
 import com.flexicore.interfaces.dynamic.ListingInvoker;
 import com.flexicore.model.*;
@@ -27,12 +29,13 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.pf4j.PluginManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.OneToMany;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
@@ -64,14 +67,15 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     @Autowired
     private BaselinkRepository baselinkRepository;
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
     private static ObjectMapper objectMapper;
 
     @Autowired
     private FileResourceService fileResourceService;
 
     @Autowired
-    private PluginService pluginService;
+    @Lazy
+    private PluginManager pluginManager;
 
     @Autowired
     private OperationService operationService;
@@ -93,7 +97,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     }
 
     private static final Set<String> knownTypes = new HashSet<>(Arrays.asList(OffsetDateTime.class.getCanonicalName(),
-            Date.class.getCanonicalName(), ZonedDateTime.class.getCanonicalName(), List.class.getCanonicalName(),Map.class.getCanonicalName()));
+            Date.class.getCanonicalName(), ZonedDateTime.class.getCanonicalName(), List.class.getCanonicalName(), Map.class.getCanonicalName()));
 
 
     public BaseclassService() {
@@ -175,8 +179,6 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     }
 
 
-
-
     @Override
     public <T extends Baseclass> T deserializeBaseclassForImport(String json, Class<T> type, SecurityContext securityContext) throws IOException {
         return objectMapper.readValue(json, type);
@@ -192,7 +194,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     public void massDelete(MassDeleteRequest massDeleteRequest, SecurityContext securityContext) {
-        if(massDeleteRequest.getBaseclass().isEmpty()){
+        if (massDeleteRequest.getBaseclass().isEmpty()) {
             return;
         }
         baseclassRepository.massDelete(massDeleteRequest);
@@ -229,16 +231,16 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     }
 
     @Override
-    public Object getExample(GetClassInfo filteringInformationHolder)  {
+    public Object getExample(GetClassInfo filteringInformationHolder) {
         String className = filteringInformationHolder.getClassName();
         Class<?> c = CrossLoaderResolver.getRegisteredClass(className);
-        if(c==null){
-            throw new BadRequestException("No Class "+filteringInformationHolder.getClassName());
+        if (c == null) {
+            throw new BadRequestException("No Class " + filteringInformationHolder.getClassName());
         }
 
         Object exampleCached = getExampleCached(c);
-        if(exampleCached==null){
-            throw new ServiceUnavailableException("Class "+className +" is not suitable for examples");
+        if (exampleCached == null) {
+            throw new ServiceUnavailableException("Class " + className + " is not suitable for examples");
         }
         return exampleCached;
 
@@ -276,7 +278,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
         }
 
 
-            Object example = null;
+        Object example = null;
         try {
             example = c.newInstance();
             exampleCache.put(c.getCanonicalName(), example);
@@ -292,18 +294,17 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
                                 if (setter != null) {
 
                                     Class<?> toRet = getter.getReturnType();
-                                    if(Collection.class.isAssignableFrom(toRet) ){
-                                        ListFieldInfo listFieldInfo=getter.getAnnotation(ListFieldInfo.class);
-                                        if(listFieldInfo!=null){
-                                            Class<?> collectionType=listFieldInfo.listType();
-                                            Object o=getExampleCached(collectionType);
-                                            Collection collection= (Collection) toRet.newInstance();
+                                    if (Collection.class.isAssignableFrom(toRet)) {
+                                        ListFieldInfo listFieldInfo = getter.getAnnotation(ListFieldInfo.class);
+                                        if (listFieldInfo != null) {
+                                            Class<?> collectionType = listFieldInfo.listType();
+                                            Object o = getExampleCached(collectionType);
+                                            Collection collection = (Collection) toRet.newInstance();
                                             collection.add(o);
-                                            setter.invoke(example,collection);
+                                            setter.invoke(example, collection);
 
                                         }
-                                    }
-                                    else{
+                                    } else {
                                         setter.invoke(example, getExampleCached(toRet));
                                     }
 
@@ -354,12 +355,12 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     }
 
     @Override
-    public <T ,E extends FilteringInformationHolder> FileResource exportBaseclassGeneric(ExportBaseclassGeneric<E> baseclassGeneric, SecurityContext securityContext) {
-        FilteringInformationHolder filteringInformationHolder=baseclassGeneric.getFilter();
-        Map<String,String> fieldToName=baseclassGeneric.getFieldToName();
-        Map<String,Method> fieldNameToMethod=new HashMap<>();
-        PaginationResponse<T> paginationResponse=listAllBaseclassGeneric(filteringInformationHolder,securityContext);
-        List<T> collection=paginationResponse.getList();
+    public <T, E extends FilteringInformationHolder> FileResource exportBaseclassGeneric(ExportBaseclassGeneric<E> baseclassGeneric, SecurityContext securityContext) {
+        FilteringInformationHolder filteringInformationHolder = baseclassGeneric.getFilter();
+        Map<String, String> fieldToName = baseclassGeneric.getFieldToName();
+        Map<String, Method> fieldNameToMethod = new HashMap<>();
+        PaginationResponse<T> paginationResponse = listAllBaseclassGeneric(filteringInformationHolder, securityContext);
+        List<T> collection = paginationResponse.getList();
         Collection<String> headers = fieldToName.values();
         String[] headersArr = new String[headers.size()];
         headers.toArray(headersArr);
@@ -376,13 +377,12 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
 
         }
-        format=format.withHeader(headersArr);
-        try (Writer out = new OutputStreamWriter(new FileOutputStream(file,true), StandardCharsets.UTF_8);
+        format = format.withHeader(headersArr);
+        try (Writer out = new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8);
              CSVPrinter csvPrinter = new CSVPrinter(out, format)) {
-            DynamicInvokersService.exportCollection(fieldToName,fieldNameToMethod,csvPrinter,collection);
-        }
-        catch (Exception e){
-            logger.log(Level.SEVERE,"failed exporting data",e);
+            DynamicInvokersService.exportCollection(fieldToName, fieldNameToMethod, csvPrinter, collection);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "failed exporting data", e);
         }
 
 
@@ -396,7 +396,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     public List<BaseclassCount> getBaseclassCount(BaseclassCountRequest baseclassCountRequest, SecurityContext securityContext) {
-        return baseclassRepository.getBaseclassCount(baseclassCountRequest,securityContext);
+        return baseclassRepository.getBaseclassCount(baseclassCountRequest, securityContext);
     }
 
     public enum LinkSide {
@@ -454,7 +454,8 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
             throw new BadRequestException("could not find connection between " + type.getName() + " and " + linkclass.getName());
         }
         List<E> list = baselinkRepository.getDisconnected(getDisconnected, right, securityContext);
-        long count =  baselinkRepository.countDisconnected(getDisconnected, right, securityContext);;
+        long count = baselinkRepository.countDisconnected(getDisconnected, right, securityContext);
+        ;
         return new PaginationResponse<>(list, getDisconnected, count);
     }
 
@@ -655,35 +656,6 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
         return baseclassRepository.getAll(c);
     }
 
-    @Override
-    public <T extends Baseclass> boolean updateInfo(String id, String clazzName,
-                                                    BaseclassUpdateContainer updateContainer, SecurityContext securityContext) throws ClassNotFoundException {
-        Class<T> c = (Class<T>) Class.forName(clazzName);
-        T base = baseclassRepository.getById(id, c, null, securityContext);
-        for (FieldSetContainer field : updateContainer.getFields()) {
-            try {
-                if (field.isById() && Baseclass.class.isAssignableFrom(field.getClazz())) {
-                    Baseclass base1 = (Baseclass) field.getValue();
-                    Baseclass b = baseclassRepository.getByIdOrNull(base1.getId(), field.getClazz(), null, securityContext);
-                    if (b != null) {
-                        field.setValue(b);
-                    }
-
-                }
-                c.getField(field.getName()).set(base,field.getValue());
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                logger.log(Level.WARNING, "field " + field.getName() + " doesn't exists", e);
-            }
-
-        }
-
-        baseclassRepository.merge(base);
-        baseclassRepository.flush();
-
-        return false;
-
-    }
-
 
     @Override
     public void merge(Object base) {
@@ -722,38 +694,32 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     @Override
     public <T, E extends FilteringInformationHolder> PaginationResponse<T> listAllBaseclassGeneric(E filteringInformationHolder, SecurityContext securityContext) {
 
-        Collection<ListingInvoker<?, ?>> plugins = (Collection<ListingInvoker<?, ?>>) pluginService.getPlugins(ListingInvoker.class, null, null);
+        List<ListingInvoker> plugins = pluginManager.getExtensions(ListingInvoker.class);
         String msg;
-        try {
-            for (ListingInvoker<?, ?> plugin : plugins) {
-                if (plugin.getFilterClass().equals(filteringInformationHolder.getClass()) && plugin.getHandlingClass().getCanonicalName().equals(filteringInformationHolder.getResultType())) {
-                    try {
-                        Method method = plugin.getClass().getDeclaredMethod("listAll", plugin.getFilterClass(), SecurityContext.class);
-                        String operationId = Baseclass.generateUUIDFromString(method.toString());
-                        Operation operation = operationService.findById(operationId);
-                        securityContext.setOperation(operation);
-                        if (securityService.checkIfAllowed(securityContext)) {
-                            ListingInvoker<T, E> invoker = (ListingInvoker<T, E>) plugin;
-                            return invoker.listAll(filteringInformationHolder, securityContext);
-                        } else {
-                            throw new NotAuthorizedException("user is not authorized for this resource");
-                        }
-
-
-                    } catch (NoSuchMethodException e) {
-                        logger.log(Level.SEVERE, "unable to get method", e);
+        for (ListingInvoker<?, ?> plugin : plugins) {
+            if (plugin.getFilterClass().equals(filteringInformationHolder.getClass()) && plugin.getHandlingClass().getCanonicalName().equals(filteringInformationHolder.getResultType())) {
+                try {
+                    Method method = plugin.getClass().getDeclaredMethod("listAll", plugin.getFilterClass(), SecurityContext.class);
+                    String operationId = Baseclass.generateUUIDFromString(method.toString());
+                    Operation operation = operationService.findById(operationId);
+                    securityContext.setOperation(operation);
+                    if (securityService.checkIfAllowed(securityContext)) {
+                        ListingInvoker<T, E> invoker = (ListingInvoker<T, E>) plugin;
+                        return invoker.listAll(filteringInformationHolder, securityContext);
+                    } else {
+                        throw new NotAuthorizedException("user is not authorized for this resource");
                     }
 
-                }
-            }
-            msg = "no invoker matches  " + filteringInformationHolder.getResultType() + " with filter type " + filteringInformationHolder.getClass();
-            logger.log(Level.SEVERE, msg);
 
-        } finally {
-            for (ListingInvoker<?, ?> plugin : plugins) {
-                pluginService.cleanUpInstance(plugin);
+                } catch (NoSuchMethodException e) {
+                    logger.log(Level.SEVERE, "unable to get method", e);
+                }
+
             }
         }
+        msg = "no invoker matches  " + filteringInformationHolder.getResultType() + " with filter type " + filteringInformationHolder.getClass();
+        logger.log(Level.SEVERE, msg);
+
         throw new BadRequestException(msg);
 
 

@@ -1,6 +1,6 @@
 package com.flexicore.interceptors;
 
-import com.flexicore.constants.Constants;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,12 +15,16 @@ import java.util.stream.Stream;
 
 @Configuration
 public class CorsBean {
+
+    @Value("${flexicore.cores.allowOrigin:*}")
+    private String allowOrigin;
+
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Stream.of(Constants.HTTP_ACCESS_CONTROL_ALLOW_ORIGIN.split(",")).collect(Collectors.toList()));
+        config.setAllowedOrigins(Stream.of(allowOrigin).collect(Collectors.toList()));
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
         source.registerCorsConfiguration("/**", config);

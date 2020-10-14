@@ -9,7 +9,6 @@ package com.flexicore.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flexicore.data.AuditingRepository;
-import com.flexicore.data.jsoncontainers.BasicContainer;
 import com.flexicore.data.jsoncontainers.ListHolder;
 import com.flexicore.data.jsoncontainers.ObjectMapperContextResolver;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
@@ -64,7 +63,6 @@ public class AuditingService implements com.flexicore.service.AuditingService {
     static {
         containerMap.put(FilteringInformationHolder.class.getCanonicalName(), i -> i);
         containerMap.put(PaginationResponse.class.getCanonicalName(), o -> new PaginationAuditingContainer((PaginationResponse) o));
-        containerMap.put(Baseclass.class.getCanonicalName(), f -> new BasicContainer((Baseclass) f));
         containerMap.put(String.class.getCanonicalName(), i -> i);
         containerMap.put(Integer.class.getCanonicalName(), i -> i);
         containerMap.put(int.class.getCanonicalName(), i -> i);

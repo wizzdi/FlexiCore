@@ -1,15 +1,14 @@
 package com.flexicore.runningentities;
 
 
-import com.flexicore.constants.Constants;
 import com.flexicore.interfaces.FlexiCoreService;
 import com.flexicore.model.FileResource;
 import com.flexicore.service.impl.FileResourceService;
-
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
@@ -21,21 +20,24 @@ import java.util.logging.Logger;
 
 @Primary
 @Component
-public class FilesCleaner implements FlexiCoreService,Runnable {
+public class FilesCleaner implements FlexiCoreService, Runnable {
 
     private boolean stop;
     @Autowired
     private FileResourceService fileResourceService;
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+
+    @Value("${flexicore.files.cleaner.checkInterval:3600000}")
+    private long deletedFileCleanInterval;
 
     @Override
     public void run() {
         logger.info("file cleaner started");
-        while(!stop){
+        while (!stop) {
             try {
-                List<FileResource> files=fileResourceService.getFileResourceScheduledForDelete(OffsetDateTime.now());
-                Set<String> deleted=new HashSet<>();
-                Set<String> failed=new HashSet<>();
+                List<FileResource> files = fileResourceService.getFileResourceScheduledForDelete(OffsetDateTime.now());
+                Set<String> deleted = new HashSet<>();
+                Set<String> failed = new HashSet<>();
                 try {
                     for (FileResource fileResource : files) {
                         File file = new File(fileResource.getFullPath());
@@ -53,14 +55,13 @@ public class FilesCleaner implements FlexiCoreService,Runnable {
                     if (!failed.isEmpty()) {
                         logger.severe("Failed Deleting files: " + failed);
                     }
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "cleaning files throed unexpected exception ", e);
                 }
-                catch (Exception e){
-                    logger.log(Level.SEVERE,"cleaning files throed unexpected exception ",e);
-                }
-                Thread.sleep(Constants.FILE_CLEAN_INTERVAL);
+                Thread.sleep(deletedFileCleanInterval);
             } catch (InterruptedException e) {
-                logger.log(Level.SEVERE,"inturrtped while sleeping",e);
-                stop=true;
+                logger.log(Level.SEVERE, "interrupted while sleeping", e);
+                stop = true;
             }
 
         }
@@ -68,7 +69,7 @@ public class FilesCleaner implements FlexiCoreService,Runnable {
 
     }
 
-    public void stop(){
-        stop=true;
+    public void stop() {
+        stop = true;
     }
 }

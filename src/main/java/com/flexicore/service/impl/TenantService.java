@@ -80,7 +80,7 @@ public class TenantService implements com.flexicore.service.TenantService {
         User user=null;
         if (tenantAdmin != null) {
             Operation allOp = baselinkService.findById(Baseclass.generateUUIDFromString(All.class.getCanonicalName()));
-            Clazz SecurityWildcard = Baseclass.getClazzbyname(SecurityWildcard.class.getCanonicalName());
+            Clazz SecurityWildcard = Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName());
             user = userService.createUserNoMerge(tenantAdmin, securityContext);
             toMergeUser.add(user);
             TenantToUser tenantToUser=userService.createTenantToUserNoMerge(new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant(tenant),securityContext);
@@ -105,13 +105,6 @@ public class TenantService implements com.flexicore.service.TenantService {
     @Override
     public void validate(TenantCreate tenantCreate, SecurityContext securityContext) {
         baseclassService.validate(tenantCreate,securityContext);
-        if(tenantCreate.getApiKey()==null){
-            throw new BadRequestException("tenant api key must not be null");
-        }
-        List<Tenant> tenants= listAllTenants(new TenantFilter().setApiKey(tenantCreate.getApiKey()), securityContext);
-        if(!tenants.isEmpty()){
-            throw new BadRequestException("Tenant With api key "+tenantCreate.getApiKey() +" already exists");
-        }
         FileResource icon=tenantCreate.getIconId()!=null?tenantRepository.getByIdOrNull(tenantCreate.getIconId(),FileResource.class,null,securityContext):null;
         if(icon==null && tenantCreate.getIconId()!=null){
             throw new BadRequestException("No Icon with id "+tenantCreate.getIconId());
@@ -142,10 +135,6 @@ public class TenantService implements com.flexicore.service.TenantService {
 
     public boolean updateTenantNoMerge(Tenant tenant, TenantCreate tenantCreate) {
         boolean update=baseclassService.updateBaseclassNoMerge(tenantCreate,tenant);
-        if(tenantCreate.getApiKey()!=null &&!tenantCreate.getApiKey().equals(tenant.getApiKey())){
-            tenant.setApiKey(tenantCreate.getApiKey());
-            update=true;
-        }
         if(tenantCreate.getIcon()!=null && (tenant.getIcon()==null||!tenantCreate.getIcon().getId().equals(tenant.getIcon().getId()))){
             tenant.setIcon(tenantCreate.getIcon());
             update=true;
@@ -156,54 +145,6 @@ public class TenantService implements com.flexicore.service.TenantService {
     @Transactional
     public void merge(Object base) {
         tenantRepository.merge(base);
-    }
-
-    @Override
-    public Tenant createNewTenant(NewUser tenantAdmin, String name, String apiKey, SecurityContext securityContext) {
-        try {
-            Tenant tenant = new Tenant(name, securityContext);
-            tenant.setApiKey(apiKey);
-            tenantRepository.merge(tenant);
-            User user = userService.getUserByMail(tenantAdmin.getEmail());
-            if (user == null) {
-                RunningUser runningUser = userService.register(tenantAdmin, false, securityContext, tenant);
-                user = runningUser.getUser();
-                Role role = new Role(tenant.getName()+" "+TENANT_ADMINISTRATOR_NAME, securityContext);
-                role.setTenant(tenant);
-                roleService.merge(role);
-                //userService.addUserToRole(role, user);
-                Baseclass allOp = baselinkService.findById(Baseclass.generateUUIDFromString(All.class.getCanonicalName()));
-                Clazz SecurityWildcard = Baseclass.getClazzbyname(SecurityWildcard.class.getCanonicalName());
-                baselinkService.linkEntities(role, SecurityWildcard, RoleToBaseclass.class, allOp, IOperation.Access.allow.name());
-
-
-            }
-
-
-            return tenant;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "unable to create tenant", e);
-            throw new ServerErrorException("unable to create tenant", Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    public Tenant createTenantNoUser(String name, String apiKey, SecurityContext securityContext) {
-        Tenant tenant = createTenantNoUserNoMerge(name, apiKey, securityContext);
-        tenantRepository.merge(tenant);
-        return tenant;
-
-    }
-
-    private Tenant createTenantNoUserNoMerge(String name, String apiKey, SecurityContext securityContext) {
-        Tenant tenant = new Tenant(name, securityContext);
-        tenant.setApiKey(apiKey);
-        return tenant;
-    }
-
-    @Override
-    public Tenant getTenantByApiKey(String apiKey) {
-        return tenantRepository.getTenantByApiKey(apiKey);
     }
 
 

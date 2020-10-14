@@ -114,34 +114,6 @@ public class BaseclassRESTService implements RESTService {
 
    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
 
-    @POST
-    @Consumes("application/json")
-    @IOperation(access = Access.allow, Name = "createBaseclass", Description = "creates Baseclass genericlly")
-    @Operation(summary = "Create an instance of a Baseclass extender",
-            description = "Creates a new instance of the requested Class, pass a properly initialized instance of BaseclassCreationContainer")
-
-    public String create(@HeaderParam("authenticationkey") String authenticationkey,
-                         BaseclassCreationContainer container, @Context SecurityContext securityContext) {
-        long start = System.currentTimeMillis();
-        log.log(Level.INFO, "will start the creation of a new instance: " + container.getClazzName());
-
-        Baseclass b = repository.createBaseclass(container, securityContext);
-        if (b == null) {
-            throw new ServerErrorException("instance was not created", HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
-        }
-        if (repository.Persist(b)) {
-            String id = b.getId();
-            log.log(Level.INFO, "Have created a new : " + container.getClazzName() + " in: "
-                    + (System.currentTimeMillis() - start) + " Created ID is: " + id);
-            return id;
-        } else {
-            log.log(Level.INFO, "Have failed in creating a new : " + container.getClazzName() + " in: "
-                    + (System.currentTimeMillis() - start));
-
-            return null;
-        }
-    }
-
 
     @POST
     @Path("/listAllBaseclassGeneric")
@@ -394,8 +366,8 @@ public class BaseclassRESTService implements RESTService {
                                         @HeaderParam("valueId") String valueId,
                                         @HeaderParam("simpleValue") String simpleValue,
                                         @Context SecurityContext securityContext) {
-        Clazz wantedClazz = Baseclass.getClazzbyname(wantedClazzName);
-        Clazz linkClazz = Baseclass.getClazzbyname(linkClazzName);
+        Clazz wantedClazz = Baseclass.getClazzByName(wantedClazzName);
+        Clazz linkClazz = Baseclass.getClazzByName(linkClazzName);
         Baseclass value = valueId == null ? null : baseclassService.findByIdOrNull(Baseclass.class, valueId);
         if (value == null && valueId != null) {
             throw new BadRequestException("No Value with id " + valueId);
@@ -424,8 +396,8 @@ public class BaseclassRESTService implements RESTService {
                                         @HeaderParam("valueId") String valueId,
                                         @HeaderParam("simpleValue") String simpleValue,
                                         @Context SecurityContext securityContext) {
-        Clazz wantedClazz = Baseclass.getClazzbyname(wantedClazzName);
-        Clazz linkClazz = Baseclass.getClazzbyname(linkClazzName);
+        Clazz wantedClazz = Baseclass.getClazzByName(wantedClazzName);
+        Clazz linkClazz = Baseclass.getClazzByName(linkClazzName);
         Baseclass value = valueId == null ? null : baseclassService.findByIdOrNull(Baseclass.class, valueId);
         if (value == null && valueId != null) {
             throw new BadRequestException("No Value with id " + valueId);
@@ -487,8 +459,8 @@ public class BaseclassRESTService implements RESTService {
                                @HeaderParam("valueId") String valueId,
                                @HeaderParam("simpleValue") String simpleValue,
                                @Context SecurityContext securityContext) {
-        Clazz wantedClazz = Baseclass.getClazzbyname(wantedClazzName);
-        Clazz linkClazz = Baseclass.getClazzbyname(linkClazzName);
+        Clazz wantedClazz = Baseclass.getClazzByName(wantedClazzName);
+        Clazz linkClazz = Baseclass.getClazzByName(linkClazzName);
         Baseclass value = valueId == null ? null : baseclassService.findByIdOrNull(Baseclass.class, valueId);
         if (value == null && valueId != null) {
             throw new BadRequestException("No Value with id " + valueId);
@@ -518,8 +490,8 @@ public class BaseclassRESTService implements RESTService {
                                   @HeaderParam("valueId") String valueId,
                                   @HeaderParam("simpleValue") String simpleValue,
                                   @Context SecurityContext securityContext) {
-        Clazz wantedClazz = Baseclass.getClazzbyname(wantedClazzName);
-        Clazz linkClazz = Baseclass.getClazzbyname(linkClazzName);
+        Clazz wantedClazz = Baseclass.getClazzByName(wantedClazzName);
+        Clazz linkClazz = Baseclass.getClazzByName(linkClazzName);
         Baseclass value = valueId == null ? null : baseclassService.findByIdOrNull(Baseclass.class, valueId);
         if (value == null && valueId != null) {
             throw new BadRequestException("No Value with id " + valueId);
@@ -588,8 +560,8 @@ public class BaseclassRESTService implements RESTService {
                                            @HeaderParam("simpleValue") String simpleValue,
                                            @Context SecurityContext securityContext) {
 
-        Clazz wantedClazz = Baseclass.getClazzbyname(wantedClazzName);
-        Clazz linkClazz = Baseclass.getClazzbyname(linkClazzName);
+        Clazz wantedClazz = Baseclass.getClazzByName(wantedClazzName);
+        Clazz linkClazz = Baseclass.getClazzByName(linkClazzName);
         Baseclass value = valueId == null ? null : baseclassService.findByIdOrNull(Baseclass.class, valueId);
         if (value == null && valueId != null) {
             throw new BadRequestException("No Value with id " + valueId);
@@ -607,15 +579,6 @@ public class BaseclassRESTService implements RESTService {
     }
 
 
-    @PUT
-    @Consumes("application/json")
-    @IOperation(access = Access.allow, Name = "updateBasicDetails", Description = "updates baseclass basic details")
-    @Operation(summary = "Update basic data", description = "Update an instance of a Baseclass using a BasicContainer instance ")
-    public boolean updateBasicDetails(@HeaderParam("authenticationkey") String authenticationkey,
-                                      BasicContainer base,
-                                      @Context SecurityContext securityContext) {
-        return baseclassService.updateInfo(base.getId(), base.getName(), base.getDescription(), securityContext);
-    }
 
     @GET
     @Path("/{id}")
@@ -722,31 +685,6 @@ public class BaseclassRESTService implements RESTService {
     }
 
 
-    /**
-     * @param authenticationkey authentication key
-     * @param id id to update
-     * @param clazz_name type to update
-     * @param updateContainer container
-     * @param securityContext security context
-     * @return true if baseclass was updated
-     */
-    @PUT
-    @Path("/update/{clazz_name}/{id}")
-    @Consumes("application/json")
-    @IOperation(access = Access.allow, Name = "update Baseclass", Description = "updates baseclass")
-    @Operation(summary = "Update an instance of a Baseclass extender", description = "Update an instance,retrieve the related fields first, create BaseclassUpdateContainer with required fields")
-    public boolean update(@HeaderParam("authenticationkey") String authenticationkey,
-                          @PathParam("id") String id,
-                          @PathParam("clazz_name") String clazz_name,
-                          BaseclassUpdateContainer updateContainer,
-                          @Context SecurityContext securityContext) {
-        try {
-            return baseclassService.updateInfo(id, clazz_name, updateContainer, securityContext);
-        } catch (ClassNotFoundException e) {
-            throw new ClientErrorException(HttpResponseCodes.SC_BAD_REQUEST, e);
-        }
-
-    }
 
     /**
      * @param securityContext security context

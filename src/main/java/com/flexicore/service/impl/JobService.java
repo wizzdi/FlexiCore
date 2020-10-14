@@ -12,7 +12,6 @@ import com.flexicore.interfaces.AnalyzerPlugin;
 import com.flexicore.interfaces.ProccessPlugin;
 import com.flexicore.model.Job;
 import com.flexicore.model.JobInformation;
-import com.flexicore.model.PluginRequirement;
 import com.flexicore.model.User;
 import com.flexicore.request.RegisterForJobUpdates;
 import com.flexicore.security.SecurityContext;
@@ -107,8 +106,8 @@ public class JobService implements com.flexicore.service.JobService {
     }
 
     @Override
-    public Job startJob(Serializable content, Class<? extends ProccessPlugin> type,
-                        Properties jobprops, HashMap<String, PluginRequirement> requriments, SecurityContext securityContext) {
+    public Job startJob(Object content, Class<? extends ProccessPlugin> type,
+                        Properties jobprops, HashMap<String, Object> requriments, SecurityContext securityContext) {
         Job job;
         User user = null;
         if (securityContext != null) {
@@ -129,7 +128,6 @@ public class JobService implements com.flexicore.service.JobService {
         // multiple of) will be an
         // Analyzer PI
         info.setJobProperties(jobprops);
-        info.setRequirments(requriments);
         job.setCurrentPhase(ProcessPhase.Waiting.getName());
         job.setCurrentPhasePrecentage(0);
         job.setJobInformation(info);

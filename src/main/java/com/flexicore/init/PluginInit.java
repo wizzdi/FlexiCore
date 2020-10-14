@@ -1,7 +1,6 @@
 package com.flexicore.init;
 
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.annotations.plugins.TestsInside;
 import com.flexicore.data.TestsRepository;
 import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
 import com.flexicore.events.PluginsLoadedEvent;
@@ -92,9 +91,10 @@ public class PluginInit {
         CrossLoaderResolver.registerClassLoader( pluginManager.getStartedPlugins().stream().map(f->f.getPluginClassLoader()).collect(Collectors.toList()));
         List<PluginWrapper> startedPlugins = pluginManager.getStartedPlugins().stream().sorted(PLUGIN_COMPARATOR_FOR_REST).collect(Collectors.toList());
         List<? extends AspectPlugin> aspects = pluginManager.getExtensions(AspectPlugin.class);
-
+        long startedAll=System.currentTimeMillis();
         //makes sure older versions are loaded first so default version for apis is being taken from oldest plugin
         for (PluginWrapper startedPlugin : startedPlugins) {
+            long start = System.currentTimeMillis();
             logger.info("REST Registration handling plugin: " + startedPlugin);
 
             List<? extends RestServicePlugin> restPlugins = pluginManager.getExtensions(RestServicePlugin.class, startedPlugin.getPluginId());
@@ -129,15 +129,12 @@ public class PluginInit {
 
                 }
             }
+            List<Class<? extends Plugin>> classes = pluginManager.getExtensionClasses(Plugin.class, startedPlugin.getPluginId());
+            for (Class<? extends Plugin> c : classes) {
+                if (c.isAnnotationPresent(Provider.class)) {
+                    JaxRsActivator.addProvider(c);
 
-        }
-
-        List<Class<? extends Plugin>> classes = pluginManager.getExtensionClasses(Plugin.class);
-        for (Class<? extends Plugin> c : classes) {
-            if (c.isAnnotationPresent(Provider.class)) {
-                JaxRsActivator.addProvider(c);
-
-            }
+                }
 
             /*if (c.isAnnotationPresent(ServerEndpoint.class)) {
                 try {
@@ -147,24 +144,26 @@ public class PluginInit {
                 }
             }*/
 
-            if (c.isAnnotationPresent(OperationsInside.class)) {
-                classScannerService.registerOperationsInclass(c); // Adds
+                if (c.isAnnotationPresent(OperationsInside.class)) {
+                    classScannerService.registerOperationsInclass(c); // Adds
+                }
+                if (c.isAnnotationPresent(InvokerInfo.class)) {
+                    classScannerService.registerInvoker(c, securityContext);
+                }
+                if (c.isAnnotationPresent(OpenAPIDefinition.class)) {
+                    classScannerService.addSwaggerTags(c, securityContext);
+                }
+                Tag[] annotationsByType = c.getAnnotationsByType(Tag.class);
+                if (annotationsByType.length != 0) {
+                    classScannerService.addSwaggerTags(c, securityContext);
+                }
             }
-            if (c.isAnnotationPresent(InvokerInfo.class)) {
-                classScannerService.registerInvoker(c, securityContext);
-            }
-            if (c.isAnnotationPresent(TestsInside.class)) {
+            logger.debug("registering "+startedPlugin.getPluginId() +" for basic services took "+(System.currentTimeMillis()-start));
 
-                TestsRepository.put(c.getCanonicalName(), c);
-            }
-            if (c.isAnnotationPresent(OpenAPIDefinition.class)) {
-                classScannerService.addSwaggerTags(c, securityContext);
-            }
-            Tag[] annotationsByType = c.getAnnotationsByType(Tag.class);
-            if (annotationsByType.length != 0) {
-                classScannerService.addSwaggerTags(c, securityContext);
-            }
         }
+        logger.debug("registering plugins for basic services took "+(System.currentTimeMillis()-startedAll));
+
+
         PluginsLoadedEvent event = new PluginsLoadedEvent(applicationContext, startedPlugins);
         eventPublisher.publishEvent(event);
         return event;

@@ -61,12 +61,15 @@ public class EventPropagator {
             eventsInProcess.add(event);
             try {
                 for (ApplicationContext applicationContext : flexiCorePluginManager.getPluginApplicationContexts()) {
+                    long start=System.currentTimeMillis();
                     try {
 
                         if (event.getSource() != applicationContext) {
                             Object contextId = applicationContext.getClassLoader() instanceof FlexiCorePluginClassLoader ? applicationContext.getClassLoader() : applicationContext.getId();
                             logger.debug("Propagating event " + eventToPrint + " to context " + contextId);
                             applicationContext.publishEvent(event);
+                            logger.debug("Propagating event " + eventToPrint + " to context " + contextId +" took "+(System.currentTimeMillis()-start)+"ms");
+
                         }
                     } catch (Exception e) {
                         logger.error("error while propagating event: " + eventToPrint, e);

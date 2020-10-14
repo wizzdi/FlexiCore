@@ -26,7 +26,6 @@ import com.flexicore.request.ZipFileToFileResourceFilter;
 import com.flexicore.security.SecurityContext;
 import org.apache.commons.io.FilenameUtils;
 
-import com.flexicore.constants.Constants;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,65 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class FileResourceRepository extends BaseclassRepository {
 
+
    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
-
-
-    private HashMap<Class<? extends FileType>, FileType> typeMaps = new HashMap<>();
-
-
-    public FileResource create(String filename, SecurityContext securityContext, String md5) {
-        return create(filename, securityContext, md5, null);
-    }
-
-    public FileResource create(String filename, SecurityContext securityContext, String md5, String path) {
-        FileResource fileResource = createDontPersist(filename, securityContext, md5, path);
-        merge(fileResource);
-        return fileResource;
-
-    }
-
-
-    public <T extends FileResource> T createDontPersist(Class<T> c, String filename, SecurityContext securityContext, String md5, String path) {
-        String ext = filename.endsWith("tar.gz") ? "tar.gz" : FilenameUtils.getExtension(filename);
-        T fileResource = Baseclass.createUnchecked(c, filename, securityContext);
-        fileResource.setMd5(md5);
-        fileResource.setOffset(0);
-        String actualFilename = !ext.isEmpty() ? UUID.randomUUID().toString() + "." + ext :UUID.randomUUID().toString();
-        fileResource.setActualFilename(actualFilename);
-        fileResource.setFullPath(path != null ? path : Constants.UPLOAD_PATH + fileResource.getActualFilename());
-        fileResource.setUrl(Constants.UPLOAD_URL + fileResource.getMd5());
-        fileResource.setOriginalFilename(filename);
-
-
-        return fileResource;
-    }
-
-
-    public FileResource createDontPersist(String filename, SecurityContext securityContext, String md5, String path) {
-        return createDontPersist(FileResource.class, filename, securityContext, md5, path);
-
-    }
-
-
-    public FileType getFileType(String fileType, QueryInformationHolder<FileType> queryInformationHolder) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<FileType> q = cb.createQuery(FileType.class);
-        Root<FileType> r = q.from(FileType.class);
-        Predicate con = cb.equal(r.get(FileType_.name), fileType);
-        List<Predicate> predicates = new ArrayList<>();
-        predicates.add(con);
-        FileType type = getFiltered(queryInformationHolder, predicates, cb, q, r);
-        if (type == null) {
-            type = new FileType(fileType, null);
-            type.setId(type.getName());
-
-        }
-        merge(type);
-        return type;
-
-    }
-
-
 
     public void persist(Object o) {
         em.persist(o);

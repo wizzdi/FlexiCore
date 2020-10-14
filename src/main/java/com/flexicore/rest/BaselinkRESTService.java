@@ -26,7 +26,6 @@ import javax.ws.rs.core.Response.Status;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.interfaces.RESTService;
 import com.flexicore.model.FilteringInformationHolder;
-import com.flexicore.data.jsoncontainers.LinkContainer;
 import com.flexicore.request.BaselinkCreate;
 import com.flexicore.request.BaselinkFilter;
 import com.flexicore.request.BaselinkMassCreate;
@@ -40,8 +39,7 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.data.jsoncontainers.RoleUserContainer;
-import com.flexicore.interceptors.SecurityImposer;
+
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Baselink;
 import com.flexicore.model.RoleToUser;
@@ -50,8 +48,6 @@ import com.flexicore.model.UserToBaseClass;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.BaseclassService;
 import com.flexicore.service.impl.BaselinkService;
-import org.springframework.stereotype.Component;
-
 
 /**
  * @author avishayb
@@ -219,16 +215,6 @@ public class 	BaselinkRESTService implements RESTService {
 
 	}
 
-	@POST
-	@Path("/linkroleuser")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@IOperation(access = Access.deny, Name = "Link Role to User", Description = "Link a Role to a User, User can be linked to many Roles")
-	@Operation(summary="Link Role and User",description="Helper class for linking Role and User using a RoleUserContainer class, can be carried out by using the Generic createBaselink call")
-	public RoleToUser linkroleuser(@HeaderParam("authenticationkey") String authenticationkey,
-			RoleUserContainer container) {
-        return service.linkEntities(container.getLeftside(), container.getRightside(), RoleToUser.class);
-	}
 
 	@PUT
 	@Path("/linkUserToBaseclass/{left_id}/{right_id}/{operation_id}")
@@ -258,51 +244,6 @@ public class 	BaselinkRESTService implements RESTService {
 				return false;
 			}
 		}
-
-	}
-
-
-	@SuppressWarnings("unchecked")
-	@POST
-	@Path("findLinksContainers/{left}/{right}/{classname}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@IOperation(access = Access.allow, Name = "Search for m2m relationship", Description = "Generic link search by pair of objects")
-
-	public <T extends Baselink> List<LinkContainer> findLinksContainers(@HeaderParam("authenticationkey") String authenticationkey,
-																	   @PathParam("left") String leftId, @PathParam("right") String rightId,
-																	   @PathParam("classname") String linkClazzName, @HeaderParam("value") @DefaultValue("") String valueId,
-																	   @HeaderParam("simpleValue") @DefaultValue("-1") String simpleValue,
-																	   FilteringInformationHolder filter,
-																	   @HeaderParam("pagesize")  @DefaultValue("-1") int pagesize,
-																	   @HeaderParam("currentpage")  @DefaultValue("-1") int currentpage,
-
-																	   @Context SecurityContext securityContext) {
-		log.log(Level.INFO, "Finding sides: " + linkClazzName + " leftID: " + leftId + " rightID: " + rightId);
-		Class<T> clazz;
-		try {
-			clazz = (Class<T>) Class.forName(linkClazzName);
-		} catch (ClassNotFoundException e) {
-			throw new ClientErrorException("no class with name:" + linkClazzName, HttpResponseCodes.SC_BAD_REQUEST);
-		}
-		long start = System.currentTimeMillis();
-		Baseclass leftside = service.getById(leftId, Baseclass.class, null, securityContext);
-		log.log(Level.INFO, "Time taken to find by id: " + (System.currentTimeMillis() - start));
-		start = System.currentTimeMillis();
-		Baseclass rightside = service.getById(rightId, Baseclass.class, null, securityContext);
-		log.log(Level.INFO, "Time taken to find by id: " + (System.currentTimeMillis() - start));
-		start = System.currentTimeMillis();
-		Baseclass value = null;
-		if (!valueId.isEmpty()) {
-			value = service.getById(valueId, Baseclass.class, null, securityContext);
-		}
-		if (simpleValue.equals("-1")) {
-			simpleValue = null;
-		}
-		List<LinkContainer> baselink = service.findAllBySidesAndValueContainers(clazz,leftside,rightside,value,simpleValue,filter,pagesize,currentpage,securityContext);
-
-		log.log(Level.INFO, "Time taken to find sides: " + (System.currentTimeMillis() - start));
-		return baselink;
 
 	}
 

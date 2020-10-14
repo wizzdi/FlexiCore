@@ -128,48 +128,6 @@ public class UserRESTService implements RESTService {
         return user;
     }
 
-    /**
-     * Creates a new user, seems that the method is detected with no path parameter
-     * returns a running user anyway, we need the user object
-     *
-     * @param authenticationkey authentication key
-     * @param loginuponsuccess  true if do login after creation
-     * @param newuser to create
-     * @param <T> type of user to create
-     * @param securityContext security ccontext
-     * @return logged in user created
-     */
-    @POST
-    @Path("/new")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "Create New User", Description = "Create new user in the system", relatedClazzes = {User.class})
-    public <T extends User> RunningUser createUser(@HeaderParam("authenticationkey") String authenticationkey,
-                                                   @HeaderParam("loginuponsuccess") boolean loginuponsuccess
-            , NewUser<T> newuser, @Context SecurityContext securityContext) {
-        userService.validateAndpopulateNewUser(newuser);
-
-        Response.ResponseBuilder builder = null;
-
-        try {
-            RunningUser runninguser;
-            if ((runninguser = userService.register(newuser, loginuponsuccess, securityContext)) != null) {
-                if (runninguser.getLoggedin()) {
-                    authenticationkey = runninguser.getAuthenticationkey().getKey();
-                }
-
-            }
-            return runninguser;
-        } catch (ConstraintViolationException ce) {
-            // Handle bean validation issues
-            throw new BadRequestException(ce);
-        } catch (ValidationException e) {
-            throw new BadRequestException("email taken", e);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e);
-        }
-    }
-
     @POST
     @Path("/getAllUsers")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -235,42 +193,5 @@ public class UserRESTService implements RESTService {
 
         return userService.resetUserPassword(resetUserPasswordRequest, securityContext);
     }
-
-
-
-    @PUT
-    @Path("/attachTennat")
-    @Produces(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "attachTenant", Description = "Attach User to another tenant", relatedClazzes = {User.class, Tenant.class})
-    public boolean attachTenant(@HeaderParam("authenticationkey") String authenticationkey, String apiKey, @Context SecurityContext context) {
-        return userService.attachTenant(authenticationkey, apiKey, context);
-    }
-
-    @PUT
-    @Path("/connectToTenant")
-    @Produces(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "connectToTenant", Description = "connect user from tenant", relatedClazzes = {User.class, Tenant.class})
-    public boolean connectToTenant(@HeaderParam("authenticationkey") String authenticationkey, String TenantId, @Context SecurityContext context) {
-        return false;//userService.connectToTenant(context.getUser(), TenantId);
-    }
-
-
-    @PUT
-    @Path("/addToRole/{roleId}/{userId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "addUserToRole", Description = "connect user to role", relatedClazzes = {User.class, Role.class})
-    public boolean addUserToRole(@HeaderParam("authenticationkey") String authenticationkey, @PathParam("roleId") String roleId, @PathParam("userId") String userId, @Context SecurityContext context) {
-        return  false;//userService.addUserToRole(userId, roleId);
-    }
-
-
-    @POST
-    @Path("/batchCreate")
-    @Produces(MediaType.APPLICATION_JSON)
-    @IOperation(access = Access.allow, Name = "addUserToRole", Description = "connect user to role", relatedClazzes = {User.class})
-    public int multipleCreate(@HeaderParam("authenticationkey") String authenticationkey, @HeaderParam("number") @DefaultValue("0") int number, @Context SecurityContext securityContext) {
-        return userService.multipleCreate(number, securityContext);
-    }
-
 
 }
