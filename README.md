@@ -14,13 +14,16 @@ FlexiCore boosts [Spring Boot](https://github.com/spring-projects/spring-boot) a
 **PersonService** in person-service jar
 
     @PluginInfo(version = 1)  
+    @Extension  
+    @Component
     public class PersonService implements ServicePlugin {  
+    
+      private static final Logger logger=LoggerHandler.getLogger(PersonService.class);  
       
-     @Inject  
+     @Autowired  
      @PluginInfo(version = 1)  
       private PersonRepository repository;  
-      @Inject  
-      private Logger logger;  
+      
       
      public Person createPerson(PersonCreate personCreate, SecurityContext securityContext) {  
             Person person = createPersonNoMerge(personCreate, securityContext);  
