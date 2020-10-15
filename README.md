@@ -87,7 +87,7 @@ now from your IDE connect to the port specified in the above command (8787)
 FlexiCore maintains a reference [documentation ](https://support.wizzdi.com)
 
 ## Stay in Touch
-Contact us at our [site]([http://wizzdi.com/](http://wizzdi.com/))
+Contact us at our [site](http://wizzdi.com/)
 
 
 ### Main 3rd Party Dependencies
