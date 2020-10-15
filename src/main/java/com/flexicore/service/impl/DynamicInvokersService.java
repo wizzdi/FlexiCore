@@ -62,8 +62,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
 
     @Autowired
     private FileResourceService fileResourceService;
-    @Autowired
-    private AuditingService auditingService;
+
 
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicInvokersService.class);

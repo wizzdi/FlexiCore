@@ -11,16 +11,15 @@ import com.flexicore.data.jsoncontainers.OperationInfo;
 import com.flexicore.model.Operation;
 import com.flexicore.model.Tenant;
 import com.flexicore.model.User;
-import com.flexicore.model.auditing.AuditingJob;
-import com.flexicore.model.auditing.DefaultAuditingTypes;
 import com.flexicore.security.SecurityContext;
-import com.flexicore.service.impl.AuditingService;
 import com.flexicore.service.impl.SecurityService;
 import io.jsonwebtoken.JwtException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -29,11 +28,8 @@ import javax.websocket.CloseReason;
 import javax.websocket.Session;
 import javax.ws.rs.NotAuthorizedException;
 import java.lang.reflect.Method;
-import java.sql.Date;
-import java.time.Instant;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
@@ -58,9 +54,7 @@ public class SecurityImposer  {
 	private static final long serialVersionUID = 1L;
 	@Autowired
 	private SecurityService securityService;
-	private Logger logger = Logger.getLogger(getClass().getCanonicalName());
-	@Autowired
-	private AuditingService auditingService;
+	private static final Logger logger = LoggerFactory.getLogger(SecurityImposer.class);
 
 	@Around("execution(@com.flexicore.annotations.Protected * *(..)) || within(@(@com.flexicore.annotations.Protected *) *)|| within(@com.flexicore.annotations.Protected *)")
 	public Object transformReturn(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -88,18 +82,29 @@ public class SecurityImposer  {
 				Operation operation = securityContext.getOperation();
 
 				OperationsInside operationsInside = method.getDeclaringClass().getAnnotation(OperationsInside.class);
+				if(operationInfo.getiOperation()==null){
+					logger.error("could not find io operation annotation on method: "+methodName);
+					return deny(websocketSession);
+				}
+				if(user==null){
+					logger.error("could not determine user");
+					return deny(websocketSession);
 
-				if (operationInfo.getiOperation() != null && user != null && tenants != null && operation!=null) {
+				}
+				if(tenants==null){
+					logger.error("could not determine tenants");
+					return deny(websocketSession);
+				}
 
-					if (securityService.checkIfAllowed(user, tenants, operation, operationInfo.getiOperation().access())) {
-						Object procceed = procceed(securityContext, joinPoint, methodName, parameters, start);
-						return procceed;
-					} else {
-						return deny(websocketSession);
-					}
+				if(operation==null){
+					logger.error("could not determine operation for method "+methodName);
+					return deny(websocketSession);
+				}
 
+				if (securityService.checkIfAllowed(user, tenants, operation, operationInfo.getiOperation().access())) {
+					Object procceed = procceed(securityContext, joinPoint, methodName, parameters, start);
+					return procceed;
 				} else {
-					// TODO: policy if no operation available
 					return deny(websocketSession);
 				}
 
@@ -110,7 +115,7 @@ public class SecurityImposer  {
 			}
 		}
 		catch (JwtException e){
-			logger.log(Level.SEVERE,"security check failed with error",e);
+			logger.error("security check failed with error",e);
 			return deny(websocketSession);
 		}
 		
@@ -133,9 +138,6 @@ public class SecurityImposer  {
 		Object o= proceedingJoinPoint.proceed(parameters);
 		long timeTaken = System.currentTimeMillis() - start;
 
-		if(securityContext.getOperation().isAuditable()){
-			auditingService.addAuditingJob(new AuditingJob(securityContext,null,o,timeTaken,Date.from(Instant.now()),DefaultAuditingTypes.REST.name()));
-		}
 		logger.info("request to "+methodName +" took: "+ timeTaken +"ms");
 		return o;
 
@@ -158,10 +160,10 @@ public class SecurityImposer  {
 				String id = websocketSession.getId();
 
 				websocketSession.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT,reason));
-				logger.warning("Closed WS "+ id +" for being unauthorized");
+				logger.warn("Closed WS "+ id +" for being unauthorized");
 			}
 			catch (Exception e){
-				logger.log(Level.SEVERE,"failed closing WS",e);
+				logger.error("failed closing WS",e);
 			}
 		}
 	}

@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.ws.rs.BadRequestException;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +112,14 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
         return baseclassRepository.getByIdOrNull(id, c, batchString, securityContext);
     }
 
+    @Override
     public <T extends Baseclass> List<T> listByIds(Class<T> aClass, Set<String> set, SecurityContext securityContext) {
         return baseclassRepository.listByIds(aClass, set, securityContext);
+    }
+
+    @Override
+    @Transactional
+    public void massMerge(List<?> toMerge) {
+        baseclassRepository.massMerge(toMerge);
     }
 }
