@@ -1025,6 +1025,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     }
 */
 
+
     private <T extends Baseclass> void addSecurityNew(List<Predicate> existingPredicates, From<?, T> r, CriteriaBuilder cb,
                                                       User user, List<Tenant> tenants, boolean impersonated, Class<T> c, Operation op, CommonAbstractCriteria query) {
         Set<String> tenantIds = tenants.parallelStream().map(f -> f.getId()).collect(Collectors.toSet());

@@ -46,6 +46,7 @@ import io.joshworks.restclient.http.RestClient;
 import io.joshworks.restclient.http.mapper.ObjectMapper;
 import io.joshworks.restclient.http.mapper.ObjectMappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -85,7 +86,17 @@ public class UserService implements com.flexicore.service.UserService {
 
     @Autowired
     private TokenService tokenService;
-    public static final String systemAdminId="UEKbB6XlQhKOtjziJoUQ8w";
+
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    @Qualifier("systemAdminId")
+    public static String systemAdminId(){
+        return "UEKbB6XlQhKOtjziJoUQ8w";
+    }
+
+    @Autowired
+    @Qualifier("systemAdminId")
+    private String systemAdminId;
 
 
     @Value("${flexicore.users.rootDirPath:/home/flexicore/users/}")

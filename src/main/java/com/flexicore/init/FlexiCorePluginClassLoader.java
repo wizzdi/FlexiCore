@@ -148,7 +148,7 @@ public class FlexiCorePluginClassLoader extends PluginClassLoader {
                 log.trace("Found class '{}' in dependencies", className);
                 return loadedClass;
             }
-            throw new ClassNotFoundException(className);
+            throw new ClassNotFoundException(className+"@"+getName());
         }
     }
 

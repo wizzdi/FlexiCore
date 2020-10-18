@@ -25,6 +25,7 @@ import org.reflections.Reflections;
 import org.reflections.serializers.JsonSerializer;
 import org.reflections.util.FilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -79,6 +80,9 @@ public class ClassScannerService {
     private String firstRunFilePath;
     @Value("${flexicore.users.adminEmail:admin@flexicore.com}")
     private String adminEmail;
+    @Autowired
+    @Qualifier("systemAdminId")
+    private String systemAdminId;
 
 
     public void initializeInvokers() {
@@ -724,12 +728,12 @@ public class ClassScannerService {
                 .setLastName("Admin")
                 .setTenant(defaultTenant)
                 .setName("Admin");
-        User admin = baselinkrepository.findByIdOrNull(User.class, UserService.systemAdminId);
+        User admin = baselinkrepository.findByIdOrNull(User.class, systemAdminId);
         if(admin==null){
             logger.fine("Creating Admin User");
             admin=userService.createUserNoMerge(userCreate,null);
             admin.setCreator(admin);
-            admin.setId(UserService.systemAdminId);
+            admin.setId(systemAdminId);
             toMerge.add(admin);
         }
         else{
