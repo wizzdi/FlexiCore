@@ -1,14 +1,13 @@
 package com.flexicore.service.impl;
 
 import com.google.crypto.tink.*;
-import com.google.crypto.tink.aead.AeadFactory;
-import com.google.crypto.tink.aead.AeadKeyTemplates;
-import com.google.crypto.tink.config.TinkConfig;
-import com.google.crypto.tink.proto.KeyTemplate;
+import com.google.crypto.tink.aead.AeadConfig;
+import com.google.crypto.tink.aead.AesGcmKeyManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.File;
 import java.security.GeneralSecurityException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,17 +34,18 @@ public class EncryptionService implements com.flexicore.service.EncryptionServic
     private void initEncryption() {
         if(init.compareAndSet(false,true)){
             try {
-                TinkConfig.register();
+                AeadConfig.register();
                 File keysetFile = new File(tinkKeySetPath);
                 KeysetHandle keysetHandle;
                 if (!keysetFile.exists()) {
-                    KeyTemplate keyTemplate = AeadKeyTemplates.AES128_GCM;
+
+                    KeyTemplate keyTemplate = AesGcmKeyManager.aes256GcmTemplate();
                     keysetHandle = KeysetHandle.generateNew(keyTemplate);
                     CleartextKeysetHandle.write(keysetHandle, JsonKeysetWriter.withFile(keysetFile));
                 } else {
                     keysetHandle = CleartextKeysetHandle.read(JsonKeysetReader.withFile(keysetFile));
                 }
-                aead = AeadFactory.getPrimitive(keysetHandle);
+                aead = keysetHandle.getPrimitive(Aead.class);
 
 
             } catch (Exception e) {

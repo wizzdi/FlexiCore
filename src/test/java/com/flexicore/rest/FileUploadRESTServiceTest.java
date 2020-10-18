@@ -1,39 +1,29 @@
 package com.flexicore.rest;
 
-import com.amazonaws.util.Md5Utils;
-import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.init.FlexiCoreApplication;
 import com.flexicore.model.FileResource;
 import com.flexicore.model.Role;
 import com.flexicore.request.AuthenticationRequest;
-import com.flexicore.request.RoleCreate;
-import com.flexicore.request.RoleFilter;
-import com.flexicore.request.RoleUpdate;
 import com.flexicore.response.AuthenticationResponse;
-import io.joshworks.restclient.http.HttpResponse;
+import com.flexicore.security.MD5Calculator;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.ResponseExtractor;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = FlexiCoreApplication.class)
@@ -68,13 +58,13 @@ public class FileUploadRESTServiceTest {
         Random rd = new Random();
         byte[] data = new byte[FILE_LENGTH];
         rd.nextBytes(data);
-        String md5=Hex.encodeHexString(Md5Utils.computeMD5Hash(data));
+        String md5=MD5Calculator.getMD5(data);
         String name="test-"+System.currentTimeMillis()+".js";
         String id=null;
         // chunk size to divide
         for(int i=0;i<data.length;i+=CHUNK_SIZE){
             byte[] chunk=Arrays.copyOfRange(data, i, Math.min(data.length,i+CHUNK_SIZE));
-            String chunkMD5= Hex.encodeHexString(Md5Utils.computeMD5Hash(chunk));
+            String chunkMD5= MD5Calculator.getMD5(chunk);
             boolean lastChunk=i+CHUNK_SIZE >=data.length;
 
             HttpHeaders headers = new HttpHeaders();
@@ -111,13 +101,13 @@ public class FileUploadRESTServiceTest {
         Random rd = new Random();
         byte[] data = new byte[FILE_LENGTH];
         rd.nextBytes(data);
-        String md5=Hex.encodeHexString(Md5Utils.computeMD5Hash(data));
+        String md5=MD5Calculator.getMD5(data);
         String name="test-"+System.currentTimeMillis();
         // chunk size to divide
         boolean error=true;
         for(int i=0;i<data.length;i+=CHUNK_SIZE){
             byte[] chunk=Arrays.copyOfRange(data, i, Math.min(data.length,i+CHUNK_SIZE));
-            String chunkMD5= Hex.encodeHexString(Md5Utils.computeMD5Hash(chunk));
+            String chunkMD5= MD5Calculator.getMD5(chunk);
             if(error){
                 chunkMD5="fake";
             }
@@ -156,7 +146,7 @@ public class FileUploadRESTServiceTest {
         byte[] data = new byte[FILE_LENGTH];
         rd.nextBytes(data);
         byte[] real=data;
-        String md5=Hex.encodeHexString(Md5Utils.computeMD5Hash(data));
+        String md5=MD5Calculator.getMD5(data);
         String name="test-"+System.currentTimeMillis();
         data= new byte[FILE_LENGTH];
         rd.nextBytes(data);
@@ -165,7 +155,7 @@ public class FileUploadRESTServiceTest {
         // chunk size to divide
         for(int i=0;i<data.length;i+=CHUNK_SIZE){
             byte[] chunk=Arrays.copyOfRange(data, i, Math.min(data.length,i+CHUNK_SIZE));
-            String chunkMD5= Hex.encodeHexString(Md5Utils.computeMD5Hash(chunk));
+            String chunkMD5= MD5Calculator.getMD5(chunk);
 
             boolean lastChunk=i+CHUNK_SIZE >=data.length;
 
@@ -195,7 +185,7 @@ public class FileUploadRESTServiceTest {
         // chunk size to divide
         for(int i=0;i<data.length;i+=CHUNK_SIZE){
             byte[] chunk=Arrays.copyOfRange(data, i, Math.min(data.length,i+CHUNK_SIZE));
-            String chunkMD5= Hex.encodeHexString(Md5Utils.computeMD5Hash(chunk));
+            String chunkMD5= MD5Calculator.getMD5(chunk);
 
             boolean lastChunk=i+CHUNK_SIZE >=data.length;
 
@@ -226,7 +216,7 @@ public class FileUploadRESTServiceTest {
         Random rd = new Random();
         byte[] data = new byte[FILE_LENGTH];
         rd.nextBytes(data);
-        String md5=Hex.encodeHexString(Md5Utils.computeMD5Hash(data));
+        String md5=MD5Calculator.getMD5(data);
         String name="test-"+System.currentTimeMillis();
         // chunk size to divide
         for(int i=0;i<data.length;i+=CHUNK_SIZE){
