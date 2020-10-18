@@ -5,21 +5,25 @@
 # ![](https://support.wizzdi.com/wp-content/uploads/2020/05/flexicore-icon-extra-small.png) FlexiCore [![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore)](https://jenkins.wizzdi.com/job/FlexiCore/)[![Maven Central](https://img.shields.io/maven-central/v/com.wizzdi/flexicore-api.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.wizzdi%22%20AND%20a:%22flexicore-api%22)
 
 
+For comprehensive information about FlexiCore please visit our [site](http://wizzdi.com/).
 
-Flexicore empowers [Spring Boot]([https://github.com/spring-projects/spring-boot](https://github.com/spring-projects/spring-boot)) applications with a very flexible and powerful plugins support, robust access control,and an optional set of services many applications require
+FlexiCore boosts [Spring Boot](https://github.com/spring-projects/spring-boot) applications with a very flexible and powerful plugins support, robust access control and an optional set of services many applications require.
 
 ## Use Case
 
 **PersonService** in person-service jar
 
     @PluginInfo(version = 1)  
+    @Extension  
+    @Component
     public class PersonService implements ServicePlugin {  
+    
+      private static final Logger logger=LoggerHandler.getLogger(PersonService.class);  
       
-     @Inject  
+     @Autowired  
      @PluginInfo(version = 1)  
       private PersonRepository repository;  
-      @Inject  
-      private Logger logger;  
+      
       
      public Person createPerson(PersonCreate personCreate, SecurityContext securityContext) {  
             Person person = createPersonNoMerge(personCreate, securityContext);  
@@ -87,7 +91,7 @@ now from your IDE connect to the port specified in the above command (8787)
 FlexiCore maintains a reference [documentation ](https://support.wizzdi.com)
 
 ## Stay in Touch
-Contact us at our [site]([http://wizzdi.com/](http://wizzdi.com/))
+Contact us at our [site](http://wizzdi.com/)
 
 
 ### Main 3rd Party Dependencies
