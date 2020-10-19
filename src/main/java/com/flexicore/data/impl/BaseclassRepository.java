@@ -1573,7 +1573,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     @Override
     @Transactional
     public void massMerge(List<?> toMerge,boolean updatedate) {
-        List<BaseclassCreated<?>> events=new ArrayList<>();
+        List<Object> events=new ArrayList<>();
         OffsetDateTime now = OffsetDateTime.now();
         for (Object o : toMerge) {
             if(o instanceof Baseclass){
@@ -1590,12 +1590,16 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
                     BaseclassCreated<?> baseclassCreated=new BaseclassCreated<>(baseclass);
                     events.add(baseclassCreated);
                 }
+                else{
+                    BaseclassUpdated<?> baseclassUpdated=new BaseclassUpdated<>(baseclass);
+                    events.add(baseclassUpdated);
+                }
 
             }
 
             em.merge(o);
         }
-        for (BaseclassCreated<?> event : events) {
+        for (Object event : events) {
             eventPublisher.publishEvent(event);
         }
     }
