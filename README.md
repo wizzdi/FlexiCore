@@ -92,8 +92,10 @@ FlexiCore maintains a reference [documentation](https://support.wizzdi.com)
 ## Docker
 if your machine is running docker ( if not installation instructions are available in [docker documentation site](https://docs.docker.com/get-docker/) ) simply run:
 
-    docker run wizzdi/flexicore
+    docker run -p 8080:8080 wizzdi/flexicore
     
+once initialization is complete a swagger will be avilable at http://<your-server-ip>:8080/FlexiCore
+the default username is admin@flexicore.com the password is randomlly generated and can be found in the docker container at /home/flexicore/firstRun.txt
 docker image is available at [Docker Hub](https://hub.docker.com/r/wizzdi/flexicore)
 
 
