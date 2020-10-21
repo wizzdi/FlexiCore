@@ -89,11 +89,11 @@ now from your IDE connect to the port specified in the above command (8787)
 ## Documentation
 
 ## Docker
-if your machine is running docker ( if not installation instructions are avilable in [docker documentation site](https://docs.docker.com/get-docker/) ) simply run
+if your machine is running docker ( if not installation instructions are available in [docker documentation site](https://docs.docker.com/get-docker/) ) simply run
 docker run wizzdi/flexicore
 docker image is available at [Docker Hub](https://hub.docker.com/r/wizzdi/flexicore)
 
-FlexiCore maintains a reference [documentation ](https://support.wizzdi.com)
+FlexiCore maintains a reference [documentation](https://support.wizzdi.com)
 
 ## Stay in Touch
 Contact us at our [site](http://wizzdi.com/)
