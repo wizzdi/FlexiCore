@@ -27,7 +27,7 @@ public class EventPropagator {
     @Autowired
     private FlexiCorePluginManager flexiCorePluginManager;
     private static final Set<Object> eventsInProcess = new ConcurrentSkipListSet<>(Comparator.comparing(System::identityHashCode));
-    private Logger logger = LoggerFactory.getLogger(EventPropagator.class);
+    private static final Logger logger = LoggerFactory.getLogger(EventPropagator.class);
 
     @Autowired
     private ApplicationContext applicationContext;

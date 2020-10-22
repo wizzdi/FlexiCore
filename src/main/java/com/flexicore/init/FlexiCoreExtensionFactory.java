@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -22,6 +23,17 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
     public FlexiCoreExtensionFactory(FlexiCorePluginManager pluginManager) {
         super(pluginManager, true);
         this.pluginManager = pluginManager;
+    }
+    protected <T> T createWithoutSpring(Class<?> extensionClass) {
+        try {
+            Class<T> c=(Class<T>) extensionClass;
+            Constructor<T> constructor = c.getConstructor();
+            return constructor.newInstance();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return null;
     }
 
     @Override

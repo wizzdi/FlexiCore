@@ -1,18 +1,14 @@
 package com.flexicore.init;
 
-import com.flexicore.model.Clazz;
-
-import java.util.List;
-
 public class StartingContext {
 
-    private final List<Clazz> clazzes;
+    private final long time;
 
-    public StartingContext(List<Clazz> clazzes) {
-        this.clazzes = clazzes;
+    public StartingContext(long time) {
+        this.time=time;
     }
 
-    public List<Clazz> getClazzes() {
-        return clazzes;
+    public long getTime() {
+        return time;
     }
 }
