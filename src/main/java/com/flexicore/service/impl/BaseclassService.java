@@ -97,7 +97,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     }
 
-    private static final Set<String> knownTypes = new HashSet<>(Arrays.asList(OffsetDateTime.class.getCanonicalName(),
+    private static final Set<String> knownTypes = new HashSet<>(Arrays.asList(OffsetDateTime.class.getCanonicalName(),LocalDateTime.class.getCanonicalName(),
             Date.class.getCanonicalName(), ZonedDateTime.class.getCanonicalName(), List.class.getCanonicalName(), Map.class.getCanonicalName()));
 
 
