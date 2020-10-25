@@ -49,6 +49,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -325,6 +326,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     }
 
     private Object getKnownTypeValue(Class<?> c) {
+        if (c.equals(LocalDateTime.class)) return LocalDateTime.now();
         if (c.equals(OffsetDateTime.class)) return OffsetDateTime.now();
         if (c.equals(ZonedDateTime.class)) return ZonedDateTime.now();
         if (c.equals(Date.class)) return Date.from(Instant.now());
