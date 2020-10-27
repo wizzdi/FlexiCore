@@ -197,7 +197,7 @@ public class UserRepository extends BaseclassRepository {
         if (userFiltering.getUserTenants() != null && !userFiltering.getUserTenants().isEmpty()) {
             Set<String> ids = userFiltering.getUserTenants().parallelStream().map(Baseclass::getId).collect(Collectors.toSet());
             Join<T, TenantToUser> join = r.join(User_.tenantToUsers);
-            Join<TenantToUser, Tenant> tenantJoin = join.join(TenantToUser_.tenant);
+            Join<TenantToUser, Tenant> tenantJoin = cb.treat(join.join(Baselink_.leftside),Tenant.class);
             preds.add(tenantJoin.get(Tenant_.id).in(ids));
         }
 
