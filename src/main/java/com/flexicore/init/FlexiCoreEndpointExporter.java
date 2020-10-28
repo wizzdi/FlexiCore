@@ -3,6 +3,7 @@ package com.flexicore.init;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
@@ -27,6 +28,7 @@ public class FlexiCoreEndpointExporter extends ServerEndpointExporter {
     private static final String ANNOTATION_METHOD = "annotationData";
     private static final String ANNOTATIONS = "annotations";
     @Autowired
+    @Lazy
     private FlexiCorePluginManager flexiCorePluginManager;
     @Override
     protected void registerEndpoints() {

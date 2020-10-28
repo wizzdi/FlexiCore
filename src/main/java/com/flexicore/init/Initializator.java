@@ -7,8 +7,10 @@
 package com.flexicore.init;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import java.io.File;
 import java.util.Arrays;
@@ -23,6 +25,7 @@ import java.util.logging.Logger;
  */
 
 @Configuration
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class Initializator {
 
     private static final Logger logger = Logger.getLogger(Initializator.class.getCanonicalName());
@@ -59,6 +62,7 @@ public class Initializator {
      * @throws Exception if there is any issue starting the context
      */
     @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public StartingContext getStartingContext() throws Exception {
 
         createFolderStructure();

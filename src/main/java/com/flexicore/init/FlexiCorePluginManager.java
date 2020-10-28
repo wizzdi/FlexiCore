@@ -4,8 +4,11 @@ import org.pf4j.*;
 import org.pf4j.spring.SpringPluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -13,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+@Lazy
 public class FlexiCorePluginManager extends SpringPluginManager {
 
     private static final Logger logger= LoggerFactory.getLogger(FlexiCorePluginManager.class);

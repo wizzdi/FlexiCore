@@ -61,8 +61,12 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
             contextCache.put(pluginId, applicationContext);
             List<String> dependencies = pluginWrapper!=null?pluginWrapper.getDescriptor().getDependencies().parallelStream().map(f -> f.getPluginId()).sorted().collect(Collectors.toList()):new ArrayList<>();
             List<ApplicationContext> dependenciesContexts=dependencies.stream().map(f->pluginManager.getPlugin(f)).filter(f->f!=null).map(this::getApplicationContext).collect(Collectors.toList());
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
             applicationContext.getAutowireCapableBeanFactory().addDependenciesContext(dependenciesContexts);
             applicationContext.refresh();
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
+
             pluginsApplicationContexts.add(applicationContext);
             logger.debug("creating context for "+pluginId +" took "+(System.currentTimeMillis()-start)+"ms");
 
