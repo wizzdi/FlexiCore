@@ -9,7 +9,7 @@ RUN mvn install -DskipTests
 
 FROM adoptopenjdk/openjdk11
 WORKDIR /app
-COPY --from=build /app/target/FlexiCore-4.2.2-SNAPSHOT-exec.jar /app
+COPY --from=build /app/target/FlexiCore-*-SNAPSHOT-exec.jar /app/FlexiCore.jar
 
 
 RUN apt-get update && apt-get -qq -y install wget gnupg maven python2.7 python-pip
@@ -50,4 +50,4 @@ EXPOSE 8080
 EXPOSE 8787
 USER root
 RUN mkdir -p /data/db
-CMD ["/bin/bash","-c","/usr/sbin/service postgresql start&&/usr/bin/mongod --fork --logpath /var/log/mongodb/mongod.log&&java -jar /app/FlexiCore-4.2.2-SNAPSHOT-exec.jar"]
+CMD ["/bin/bash","-c","/usr/sbin/service postgresql start&&/usr/bin/mongod --fork --logpath /var/log/mongodb/mongod.log&&java -jar /app/FlexiCore.jar"]
