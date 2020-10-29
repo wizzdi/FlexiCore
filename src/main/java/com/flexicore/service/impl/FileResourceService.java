@@ -309,14 +309,14 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
             String fileName = file.getName();
             String ext = fileName.endsWith("tar.gz") ? "tar.gz" : FilenameUtils.getExtension(fileName);
             String actualFilename = !ext.isEmpty() ? UUID.randomUUID().toString() + "." + ext : UUID.randomUUID().toString();
-            fileResource = new FileResource(fileName, securityContext);
             FileResourceCreate fileResourceCreate = new FileResourceCreate()
                     .setFullPath(pathToFileResource)
                     .setMd5(md5)
                     .setOffset(0L)
                     .setActualFilename(actualFilename)
-                    .setOriginalFilename(fileName);
-            updateFileResourceNoMerge(fileResourceCreate, fileResource);
+                    .setOriginalFilename(fileName)
+                    .setName(fileName);
+            fileResource=createFileResource(fileResourceCreate,securityContext);
         }
         return fileResource;
 
