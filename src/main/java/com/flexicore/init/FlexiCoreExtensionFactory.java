@@ -1,7 +1,10 @@
 package com.flexicore.init;
 
+import com.flexicore.interfaces.Plugin;
+import com.flexicore.plugin.FlexiCorePlugin;
 import org.pf4j.PluginWrapper;
 import org.pf4j.spring.SpringExtensionFactory;
+import org.pf4j.spring.SpringPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -83,6 +86,16 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
         applicationContext.setClassLoader(pluginClassLoader);
         for (Class<? extends com.flexicore.interfaces.Plugin> beanClass : beanClasses) {
             applicationContext.register(beanClass);
+        }
+        if(pluginWrapper!=null&&pluginWrapper.getPlugin() instanceof FlexiCorePlugin){
+            FlexiCorePlugin flexiCorePlugin= (FlexiCorePlugin) pluginWrapper.getPlugin();
+            List<Class<?>> additionalBeanClasses = flexiCorePlugin.getAdditionalBeanClasses(beanClasses);
+            if(additionalBeanClasses!=null){
+                for (Class<?> additionalBeanClass : additionalBeanClasses) {
+                    applicationContext.register(additionalBeanClass);
+                }
+            }
+
         }
 
         return applicationContext;
