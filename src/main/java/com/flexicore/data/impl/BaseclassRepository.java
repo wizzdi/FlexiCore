@@ -296,9 +296,11 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     @Transactional
     public void merge(Object base,boolean updateDate) {
         Baseclass base1=null;
+        boolean created=false;
         if(base instanceof Baseclass){
             OffsetDateTime now = OffsetDateTime.now();
             base1 = (Baseclass) base;
+            created=base1.getUpdateDate()==null;
             if(updateDate){
                 base1.setUpdateDate(now);
             }
@@ -312,7 +314,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
 
         em.merge(base);
         if(base1!=null){
-            if(base1.getCreationDate()==null){
+            if(created){
                 eventPublisher.publishEvent(new BaseclassCreated<>(base1));
             }
             else{
