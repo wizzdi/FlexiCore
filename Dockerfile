@@ -7,7 +7,7 @@ WORKDIR /app
 COPY --from=clone /app/FlexiCore /app
 RUN mvn install -DskipTests
 
-FROM adoptopenjdk/openjdk11 as test
+FROM adoptopenjdk/openjdk11 as run
 WORKDIR /app
 COPY --from=build /app/target/FlexiCore-*-SNAPSHOT-exec.jar /app/FlexiCore.jar
 
