@@ -8,6 +8,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +18,6 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.logging.Logger;
 
 /**
  * Created by Asaf on 18/12/2016.
@@ -25,7 +26,7 @@ import java.util.logging.Logger;
 @Aspect
 public class LogExecutionTimeInterceptor implements Serializable{
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(LogExecutionTimeInterceptor.class);
 
 
     @Around("execution(@com.flexicore.annotations.LogExecutionTime * *(..)) || within(@(@com.flexicore.annotations.LogExecutionTime *) *)")

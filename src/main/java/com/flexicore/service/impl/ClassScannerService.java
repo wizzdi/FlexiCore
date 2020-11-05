@@ -36,8 +36,8 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 @Primary
@@ -57,7 +57,7 @@ public class ClassScannerService {
 
     @Autowired
     BaselinkRepository baselinkrepository;
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(ClassScannerService.class);
 
     @Autowired
     private SecurityService securityService;
@@ -150,9 +150,9 @@ public class ClassScannerService {
                     .setInvoker(dynamicInvoker);
             if (dynamicInvokersService.updateInvokerNoMerge(createInvokerRequest, createInvokerRequest.getInvoker())) {
                 toMergeInvokers.add(dynamicInvoker);
-                logger.fine("updated invoker " + dynamicInvoker.getCanonicalName());
+                logger.debug("updated invoker " + dynamicInvoker.getCanonicalName());
             } else {
-                logger.fine("invoker " + dynamicInvoker.getCanonicalName() + " already exists");
+                logger.debug("invoker " + dynamicInvoker.getCanonicalName() + " already exists");
 
             }
 
@@ -178,7 +178,7 @@ public class ClassScannerService {
                     operation = operationService.createOperationNoMerge(createOperationRequest);
                     toMergeOperations.add(operation);
                     operationMap.put(operation.getId(), operation);
-                    logger.fine("created operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName());
+                    logger.debug("created operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName());
 
                 } else {
                     UpdateOperationRequest updateOperationRequest = new UpdateOperationRequest()
@@ -190,9 +190,9 @@ public class ClassScannerService {
                             .setOperation(operation);
                     if (operationService.updateOperationNoMerge(updateOperationRequest, updateOperationRequest.getOperation())) {
                         toMergeOperations.add(operation);
-                        logger.fine("updated operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName());
+                        logger.debug("updated operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName());
                     } else {
-                        logger.fine("operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName() + " already exists");
+                        logger.debug("operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName() + " already exists");
 
                     }
                 }
@@ -352,7 +352,7 @@ public class ClassScannerService {
             operation = operationService.createOperationNoMerge(createOperationRequest);
             toMerge.add(operation);
 
-            logger.fine("Have created a new operation" + operation.toString());
+            logger.debug("Have created a new operation" + operation.toString());
 
 
         } else {
@@ -360,7 +360,7 @@ public class ClassScannerService {
                 operation.setSystemObject(true);
                 toMerge.add(operation);
             }
-            logger.fine("operation already exists: " + operation);
+            logger.debug("operation already exists: " + operation);
 
         }
 
@@ -406,7 +406,7 @@ public class ClassScannerService {
 
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "failed initializing reflections", e);
+            logger.error( "failed initializing reflections", e);
         }
 
 
@@ -420,7 +420,7 @@ public class ClassScannerService {
     public List<Clazz> InitializeClazzes() {
 
         Set<Class<?>> entities = entitiesHolder.getEntities();
-        logger.fine("detected classes:  " + entities.parallelStream().map(e -> e.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
+        logger.debug("detected classes:  " + entities.parallelStream().map(e -> e.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
 
         Set<String> ids = entities.parallelStream().map(f -> Baseclass.generateUUIDFromString(f.getCanonicalName())).collect(Collectors.toSet());
         ids.add(Baseclass.generateUUIDFromString(Clazz.class.getCanonicalName()));
@@ -482,19 +482,19 @@ public class ClassScannerService {
                 clazz.setSystemObject(true);
                 toMerge.add(clazz);
                 existing.put(clazz.getId(), clazz);
-                logger.fine("Have created a new class " + clazz.toString());
+                logger.debug("Have created a new class " + clazz.toString());
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "[register classes] Error while creating operation: ", e);
+                logger.error( "[register classes] Error while creating operation: ", e);
             }
 
         } else {
-            logger.fine("Clazz  allready exists: " + clazz);
+            logger.debug("Clazz  allready exists: " + clazz);
 
         }
         if (clazz != null) {
             baselinkrepository.addtocache(clazz);
         } else {
-            logger.severe("clazz for " + claz.getCanonicalName() + " was not registered");
+            logger.error("clazz for " + claz.getCanonicalName() + " was not registered");
         }
 
 
@@ -550,7 +550,7 @@ public class ClassScannerService {
         TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(admin).setTenant(defaultTenant);
         TenantToUser tenantToUser=baselinkrepository.findByIdOrNull(TenantToUser.class, TENANT_TO_USER_ID);
         if(tenantToUser==null){
-            logger.fine("Creating Tenant To User link");
+            logger.debug("Creating Tenant To User link");
             tenantToUser=userService.createTenantToUserNoMerge(tenantToUserCreate,null);
             tenantToUser.setCreator(admin);
             tenantToUser.setId(TENANT_TO_USER_ID);
@@ -559,7 +559,7 @@ public class ClassScannerService {
         else{
             if(userService.updateTenantToUserNoMerge(tenantToUserCreate,tenantToUser)){
                 toMerge.add(tenantToUser);
-                logger.fine("Updated Tenant To User");
+                logger.debug("Updated Tenant To User");
             }
         }
         RoleCreate roleCreate=new RoleCreate()
@@ -568,7 +568,7 @@ public class ClassScannerService {
                 .setTenant(defaultTenant);
         Role superAdminRole=baselinkrepository.findByIdOrNull(Role.class, SUPER_ADMIN_ROLE_ID);
         if(superAdminRole==null){
-            logger.fine("Creating Super Admin role");
+            logger.debug("Creating Super Admin role");
             superAdminRole=roleService.createRoleNoMerge(roleCreate,null);
             superAdminRole.setCreator(admin);
             superAdminRole.setId(SUPER_ADMIN_ROLE_ID);
@@ -577,7 +577,7 @@ public class ClassScannerService {
         RoleToUserCreate roleToUserCreate=new RoleToUserCreate().setRole(superAdminRole).setUser(admin).setTenant(defaultTenant);
         RoleToUser roleToUser=baselinkrepository.findByIdOrNull(RoleToUser.class, SUPER_ADMIN_TO_ADMIN_ID);
         if(roleToUser==null){
-            logger.fine("Creating Role To User Link");
+            logger.debug("Creating Role To User Link");
             roleToUser=userService.createRoleToUserNoMerge(roleToUserCreate,null);
             roleToUser.setCreator(admin);
             roleToUser.setId(SUPER_ADMIN_TO_ADMIN_ID);
@@ -586,7 +586,7 @@ public class ClassScannerService {
         else{
             if(userService.updateRoleToUserNoMerge(roleToUserCreate,roleToUser)){
                 toMerge.add(roleToUser);
-                logger.fine("Updated Role To User Link");
+                logger.debug("Updated Role To User Link");
             }
         }
         baselinkrepository.massMerge(toMerge);
@@ -678,9 +678,9 @@ public class ClassScannerService {
             doc.setId(id);
             doc.setDescription(doc.getDescription());
             baselinkrepository.merge(doc);
-            logger.fine("found new tag: " + tag.name());
+            logger.debug("found new tag: " + tag.name());
         } else {
-            logger.fine("tag: " + tag.name() + " already exist in the database");
+            logger.debug("tag: " + tag.name() + " already exist in the database");
         }
     }
 
@@ -692,7 +692,7 @@ public class ClassScannerService {
             try {
                 InheritanceUtils.registerClass(c);
             } catch (Throwable e) {
-                logger.log(Level.SEVERE, "failed registering", e);
+                logger.error( "failed registering", e);
             }
 
         }
@@ -705,7 +705,7 @@ public class ClassScannerService {
                 .setDescription("Default Tenant");
         Tenant defaultTenant = baselinkrepository.findByIdOrNull(Tenant.class, DEFAULT_TENANT_ID);
         if(defaultTenant==null){
-            logger.fine("Creating Default Tenant");
+            logger.debug("Creating Default Tenant");
             defaultTenant=tenantService.createTenantNoMerge(tenantCreate,null);
             defaultTenant.setId(DEFAULT_TENANT_ID);
             defaultTenant.setTenant(defaultTenant);
@@ -730,7 +730,7 @@ public class ClassScannerService {
                 .setName("Admin");
         User admin = baselinkrepository.findByIdOrNull(User.class, systemAdminId);
         if(admin==null){
-            logger.fine("Creating Admin User");
+            logger.debug("Creating Admin User");
             admin=userService.createUserNoMerge(userCreate,null);
             admin.setCreator(admin);
             admin.setId(systemAdminId);

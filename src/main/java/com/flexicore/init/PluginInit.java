@@ -140,7 +140,7 @@ public class PluginInit {
                 try {
                     serverContainer.addEndpoint(c);
                 } catch (DeploymentException e) {
-                    logger.log(Level.SEVERE,"failed adding WS",e);
+                    logger.error("failed adding WS",e);
                 }
             }*/
 

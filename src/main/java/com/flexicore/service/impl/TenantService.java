@@ -28,8 +28,8 @@ import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Primary
 @Component
@@ -47,7 +47,7 @@ public class TenantService implements com.flexicore.service.TenantService {
     private BaseclassNewService baseclassService;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(TenantService.class);
 
 
     @Override

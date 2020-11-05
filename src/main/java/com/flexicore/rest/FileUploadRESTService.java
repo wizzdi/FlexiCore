@@ -35,8 +35,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/resources")
 @RequestScoped
@@ -53,7 +53,7 @@ public class FileUploadRESTService implements RESTService {
     @Autowired
     UserService userService;
 
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(FileUploadRESTService.class);
 
 
     /**
@@ -75,7 +75,7 @@ public class FileUploadRESTService implements RESTService {
         try {
             fileResource = fileResourceService.getExistingFileResource(md5,securityContext);
         } catch (NoResultException e) {
-            logger.log(Level.INFO, "no file resource with md5: " + md5);
+            logger.info( "no file resource with md5: " + md5);
         }
 
         if (fileResource != null) {

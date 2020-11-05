@@ -62,15 +62,18 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 @Primary
 @Component
 public class UserService implements com.flexicore.service.UserService {
 
-    private Logger log = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
+    @Autowired
+    private java.util.logging.Logger utilLogger;
 
     @Autowired
     private UserRepository userrepository;
@@ -299,7 +302,7 @@ public class UserService implements com.flexicore.service.UserService {
             }
             return runningUser;
         }
-        JWTClaims claims = tokenService.parseClaimsAndVerifyClaims(authenticationKey, log);
+        JWTClaims claims = tokenService.parseClaimsAndVerifyClaims(authenticationKey, utilLogger);
         if (claims != null) {
             String email = claims.getSubject();
             User user = userrepository.findByEmail(email);
@@ -434,7 +437,7 @@ public class UserService implements com.flexicore.service.UserService {
         if (user == null) {
             long start = System.currentTimeMillis();
             user = bundle.getMail() != null ? userrepository.findByEmail(bundle.getMail()) : (bundle.getPhoneNumber() != null ? findUserByPhoneNumberOrNull(bundle.getPhoneNumber(), null) : null);
-            log.log(Level.INFO, "Time taken to find user by email is: " + (System.currentTimeMillis() - start));
+            log.info("Time taken to find user by email is: " + (System.currentTimeMillis() - start));
             if (user == null) {
                 if (bundle.getMail() != null) {
                     throw new UserNotFoundException("User for email: " + bundle.getMail() + " was not found");
@@ -483,7 +486,7 @@ public class UserService implements com.flexicore.service.UserService {
             }
 
         } else {
-            JWTClaims claims = tokenService.parseClaimsAndVerifyClaims(authenticationkey, log);
+            JWTClaims claims = tokenService.parseClaimsAndVerifyClaims(authenticationkey, utilLogger);
             if (claims != null && (claims.getExpiration() == null || OffsetDateTime.now().isBefore(claims.getExpiration().toInstant().atZone(ZoneId.of("UTC")).toOffsetDateTime()))) {
                 blacklist.put(authenticationkey, authenticationkey);
                 return true;

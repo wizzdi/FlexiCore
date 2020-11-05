@@ -48,8 +48,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 import static io.swagger.v3.jaxrs2.integration.ServletConfigContextUtils.getContextIdFromServletConfig;
@@ -69,7 +69,7 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
     @Autowired
     private BaseclassService baseclassService;
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(SwaggerAPIRESTService.class);
 
     private static AtomicBoolean init = new AtomicBoolean(false);
     private static Cache<String, String> swaggerCache = CacheBuilder.newBuilder().maximumSize(5).build();
@@ -148,7 +148,7 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
                 oas = f.filter(oas, filterImpl, getQueryParams(uriInfo.getQueryParameters()), getCookies(headers),
                         getHeaders(headers));
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "failed to load filter", e);
+                logger.error( "failed to load filter", e);
             }
 
         }

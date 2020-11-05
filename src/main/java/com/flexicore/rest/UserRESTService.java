@@ -7,8 +7,8 @@
 package com.flexicore.rest;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import org.springframework.stereotype.Component;
@@ -52,7 +52,7 @@ public class UserRESTService implements RESTService {
 
     @Autowired
     private UserService userService;
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(UserRESTService.class);
 
 
     /**
@@ -74,7 +74,7 @@ public class UserRESTService implements RESTService {
         QueryInformationHolder<User> queryInformationHolder = new QueryInformationHolder<>(getAllOfType,  User.class, securityContext);
         long start = System.currentTimeMillis();
         List<User> users = userService.getAllFiltered(queryInformationHolder);
-        logger.log(Level.INFO, "got page at " + (System.currentTimeMillis() - start) + " millisecs");
+        logger.info( "got page at " + (System.currentTimeMillis() - start) + " millisecs");
         return users;
     }
 

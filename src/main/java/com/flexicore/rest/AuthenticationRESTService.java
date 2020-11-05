@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * no need to intercept for security here.
@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 @Tag(name = "Authentication")
 @Path("/authentication")
 public class AuthenticationRESTService implements RESTService {
-    private Logger log = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationRESTService.class);
     @Autowired
     private UserService userservice;
 
@@ -77,7 +77,7 @@ public class AuthenticationRESTService implements RESTService {
 
         } catch (UserNotFoundException | CheckYourCredentialsException e) {
 
-            log.log(Level.WARNING, "unable to log in", e);
+            log.warn( "unable to log in", e);
         }
         if (runninguser != null) {
             AuthenticationBundle bundleRet = new AuthenticationBundle(bundle.getMail());
@@ -85,7 +85,7 @@ public class AuthenticationRESTService implements RESTService {
             return bundleRet;
 
         } else {
-            log.log(Level.INFO, "have failed to log user: " + bundle.getMail());
+            log.info("have failed to log user: " + bundle.getMail());
             throw new ClientErrorException(HttpResponseCodes.SC_UNAUTHORIZED);
 
         }

@@ -18,6 +18,8 @@ import com.flexicore.request.OperationUpdate;
 import com.flexicore.security.SecurityContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +30,6 @@ import javax.ws.rs.BadRequestException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Primary
@@ -49,7 +50,7 @@ public class OperationService implements com.flexicore.service.OperationService 
 
 
 
-	private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+	private static final Logger logger = LoggerFactory.getLogger(OperationService.class);
 
 
 

@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 import javax.persistence.NoResultException;
@@ -32,7 +32,7 @@ import com.flexicore.security.SecurityContext;
 public class BaselinkRepository extends BaseclassRepository {
 
 
-	private Logger logger= Logger.getLogger(getClass().getCanonicalName());
+	private static final Logger logger= LoggerFactory.getLogger(BaselinkRepository.class);
 
 
 	public void clear(){

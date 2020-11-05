@@ -5,6 +5,8 @@ import com.flexicore.model.nosql.BaseclassNoSQL;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
@@ -14,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 import static com.flexicore.service.MongoConnectionService.MONGO_DB;
 
@@ -23,7 +24,7 @@ import static com.flexicore.service.MongoConnectionService.MONGO_DB;
 @Primary
 public class BaseclassNoSQLRepository extends NoSqlRepository implements com.flexicore.data.BaseclassNoSQLRepository {
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(BaseclassNoSQLRepository.class);
     private static AtomicBoolean init = new AtomicBoolean(false);
 
 

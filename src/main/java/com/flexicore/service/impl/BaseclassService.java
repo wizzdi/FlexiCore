@@ -54,8 +54,8 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 @Primary
@@ -68,7 +68,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     @Autowired
     private BaselinkRepository baselinkRepository;
 
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(BaseclassService.class);
     private static ObjectMapper objectMapper;
 
     @Autowired
@@ -320,7 +320,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
             }
             return example;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "failed getting example value for " + c.getCanonicalName(), e);
+            logger.error( "failed getting example value for " + c.getCanonicalName(), e);
         }
         return example;
     }
@@ -374,7 +374,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
                 out.write(ByteOrderMark.UTF_BOM);
 
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "failed writing UTF-8 BOM", e);
+                logger.error( "failed writing UTF-8 BOM", e);
             }
 
 
@@ -384,7 +384,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
              CSVPrinter csvPrinter = new CSVPrinter(out, format)) {
             DynamicInvokersService.exportCollection(fieldToName, fieldNameToMethod, csvPrinter, collection);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "failed exporting data", e);
+            logger.error( "failed exporting data", e);
         }
 
 
@@ -714,13 +714,13 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
 
                 } catch (NoSuchMethodException e) {
-                    logger.log(Level.SEVERE, "unable to get method", e);
+                    logger.error( "unable to get method", e);
                 }
 
             }
         }
         msg = "no invoker matches  " + filteringInformationHolder.getResultType() + " with filter type " + filteringInformationHolder.getClass();
-        logger.log(Level.SEVERE, msg);
+        logger.error( msg);
 
         throw new BadRequestException(msg);
 

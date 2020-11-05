@@ -8,12 +8,13 @@ package com.flexicore.data;
 
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
 
 import com.flexicore.annotations.InheritedComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
@@ -38,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FileResourceRepository extends BaseclassRepository {
 
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(FileResourceRepository.class);
 
     public void persist(Object o) {
         em.persist(o);

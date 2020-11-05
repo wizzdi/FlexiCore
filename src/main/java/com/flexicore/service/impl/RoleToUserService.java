@@ -13,6 +13,8 @@ import com.flexicore.request.RoleToUserCreate;
 import com.flexicore.request.RoleToUserFilter;
 import com.flexicore.request.RoleToUserUpdate;
 import com.flexicore.security.SecurityContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -20,14 +22,13 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Primary
 @Component
 public class RoleToUserService implements com.flexicore.service.RoleToUserService {
-    @Autowired
-    private Logger log;
+
+    private static final Logger log= LoggerFactory.getLogger(RoleToUserService.class);
 
     @Autowired
     private RoleToUserRepository roleToUserRepository;

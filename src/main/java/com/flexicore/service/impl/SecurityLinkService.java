@@ -11,18 +11,19 @@ import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.model.SecurityLink;
 import com.flexicore.request.SecurityLinkFilter;
 import com.flexicore.security.SecurityContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Primary
 @Component
 public class SecurityLinkService implements com.flexicore.service.SecurityLinkService {
 
-	private Logger log=Logger.getLogger(getClass().getCanonicalName());
+	private static final Logger log= LoggerFactory.getLogger(SecurityLinkService.class);
 
 	@Autowired
 	private SecurityLinkRepository securityLinkrepository;

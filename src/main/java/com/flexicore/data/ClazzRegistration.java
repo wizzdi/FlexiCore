@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import javax.persistence.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @InheritedComponent
@@ -18,7 +18,7 @@ public class ClazzRegistration {
     private EntityManager em;
 
 
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(ClazzRegistration.class);
 
     public void register(Clazz clazz) {
         em.persist(clazz);

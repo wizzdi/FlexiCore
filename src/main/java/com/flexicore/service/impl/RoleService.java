@@ -7,9 +7,10 @@
 package com.flexicore.service.impl;
 
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.flexicore.data.RoleRepository;
@@ -28,7 +29,7 @@ import javax.ws.rs.BadRequestException;
 @Primary
 @Component
 public class RoleService implements com.flexicore.service.RoleService {
-	private Logger log = Logger.getLogger(getClass().getCanonicalName());
+	private static final Logger log = LoggerFactory.getLogger(RoleService.class);
 
 	@Autowired
 	private RoleRepository rolerepository;

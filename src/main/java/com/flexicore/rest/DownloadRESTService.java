@@ -23,6 +23,9 @@ import org.apache.commons.io.input.BoundedInputStream;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 
 import javax.enterprise.context.RequestScoped;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.flexicore.annotations.Protected;
@@ -32,7 +35,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.logging.Logger;
 
 @Path("/download")
 @RequestScoped
@@ -45,9 +47,9 @@ import java.util.logging.Logger;
 public class DownloadRESTService implements RESTService {
 
     @Autowired
-    FileResourceService fileResourceService;
+    private FileResourceService fileResourceService;
 
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(DownloadRESTService.class);
 
     /**
      * download a file by its fileResource ID

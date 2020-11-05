@@ -3,9 +3,10 @@ package com.flexicore.service.impl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.BadRequestException;
 
@@ -38,7 +39,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
     @Autowired
     @Baseclassroot
     BaseclassRepository baseclassrpository;
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(SecurityService.class);
     @Autowired
     UserService userservice;
     @Autowired

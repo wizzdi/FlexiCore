@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.security.GeneralSecurityException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Primary
@@ -20,8 +20,7 @@ import java.util.logging.Logger;
 public class EncryptionService implements com.flexicore.service.EncryptionService {
     private static Aead aead;
 
-    @Autowired
-    private  Logger logger;
+    private  static final Logger logger=LoggerFactory.getLogger(EncryptionService.class);
 
     @Value("${flexicore.security.encryption.tinkKeySetPath:/home/flexicore/keyset.json}")
     private String tinkKeySetPath;
@@ -49,7 +48,7 @@ public class EncryptionService implements com.flexicore.service.EncryptionServic
 
 
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "failed loading keyHandle", e);
+                logger.error( "failed loading keyHandle", e);
             }
 
         }

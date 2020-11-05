@@ -20,8 +20,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -29,7 +29,7 @@ import java.util.stream.StreamSupport;
 @Service
 public class BadRequestExceptionMapper implements ExceptionMapper<Exception>  {
 
-    private Logger logger= Logger.getLogger("application");
+    private static final Logger logger= LoggerFactory.getLogger(BadRequestExceptionMapper.class);
 
     private Response.ResponseBuilder badBuilder =Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON);
     private Response.ResponseBuilder internalBuilder =Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON);
@@ -47,7 +47,7 @@ public class BadRequestExceptionMapper implements ExceptionMapper<Exception>  {
             return ((DefaultOptionsMethodException) exception).getResponse();
         }
 
-        logger.log(Level.SEVERE,"error",exception);
+        logger.error("error",exception);
         Response response = exception instanceof WebApplicationException? ((WebApplicationException) exception).getResponse():null;
 
         int errorCode=exception instanceof ErrorCodeException ?((ErrorCodeException) exception).getErrorCode():-1;

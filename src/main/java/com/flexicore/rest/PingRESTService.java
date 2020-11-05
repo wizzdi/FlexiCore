@@ -21,8 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * no need to intercept for security here.
@@ -39,7 +39,7 @@ public class PingRESTService implements RESTService {
     @Autowired
     private BaseclassService baseclassService;
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(PingRESTService.class);
 
 
     @GET
@@ -74,7 +74,7 @@ public class PingRESTService implements RESTService {
             return true;
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "DB ISSUE", e);
+            logger.error( "DB ISSUE", e);
         }
         return false;
 

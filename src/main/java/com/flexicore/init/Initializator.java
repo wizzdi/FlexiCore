@@ -21,8 +21,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * this is used to make sure everything has been initialized,
@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 @Configuration
 public class Initializator {
 
-    private static final Logger logger = Logger.getLogger(Initializator.class.getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(Initializator.class.getCanonicalName());
 
     @Autowired
     private ClassScannerService classScannerService;
@@ -89,7 +89,7 @@ public class Initializator {
 
 
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Error while initializing the system", ex);
+            logger.error( "Error while initializing the system", ex);
         }
         return new StartingContext(clazzes);
 
@@ -110,7 +110,7 @@ public class Initializator {
             File file = new File(path);
             if (!file.exists()) {
                 if (!file.mkdirs()) {
-                    logger.log(Level.WARNING, "failed creating path: " + file);
+                    logger.warn( "failed creating path: " + file);
                 }
             }
         }

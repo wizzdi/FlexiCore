@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class JobProcessor implements ItemProcessor<Job, Job> {
@@ -29,7 +29,7 @@ public class JobProcessor implements ItemProcessor<Job, Job> {
     @Lazy
     private PluginManager pluginManager;
 
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(JobProcessor.class);
 
 
     @Override
@@ -70,7 +70,7 @@ public class JobProcessor implements ItemProcessor<Job, Job> {
                     plugin.process(job); //call the Process method of the PI
                     res = job.getJobInformation().getCurrrentPhaseResult();
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE, "exception while analyzing", e);
+                    logger.error( "exception while analyzing", e);
                 }
 
                 job.setCurrentPhasePrecentage((float) i / size);

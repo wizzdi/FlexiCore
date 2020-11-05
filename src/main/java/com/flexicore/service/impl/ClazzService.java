@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 @Primary
 @Component
 public class ClazzService implements FlexiCoreService{
-	private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+	private static final Logger logger = LoggerFactory.getLogger(ClazzService.class);
 
 
 	public List<Clazz> getallClazz(User user) {

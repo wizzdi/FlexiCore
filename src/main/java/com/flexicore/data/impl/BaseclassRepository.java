@@ -23,6 +23,7 @@ import com.flexicore.security.SecurityContext;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -41,8 +42,8 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,7 +57,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     private static final long serialVersionUID = -6837211315450751680L;
     @PersistenceContext
     protected EntityManager em;
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(BaseclassRepository.class);
     private static Operation allOp;
 
     @Autowired
@@ -196,7 +197,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     }
 
     public void addtocache(Clazz clazz) {
-        logger.fine("have added: " + clazz.getName() + "   class type: " + clazz.getClass().getCanonicalName());
+        logger.debug("have added: " + clazz.getName() + "   class type: " + clazz.getClass().getCanonicalName());
         Baseclass.addClazz(clazz);
 
     }
@@ -209,7 +210,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             em.persist(baseclass);
             return true;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error while persisting entity: "
+            logger.error( "Error while persisting entity: "
                     + baseclass.toString(), e);
         }
         return false;
@@ -255,7 +256,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             }
 
         } catch (NoSuchFieldException | SecurityException e) {
-            logger.log(Level.WARNING, "cant find field", e);
+            logger.warn( "cant find field", e);
 
         }
         return false;
@@ -304,8 +305,8 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             if(updateDate){
                 base1.setUpdateDate(now);
             }
-            if(logger.isLoggable(Level.FINE) ){
-                logger.fine("merging "+ base1.getId()+ " updateDate flag is "+updateDate +" update date "+base1.getUpdateDate());
+            if(logger.isDebugEnabled()){
+                logger.debug("merging "+ base1.getId()+ " updateDate flag is "+updateDate +" update date "+base1.getUpdateDate());
             }
             updateSearchKey(base1);
 
@@ -867,7 +868,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
                         orderby.add(o);
                     }
                 } else {
-                    logger.log(Level.WARNING, sortparameter.getName() + " is not qurifyable");
+                    logger.warn( sortparameter.getName() + " is not qurifyable");
                 }
 
             }
@@ -1507,8 +1508,8 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
                 if(updatedate){
                     baseclass.setUpdateDate(now);
                 }
-                if(logger.isLoggable(Level.FINE)){
-                    logger.fine("merging "+ baseclass.getId() +" updateDate flag is "+updatedate +" update date is "+baseclass.getUpdateDate());
+                if(logger.isDebugEnabled()){
+                    logger.debug("merging "+ baseclass.getId() +" updateDate flag is "+updatedate +" update date is "+baseclass.getUpdateDate());
                 }
                 updateSearchKey(baseclass);
                 if(created){
@@ -1534,13 +1535,13 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             if (isFreeTextSupport(b.getClass())) {
                 String freeText= Stream.of( Introspector.getBeanInfo(b.getClass(), Object.class).getPropertyDescriptors()).filter(this::isPropertyForTextSearch).map(PropertyDescriptor::getReadMethod).filter(this::isIncludeMethod).map(f-> invoke(b, f)).filter(Objects::nonNull).map(f->f+"").filter(f->!f.isEmpty()).collect(Collectors.joining("|"));
                 b.setSearchKey(freeText);
-                logger.fine("Free Text field for "+b.getId() +" is set");
+                logger.debug("Free Text field for "+b.getId() +" is set");
 
             }
         }
 
         catch (Exception e){
-            logger.log(Level.SEVERE,"unable to set free text field",e);
+            logger.error("unable to set free text field",e);
         }
     }
     private static final Map<String, Boolean> freeTextSuportMap = new ConcurrentHashMap<>();
@@ -1549,7 +1550,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
         try {
             return f.invoke(b);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            logger.log(Level.SEVERE,"unable to invoke method",e);
+            logger.error("unable to invoke method",e);
         }
         return null;
     }

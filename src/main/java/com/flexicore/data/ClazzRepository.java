@@ -8,9 +8,11 @@ package com.flexicore.data;
 
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ import com.flexicore.model.QueryInformationHolder;
 @Component
 public class ClazzRepository extends BaseclassRepository {
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(ClazzRepository.class);
 
     @Override
     public Clazz findById(String id) {
