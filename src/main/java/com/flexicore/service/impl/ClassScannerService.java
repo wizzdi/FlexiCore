@@ -169,13 +169,15 @@ public class ClassScannerService {
 
                 Operation operation = operationMap.get(operationId);
                 if (operation == null) {
-                    CreateOperationRequest createOperationRequest = new CreateOperationRequest()
-                            .setName(invokerMethodInfo.displayName().isEmpty() ? method.getName() : invokerMethodInfo.displayName())
-                            .setDescription(invokerMethodInfo.description())
-                            .setAccess(invokerMethodInfo.access())
+                    OperationCreate createOperationRequest = new OperationCreate()
+                            .setDefaultaccess(invokerMethodInfo.access())
                             .setDynamicInvoker(dynamicInvoker)
-                            .setId(operationId);
-                    operation = operationService.createOperationNoMerge(createOperationRequest);
+                            .setName(invokerMethodInfo.displayName().isEmpty() ? method.getName() : invokerMethodInfo.displayName())
+                            .setDescription(invokerMethodInfo.description());
+
+                    operation = operationService.createOperationNoMerge(createOperationRequest,securityContext);
+                    operation.setId(operationId);
+
                     toMergeOperations.add(operation);
                     operationMap.put(operation.getId(), operation);
                     logger.debug("created operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName());
@@ -213,9 +215,11 @@ public class ClassScannerService {
      */
     public void InitializeOperations() {
         initReflections();
+        SecurityContext securityContext = securityService.getAdminUserSecurityContext();
+
         Set<Class<?>> operationClasses = reflections.getTypesAnnotatedWith(OperationsInside.class, true);
         for (Class<?> annotated : operationClasses) {
-            registerOperationsInclass(annotated);
+            registerOperationsInclass(annotated,securityContext);
 
         }
         List<Object> toMerge = new ArrayList<>();
@@ -227,15 +231,15 @@ public class ClassScannerService {
 
         Map<String, Operation> existing = baselinkrepository.findByIds(Operation.class, new HashSet<>(Arrays.asList(deleteId, readId, updateId, writeId, allId))).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
         IOperation ioOperation = Delete.class.getDeclaredAnnotation(IOperation.class);
-        addOperation(ioOperation, deleteId, toMerge, existing);
+        addOperation(ioOperation, deleteId, toMerge, existing,securityContext);
         ioOperation = Read.class.getDeclaredAnnotation(IOperation.class);
-        addOperation(ioOperation, readId, toMerge, existing);
+        addOperation(ioOperation, readId, toMerge, existing,securityContext);
         ioOperation = Update.class.getDeclaredAnnotation(IOperation.class);
-        addOperation(ioOperation, updateId, toMerge, existing);
+        addOperation(ioOperation, updateId, toMerge, existing,securityContext);
         ioOperation = Write.class.getDeclaredAnnotation(IOperation.class);
-        addOperation(ioOperation, writeId, toMerge, existing);
+        addOperation(ioOperation, writeId, toMerge, existing,securityContext);
         ioOperation = All.class.getDeclaredAnnotation(IOperation.class);
-        addOperation(ioOperation, allId, toMerge, existing);
+        addOperation(ioOperation, allId, toMerge, existing,securityContext);
 
         baselinkrepository.massMerge(toMerge);
 
@@ -243,7 +247,7 @@ public class ClassScannerService {
     }
 
 
-    public void registerOperationsInclass(Class<?> clazz) {
+    public void registerOperationsInclass(Class<?> clazz,SecurityContext securityContext) {
         List<Object> toMerge = new ArrayList<>();
         OperationsInside operationsInside = clazz.getAnnotation(OperationsInside.class);
         Map<String, IOperation> toHandle = new HashMap<>();
@@ -268,7 +272,7 @@ public class ClassScannerService {
             Map<String, Operation> existing = toHandle.isEmpty() ? new HashMap<>() : clazzrepository.findByIds(Operation.class, toHandle.keySet()).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
             for (Map.Entry<String, IOperation> stringIOperationEntry : toHandle.entrySet()) {
                 IOperation op = stringIOperationEntry.getValue();
-                Operation operation = addOperation(op, stringIOperationEntry.getKey(), toMerge, existing);
+                Operation operation = addOperation(op, stringIOperationEntry.getKey(), toMerge, existing,securityContext);
                 existing.put(operation.getId(), operation);
                 Class<? extends Baseclass>[] related = op.relatedClazzes();
                 opIdToRelated.put(operation.getId(), related);
@@ -341,15 +345,15 @@ public class ClassScannerService {
 
 
 
-    private Operation addOperation(IOperation ioperation, String id, List<Object> toMerge, Map<String, Operation> existing) {
+    private Operation addOperation(IOperation ioperation, String id, List<Object> toMerge, Map<String, Operation> existing,SecurityContext securityContext) {
         Operation operation = existing.get(id);
         if (operation == null) {
-            CreateOperationRequest createOperationRequest = new CreateOperationRequest()
-                    .setAccess(ioperation.access())
+            OperationCreate createOperationRequest = new OperationCreate()
+                    .setDefaultaccess(ioperation.access())
                     .setDescription(ioperation.Description())
-                    .setId(id)
                     .setName(ioperation.Name());
-            operation = operationService.createOperationNoMerge(createOperationRequest);
+            operation = operationService.createOperationNoMerge(createOperationRequest,securityContext);
+            operation.setId(id);
             toMerge.add(operation);
 
             logger.debug("Have created a new operation" + operation.toString());

@@ -78,10 +78,11 @@ public class Initializator {
         logger.info("Initializing classes");
         List<Clazz> clazzes = classScannerService.InitializeClazzes(); // must be done first!
 
-        logger.info("Initializing operations");
-        classScannerService.InitializeOperations();
         try {
             classScannerService.createDefaultObjects();
+            logger.info("Initializing operations");
+            classScannerService.InitializeOperations();
+
             classScannerService.createSwaggerTags();
             classScannerService.initializeInvokers();
 

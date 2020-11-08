@@ -145,7 +145,7 @@ public class PluginInit {
             }*/
 
                 if (c.isAnnotationPresent(OperationsInside.class)) {
-                    classScannerService.registerOperationsInclass(c); // Adds
+                    classScannerService.registerOperationsInclass(c,securityContext); // Adds
                 }
                 if (c.isAnnotationPresent(InvokerInfo.class)) {
                     classScannerService.registerInvoker(c, securityContext);
