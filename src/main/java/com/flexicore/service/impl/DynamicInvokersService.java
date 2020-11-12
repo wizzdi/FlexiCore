@@ -246,6 +246,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
     public ExecuteInvokerRequest getExecuteInvokerRequest(DynamicExecution dynamicExecution, ExecutionContext executionContext, SecurityContext securityContext) {
         Set<String> invokerNames = dynamicInvokersRepository.getAllServiceCanonicalNames(dynamicExecution).parallelStream().map(f -> f.getServiceCanonicalName()).collect(Collectors.toSet());
         return new ExecuteInvokerRequest()
+                .setLastExecuted(dynamicExecution.getLastExecuted())
                 .setInvokerNames(invokerNames)
                 .setInvokerMethodName(dynamicExecution.getMethodName())
                 .setExecutionContext(executionContext)
