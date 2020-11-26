@@ -61,9 +61,14 @@ public class FileUploadRESTServiceTest {
         String md5=MD5Calculator.getMD5(data);
         String name="test-"+System.currentTimeMillis()+".js";
         String id=null;
+        //just for sake of the example , frResponse will always be 204 here since we are generating a random file content
+        ResponseEntity<FileResource> frResponse=this.restTemplate.getForEntity("/FlexiCore/rest/resources/"+md5, FileResource.class);
+        FileResource body = frResponse.getBody();
+        long offset=body!=null?body.getOffset():0L;
+
         // chunk size to divide
-        for(int i=0;i<data.length;i+=CHUNK_SIZE){
-            byte[] chunk=Arrays.copyOfRange(data, i, Math.min(data.length,i+CHUNK_SIZE));
+        for(long i=offset;i<data.length;i+=CHUNK_SIZE){
+            byte[] chunk=Arrays.copyOfRange(data, (int)i, Math.min(data.length,(int)(i+CHUNK_SIZE)));
             String chunkMD5= MD5Calculator.getMD5(chunk);
             boolean lastChunk=i+CHUNK_SIZE >=data.length;
 
