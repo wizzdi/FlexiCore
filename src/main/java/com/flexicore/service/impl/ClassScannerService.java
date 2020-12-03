@@ -38,6 +38,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.ManyToOne;
 import java.util.stream.Collectors;
 
 @Primary
@@ -478,9 +480,7 @@ public class ClassScannerService {
         if (clazz == null) {
             try {
 
-                clazz = new Clazz(classname, null);
-
-
+                clazz = Baselink.class.isAssignableFrom(claz) ? createClazzLink(claz, existing, defaults, toMerge) : new Clazz(classname, null);
                 clazz.setId(ID);
                 clazz.setDescription(annotatedclazz.Description());
                 clazz.setSystemObject(true);
@@ -503,6 +503,54 @@ public class ClassScannerService {
 
 
     }
+
+    private ClazzLink createClazzLink(Class<?> claz, Map<String, Clazz> existing, List<AnnotatedClazzWithName> defaults, List<Object> toMerge) {
+        //handle the case where a ClazzLink is needed
+        String classname = claz.getCanonicalName();
+        ClazzLink clazzLink = new ClazzLink(classname, null);
+        Class<?>[] params = new Class[0];
+        try {
+            Method l = claz.getDeclaredMethod("getLeftside", params);
+            Method r = claz.getDeclaredMethod("getRightside", params);
+            Clazz valueClazz = Baseclass.getClazzByName(Baseclass.class.getCanonicalName());
+            if (valueClazz == null) {
+                handleEntityClass(Baseclass.class, existing, defaults, toMerge);
+                valueClazz = Baseclass.getClazzByName(Baseclass.class.getCanonicalName());
+            }
+            try {
+                Method v = claz.getDeclaredMethod("getValue", params);
+                ManyToOne mtO = v.getAnnotation(ManyToOne.class);
+                Class<?> cv = mtO.targetEntity();
+                handleEntityClass(cv, existing, defaults, toMerge);
+                valueClazz = Baseclass.getClazzByName(cv.getCanonicalName());
+            } catch (NoSuchMethodException e) {
+                logger.info("there is not spesific decleration for value for: " + claz.getCanonicalName());
+
+            }
+            clazzLink.setValue(valueClazz);
+            if (l.isAnnotationPresent(ManyToOne.class)) {
+                ManyToOne mtO = l.getAnnotation(ManyToOne.class);
+                Class<?> cl = mtO.targetEntity();
+                handleEntityClass(cl, existing, defaults, toMerge);
+                Clazz lclazz = Baseclass.getClazzByName(cl.getCanonicalName());
+                clazzLink.setLeft(lclazz);
+
+            }
+            if (r.isAnnotationPresent(ManyToOne.class)) {
+                ManyToOne mtO = r.getAnnotation(ManyToOne.class);
+                Class<?> cr = mtO.targetEntity();
+                handleEntityClass(cr, existing, defaults, toMerge);
+                Clazz rclazz = Baseclass.getClazzByName(cr.getCanonicalName());
+                clazzLink.setRight(rclazz);
+
+            }
+        } catch (Exception e) {
+            logger.error( "failed setting clazzlink properties", e);
+        }
+        return clazzLink;
+    }
+
+
 
     private AnnotatedClazz generateAnnotatedClazz(Class<?> claz) {
         return new AnnotatedClazz() {
