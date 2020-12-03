@@ -1,7 +1,6 @@
 package com.flexicore.service.impl;
 
 import com.flexicore.annotations.*;
-import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.annotations.rest.*;
 import com.flexicore.constants.Constants;
 import com.flexicore.data.BaselinkRepository;
@@ -22,8 +21,6 @@ import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
@@ -35,9 +32,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
+import javax.persistence.ManyToOne;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -480,6 +476,7 @@ public class ClassScannerService {
 
     /**
      * Make sure that all classes annotated with {@code AnnotatedClazz} are registered in the database
+     *
      * @return list of initialized classes
      */
     @Transactional
@@ -512,7 +509,7 @@ public class ClassScannerService {
         entities.add(Clazz.class);
         entities.add(ClazzLink.class);
         //createIndexes(entities);
-       return new ArrayList<>(existing.values());
+        return new ArrayList<>(existing.values());
 
 
     }
@@ -520,10 +517,6 @@ public class ClassScannerService {
     private void handleEntityClass(Class<?> claz, Map<String, Clazz> existing, List<AnnotatedClazzWithName> defaults, List<Object> toMerge) {
         registerClazzes(claz, existing, defaults, toMerge);
     }
-
-
-
-
 
 
     private void registerClazzes(Class<?> claz, Map<String, Clazz> existing, List<AnnotatedClazzWithName> defaults, List<Object> toMerge) {
@@ -547,13 +540,11 @@ public class ClassScannerService {
         Clazz clazz = existing.get(ID);
         if (clazz == null) {
             try {
-
-                clazz = new Clazz(classname, null);
-
-
+                clazz = Baselink.class.isAssignableFrom(claz) ? createClazzLink(claz, existing, defaults, toMerge) : new Clazz(classname, null);
                 clazz.setId(ID);
                 clazz.setDescription(annotatedclazz.Description());
                 clazz.setSystemObject(true);
+
                 toMerge.add(clazz);
                 existing.put(clazz.getId(), clazz);
                 logger.fine("Have created a new class " + clazz.toString());
@@ -572,6 +563,52 @@ public class ClassScannerService {
         }
 
 
+    }
+
+    private ClazzLink createClazzLink(Class<?> claz, Map<String, Clazz> existing, List<AnnotatedClazzWithName> defaults, List<Object> toMerge) {
+        //handle the case where a ClazzLink is needed
+        String classname = claz.getCanonicalName();
+        ClazzLink clazzLink = new ClazzLink(classname, null);
+        Class<?>[] params = new Class[0];
+        try {
+            Method l = claz.getDeclaredMethod("getLeftside", params);
+            Method r = claz.getDeclaredMethod("getRightside", params);
+            Clazz valueClazz = Baseclass.getClazzbyname(Baseclass.class.getCanonicalName());
+            if (valueClazz == null) {
+                handleEntityClass(Baseclass.class, existing, defaults, toMerge);
+                valueClazz = Baseclass.getClazzbyname(Baseclass.class.getCanonicalName());
+            }
+            try {
+                Method v = claz.getDeclaredMethod("getValue", params);
+                ManyToOne mtO = v.getAnnotation(ManyToOne.class);
+                Class<?> cv = mtO.targetEntity();
+                handleEntityClass(cv, existing, defaults, toMerge);
+                valueClazz = Baseclass.getClazzbyname(cv.getCanonicalName());
+            } catch (NoSuchMethodException e) {
+                logger.info("there is not spesific decleration for value for: " + claz.getCanonicalName());
+
+            }
+            clazzLink.setValue(valueClazz);
+            if (l.isAnnotationPresent(ManyToOne.class)) {
+                ManyToOne mtO = l.getAnnotation(ManyToOne.class);
+                Class<?> cl = mtO.targetEntity();
+                handleEntityClass(cl, existing, defaults, toMerge);
+                Clazz lclazz = Baseclass.getClazzbyname(cl.getCanonicalName());
+                clazzLink.setLeft(lclazz);
+
+            }
+            if (r.isAnnotationPresent(ManyToOne.class)) {
+                ManyToOne mtO = r.getAnnotation(ManyToOne.class);
+                Class<?> cr = mtO.targetEntity();
+                handleEntityClass(cr, existing, defaults, toMerge);
+                Clazz rclazz = Baseclass.getClazzbyname(cr.getCanonicalName());
+                clazzLink.setRight(rclazz);
+
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "failed setting clazzlink properties", e);
+        }
+        return clazzLink;
     }
 
     private AnnotatedClazz generateAnnotatedClazz(Class<?> claz) {
@@ -616,49 +653,47 @@ public class ClassScannerService {
      */
     @SuppressWarnings("unused")
     public void createDefaultObjects() {
-        List<Object> toMerge=new ArrayList<>();
+        List<Object> toMerge = new ArrayList<>();
         TenantAndUserInit tenantAndUserInit = createAdminAndDefaultTenant(toMerge);
         Tenant defaultTenant = tenantAndUserInit.getDefaultTenant();
         User admin = tenantAndUserInit.getAdmin();
 
         TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(admin).setTenant(defaultTenant);
-        TenantToUser tenantToUser=baselinkrepository.findByIdOrNull(TenantToUser.class, TENANT_TO_USER_ID);
-        if(tenantToUser==null){
+        TenantToUser tenantToUser = baselinkrepository.findByIdOrNull(TenantToUser.class, TENANT_TO_USER_ID);
+        if (tenantToUser == null) {
             logger.fine("Creating Tenant To User link");
-            tenantToUser=userService.createTenantToUserNoMerge(tenantToUserCreate,null);
+            tenantToUser = userService.createTenantToUserNoMerge(tenantToUserCreate, null);
             tenantToUser.setCreator(admin);
             tenantToUser.setId(TENANT_TO_USER_ID);
             toMerge.add(tenantToUser);
-        }
-        else{
-            if(userService.updateTenantToUserNoMerge(tenantToUserCreate,tenantToUser)){
+        } else {
+            if (userService.updateTenantToUserNoMerge(tenantToUserCreate, tenantToUser)) {
                 toMerge.add(tenantToUser);
                 logger.fine("Updated Tenant To User");
             }
         }
-        RoleCreate roleCreate=new RoleCreate()
+        RoleCreate roleCreate = new RoleCreate()
                 .setName("Super Administrators")
                 .setDescription("Role for Super Administrators of the system")
                 .setTenant(defaultTenant);
-        Role superAdminRole=baselinkrepository.findByIdOrNull(Role.class, SUPER_ADMIN_ROLE_ID);
-        if(superAdminRole==null){
+        Role superAdminRole = baselinkrepository.findByIdOrNull(Role.class, SUPER_ADMIN_ROLE_ID);
+        if (superAdminRole == null) {
             logger.fine("Creating Super Admin role");
-            superAdminRole=roleService.createRoleNoMerge(roleCreate,null);
+            superAdminRole = roleService.createRoleNoMerge(roleCreate, null);
             superAdminRole.setCreator(admin);
             superAdminRole.setId(SUPER_ADMIN_ROLE_ID);
             toMerge.add(superAdminRole);
         }
-        RoleToUserCreate roleToUserCreate=new RoleToUserCreate().setRole(superAdminRole).setUser(admin).setTenant(defaultTenant);
-        RoleToUser roleToUser=baselinkrepository.findByIdOrNull(RoleToUser.class, SUPER_ADMIN_TO_ADMIN_ID);
-        if(roleToUser==null){
+        RoleToUserCreate roleToUserCreate = new RoleToUserCreate().setRole(superAdminRole).setUser(admin).setTenant(defaultTenant);
+        RoleToUser roleToUser = baselinkrepository.findByIdOrNull(RoleToUser.class, SUPER_ADMIN_TO_ADMIN_ID);
+        if (roleToUser == null) {
             logger.fine("Creating Role To User Link");
-            roleToUser=userService.createRoleToUserNoMerge(roleToUserCreate,null);
+            roleToUser = userService.createRoleToUserNoMerge(roleToUserCreate, null);
             roleToUser.setCreator(admin);
             roleToUser.setId(SUPER_ADMIN_TO_ADMIN_ID);
             toMerge.add(roleToUser);
-        }
-        else{
-            if(userService.updateRoleToUserNoMerge(roleToUserCreate,roleToUser)){
+        } else {
+            if (userService.updateRoleToUserNoMerge(roleToUserCreate, roleToUser)) {
                 toMerge.add(roleToUser);
                 logger.fine("Updated Role To User Link");
             }
@@ -675,13 +710,13 @@ public class ClassScannerService {
             }
 
         }
-        List<String> lines =null;
+        List<String> lines = null;
         try {
             lines = FileUtils.readLines(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return lines!=null && !lines.isEmpty()?lines.get(0).trim():null;
+        return lines != null && !lines.isEmpty() ? lines.get(0).trim() : null;
 
     }
 
@@ -701,7 +736,6 @@ public class ClassScannerService {
             e.printStackTrace();
         }
     }
-
 
 
     public void createSwaggerTags() {
@@ -733,11 +767,10 @@ public class ClassScannerService {
         }
         Tag[] tags = annotated.getAnnotationsByType(Tag.class);
         for (Tag tag : tags) {
-            if(tag!=null){
-                addTag(securityContext,tag);
+            if (tag != null) {
+                addTag(securityContext, tag);
             }
         }
-
 
 
     }
@@ -773,59 +806,57 @@ public class ClassScannerService {
     }
 
     public TenantAndUserInit createAdminAndDefaultTenant(List<Object> toMerge) {
-        boolean tenantUpdated=false;
-        TenantCreate tenantCreate=new TenantCreate()
+        boolean tenantUpdated = false;
+        TenantCreate tenantCreate = new TenantCreate()
                 .setApiKey(API_KEY)
                 .setName("Default Tenant")
                 .setDescription("Default Tenant");
         Tenant defaultTenant = baselinkrepository.findByIdOrNull(Tenant.class, DEFAULT_TENANT_ID);
-        if(defaultTenant==null){
+        if (defaultTenant == null) {
             logger.fine("Creating Default Tenant");
-            defaultTenant=tenantService.createTenantNoMerge(tenantCreate,null);
+            defaultTenant = tenantService.createTenantNoMerge(tenantCreate, null);
             defaultTenant.setId(DEFAULT_TENANT_ID);
             defaultTenant.setTenant(defaultTenant);
             toMerge.add(defaultTenant);
-        }
-        else{
-            if(defaultTenant.getTenant()==null){
+        } else {
+            if (defaultTenant.getTenant() == null) {
                 defaultTenant.setTenant(defaultTenant);
-                tenantUpdated=true;
+                tenantUpdated = true;
             }
         }
-        String pass=readFromFirstRunFile();
-        if(pass==null){
+        String pass = readFromFirstRunFile();
+        if (pass == null) {
             pass = PasswordGenerator.generateRandom(8);
             writeToFirstRunFile(pass);
         }
-        UserCreate userCreate=new UserCreate()
+        UserCreate userCreate = new UserCreate()
                 .setEmail(Constants.adminEmail)
                 .setPassword(pass)
                 .setLastName("Admin")
                 .setTenant(defaultTenant)
                 .setName("Admin");
         User admin = baselinkrepository.findByIdOrNull(User.class, Constants.systemAdminId);
-        if(admin==null){
+        if (admin == null) {
             logger.fine("Creating Admin User");
-            admin=userService.createUserNoMerge(userCreate,null);
+            admin = userService.createUserNoMerge(userCreate, null);
             admin.setCreator(admin);
             admin.setId(Constants.systemAdminId);
             toMerge.add(admin);
-        }
-        else{
-            if(admin.getCreator()==null){
+        } else {
+            if (admin.getCreator() == null) {
                 admin.setCreator(admin);
                 toMerge.add(admin);
             }
         }
 
-        if(defaultTenant.getCreator()==null){
+        if (defaultTenant.getCreator() == null) {
             defaultTenant.setCreator(admin);
-            tenantUpdated=true;
+            tenantUpdated = true;
         }
-        if(tenantUpdated){
+        if (tenantUpdated) {
             toMerge.add(defaultTenant);
         }
-        return new TenantAndUserInit(admin,defaultTenant);
+        return new TenantAndUserInit(admin, defaultTenant);
     }
 
 
@@ -834,9 +865,9 @@ public class ClassScannerService {
         private User admin;
 
 
-        public TenantAndUserInit(User admin,Tenant defaultTenant) {
-            this.defaultTenant=defaultTenant;
-            this.admin=admin;
+        public TenantAndUserInit(User admin, Tenant defaultTenant) {
+            this.defaultTenant = defaultTenant;
+            this.admin = admin;
         }
 
         public Tenant getDefaultTenant() {
