@@ -29,6 +29,7 @@ import com.flexicore.data.BaselinkRepository;
 import com.flexicore.data.TenantRepository;
 import com.flexicore.data.UserRepository;
 import com.flexicore.data.jsoncontainers.*;
+import com.flexicore.events.LoginEvent;
 import com.flexicore.exceptions.BadRequestCustomException;
 import com.flexicore.exceptions.CheckYourCredentialsException;
 import com.flexicore.exceptions.UserCannotBeRegisteredException;
@@ -49,6 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
@@ -89,6 +91,8 @@ public class UserService implements com.flexicore.service.UserService {
 
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -740,6 +744,7 @@ public class UserService implements com.flexicore.service.UserService {
         }
         OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(authenticationRequest.getSecondsValid() != 0 ? authenticationRequest.getSecondsValid() : jwtSecondsValid);
         String jwtToken = tokenService.getJwtToken(user, expirationDate);
+        applicationEventPublisher.publishEvent(new LoginEvent(user));
         return new AuthenticationResponse().setAuthenticationKey(jwtToken).setTokenExpirationDate(expirationDate).setUserId(user.getId());
 
     }
