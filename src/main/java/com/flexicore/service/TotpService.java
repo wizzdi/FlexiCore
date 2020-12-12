@@ -1,6 +1,7 @@
 package com.flexicore.service;
 
 import com.flexicore.data.UserRepository;
+import com.flexicore.events.LoginEvent;
 import com.flexicore.model.User;
 import com.flexicore.request.*;
 import com.flexicore.response.FinishTotpSetupResponse;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.BadRequestException;
@@ -70,6 +72,9 @@ public class TotpService {
     private TokenService tokenService;
     @Autowired
     private RecoveryCodeGenerator recoveryCodeGenerator;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     public SetupTotpResponse setupTotp(StartTotpSetup startTotpSetup) {
         User user = startTotpSetup.getUser();
@@ -172,6 +177,7 @@ public class TotpService {
         try {
             String secret = getDecryptedSecret(user.getTotpSecret(), user.getId().getBytes());
             if (verifier.isValidCode(secret, totpAuthenticationRequest.getCode())) {
+                applicationEventPublisher.publishEvent(new LoginEvent(user));
                 return getTotpAuthenticationResponse(securityContext, user);
 
             }
@@ -229,6 +235,7 @@ public class TotpService {
             String unusedCodes= String.join("|", totpCodes);
             user.setTotpRecoveryCodes(unusedCodes);
             userrepository.merge(user);
+            applicationEventPublisher.publishEvent(new LoginEvent(user));
             return getTotpAuthenticationResponse(securityContext,user);
         }
         throw new NotAuthorizedException("recovery code is invalid");
