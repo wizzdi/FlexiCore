@@ -59,6 +59,10 @@ public class TokenService implements com.flexicore.service.TokenService {
     }
     @Override
     public String getJwtToken(User user, OffsetDateTime expirationDate, String writeTenant, Set<String> readTenants) {
+        return getJwtToken(user, expirationDate, writeTenant, readTenants,false);
+    }
+    @Override
+    public String getJwtToken(User user, OffsetDateTime expirationDate, String writeTenant, Set<String> readTenants,boolean totpVerified) {
 
         Map<String, Object> claims=new HashMap<>();
         if(writeTenant!=null){
@@ -66,6 +70,9 @@ public class TokenService implements com.flexicore.service.TokenService {
         }
         if(readTenants!=null && !readTenants.isEmpty()){
             claims.put(READ_TENANTS,readTenants);
+        }
+        if(user.isTotpEnabled()){
+            claims.put(TOTP_VERIFIED,totpVerified);
         }
         return  Jwts.builder()
                 .setSubject(user.getEmail())

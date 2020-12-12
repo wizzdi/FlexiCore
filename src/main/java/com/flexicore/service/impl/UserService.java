@@ -314,6 +314,7 @@ public class UserService implements com.flexicore.service.UserService {
             runningUser.setExpiresDate(claims.getExpiration() != null ? claims.getExpiration().toInstant().atZone(ZoneId.of("UTC")).toOffsetDateTime() : null);
             Collection<String> readTenantsRaw = (Collection<String>) claims.get(tokenService.READ_TENANTS);
             String writeTenant = (String) claims.get(tokenService.WRITE_TENANT);
+            Boolean totpVerified=(Boolean)claims.get(tokenService.TOTP_VERIFIED);
             Set<String> tenantIds = runningUser.getTenants().parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
             if (writeTenant != null && tenantIds.contains(writeTenant)) {
                 Tenant tenant = userrepository.findByIdOrNull(Tenant.class, writeTenant);
@@ -326,6 +327,10 @@ public class UserService implements com.flexicore.service.UserService {
                 runningUser.setTenants(tenants);
                 runningUser.setImpersonated(true);
             }
+            if(totpVerified!=null){
+                runningUser.setTotpVerified(totpVerified);
+            }
+
             loggedusers.put(authenticationKey, runningUser);
             return runningUser;
         }
@@ -772,10 +777,11 @@ public class UserService implements com.flexicore.service.UserService {
     @Override
     public ImpersonateResponse impersonate(ImpersonateRequest impersonateRequest, SecurityContext securityContext) {
         User user = securityContext.getUser();
+        boolean totpVerified = securityContext.isTotpVerified();
         OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(jwtSecondsValid);
         String writeTenant = impersonateRequest.getCreationTenant().getId();
         Set<String> readTenants = impersonateRequest.getReadTenants().parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
-        String jwtToken = tokenService.getJwtToken(user, expirationDate, writeTenant, readTenants);
+        String jwtToken = tokenService.getJwtToken(user, expirationDate, writeTenant, readTenants,totpVerified);
         return new ImpersonateResponse().setAuthenticationKey(jwtToken);
 
     }

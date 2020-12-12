@@ -147,7 +147,10 @@ public class SecurityService implements com.flexicore.service.SecurityService {
         boolean impersonated = runningUser.isImpersonated();
 
         Operation operation = operationrepository.findById(operationId);
-        return new SecurityContext(tenants, user, operation, tenantToCreateIn).setImpersonated(impersonated);
+        return new SecurityContext(tenants, user, operation, tenantToCreateIn)
+                .setImpersonated(impersonated)
+                .setTotpVerified(runningUser.isTotpVerified())
+                .setExpiresDate(runningUser.getExpiresDate());
 
 
     }
