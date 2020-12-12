@@ -11,6 +11,7 @@ import com.flexicore.data.jsoncontainers.OperationInfo;
 import com.flexicore.model.Operation;
 import com.flexicore.model.Tenant;
 import com.flexicore.model.User;
+import com.flexicore.request.RecoverTotpRequest;
 import com.flexicore.request.TotpAuthenticationRequest;
 import com.flexicore.rest.TotpRESTService;
 import com.flexicore.security.SecurityContext;
@@ -55,6 +56,7 @@ public class SecurityImposer {
     private SecurityService securityService;
     private static final Logger logger = LoggerFactory.getLogger(SecurityImposer.class);
     private static Method totpAuthenticationMethod;
+    private static Method totpRecoveryMethod;
 
     @Around("execution(@com.flexicore.annotations.Protected * *(..)) || within(@(@com.flexicore.annotations.Protected *) *)|| within(@com.flexicore.annotations.Protected *)")
     public Object transformReturn(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -126,7 +128,9 @@ public class SecurityImposer {
 
     private boolean isTotpAuthentication(Method method) {
         Method totpAuthenticationMethod= getTotpAuthenticationMethod();
-        return method.equals(totpAuthenticationMethod);
+        Method totpRecoveryMethod= getTotpRecoveryMethod();
+
+        return method.equals(totpAuthenticationMethod)||method.equals(totpRecoveryMethod);
     }
 
     private Method getTotpAuthenticationMethod() {
@@ -139,6 +143,17 @@ public class SecurityImposer {
             }
         }
         return totpAuthenticationMethod;
+    }
+    private Method getTotpRecoveryMethod() {
+        if(totpRecoveryMethod==null){
+            try {
+                totpRecoveryMethod = TotpRESTService.class.getMethod("recoverTotp", String.class, RecoverTotpRequest.class, SecurityContext.class);
+            }
+            catch (Exception e){
+                logger.error("could not find totp authenticationMethod");
+            }
+        }
+        return totpRecoveryMethod;
     }
 
     private Session getWebsocketSession(Object[] parameters) {
