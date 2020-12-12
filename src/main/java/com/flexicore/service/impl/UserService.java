@@ -749,7 +749,7 @@ public class UserService implements com.flexicore.service.UserService {
         }
         OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(authenticationRequest.getSecondsValid() != 0 ? authenticationRequest.getSecondsValid() : jwtSecondsValid);
         String jwtToken = tokenService.getJwtToken(user, expirationDate);
-        if(user.isTotpEnabled()){
+        if(!user.isTotpEnabled()){
             applicationEventPublisher.publishEvent(new LoginEvent(user));
         }
         return new AuthenticationResponse().setAuthenticationKey(jwtToken).setTokenExpirationDate(expirationDate).setUserId(user.getId());
