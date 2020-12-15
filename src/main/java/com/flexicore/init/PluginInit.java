@@ -1,7 +1,6 @@
 package com.flexicore.init;
 
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.data.TestsRepository;
 import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
 import com.flexicore.events.PluginsLoadedEvent;
 import com.flexicore.interceptors.SecurityImposer;
@@ -20,6 +19,7 @@ import org.pf4j.PluginManager;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.core.SpringDocUtils;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -32,11 +32,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.ws.rs.ext.Provider;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
@@ -63,7 +65,9 @@ public class PluginInit {
     private ApplicationEventPublisher eventPublisher;
     @Autowired
     private HealthContributorRegistry healthContributorRegistry;
-    private static Set<String> handledContext = new ConcurrentSkipListSet<>();
+    @Autowired
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
+    private static final Set<Class<?>> springRestPluginClasses=new HashSet<>();
 
     /**
      * Starts plug-in threads
@@ -100,23 +104,33 @@ public class PluginInit {
             List<? extends RestServicePlugin> restPlugins = pluginManager.getExtensions(RestServicePlugin.class, startedPlugin.getPluginId());
             for (RestServicePlugin plugin : restPlugins) {
 
-                logger.info("REST class " + plugin);
+                    logger.info("REST class " + plugin);
+                Class<? extends RestServicePlugin> restClass = plugin.getClass();
                 try {
-                    AspectJProxyFactory factory = new AspectJProxyFactory(plugin);
-                    SecurityImposer securityImposer = applicationContext.getBean(SecurityImposer.class);
-                    factory.addAspect(securityImposer);
-                    for (AspectPlugin aspect : aspects) {
-                        factory.addAspect(aspect);
+                        AspectJProxyFactory factory = new AspectJProxyFactory(plugin);
+                        SecurityImposer securityImposer = applicationContext.getBean(SecurityImposer.class);
+                        factory.addAspect(securityImposer);
+                        for (AspectPlugin aspect : aspects) {
+                            factory.addAspect(aspect);
+                        }
+                        factory.setProxyTargetClass(true);
+                        Object proxy = factory.getProxy(restClass.getClassLoader());
+                        if(restClass.isAnnotationPresent(RestController.class)){
+                            registerSpringRESTController(proxy,restClass);
+                        }
+                        else{
+                            JaxRsActivator.addSingletones(proxy);
+                        }
+                    } catch (Exception e) {
+                        logger.error("Failed registering REST service " + restClass, e);
                     }
-                    factory.setProxyTargetClass(true);
-                    Object proxy = factory.getProxy(plugin.getClass().getClassLoader());
-                    JaxRsActivator.addSingletones(proxy);
-                } catch (Exception e) {
-                    logger.error("Failed registering REST service " + plugin.getClass(), e);
-                }
+
+
 
 
             }
+            Map<String, RequestMappingHandlerMapping> beansOfType = applicationContext.getBeansOfType(RequestMappingHandlerMapping.class);
+        logger.info(beansOfType+"");
             List<? extends HealthContributor> healthContributors = pluginManager.getExtensions(HealthContributor.class, startedPlugin.getPluginId());
             for (HealthContributor healthContributor : healthContributors) {
                 logger.info("Health class " + healthContributor.getClass().getCanonicalName());
@@ -171,10 +185,27 @@ public class PluginInit {
 
     }
 
+    private void registerSpringRESTController(Object plugin,Class<?> originalClass) {
+        CustomRequestMappingHandlerMapping requestMappingHandlerMapping= (CustomRequestMappingHandlerMapping) this.requestMappingHandlerMapping;
+        Class<?> pluginClass = plugin.getClass();
+        for (Method method : originalClass.getMethods()) {
+            RequestMappingInfo mappingForMethod = requestMappingHandlerMapping.getMappingForMethod(method, pluginClass);
+            if(mappingForMethod!=null){
+                requestMappingHandlerMapping.registerMapping(mappingForMethod,plugin,method);
+            }
+
+        }
+        SpringDocUtils.getConfig().addRestControllers(originalClass);
+        springRestPluginClasses.add(originalClass);
+    }
+
+
     @EventListener
     public void onContextStopped(ContextStoppedEvent contextStoppedEvent) {
         filesCleaner.stop();
     }
 
-
+    public static Set<Class<?>> getSpringRestPluginClasses() {
+        return springRestPluginClasses;
+    }
 }

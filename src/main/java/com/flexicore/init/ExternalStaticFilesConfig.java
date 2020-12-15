@@ -1,6 +1,7 @@
 package com.flexicore.init;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -23,8 +25,20 @@ public class ExternalStaticFilesConfig {
     private String externalStaticMapping;
 
     @Bean
+    public WebMvcRegistrations webMvcRegistrations(){
+        return new WebMvcRegistrations() {
+            @Override
+            public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+                return new CustomRequestMappingHandlerMapping();
+            }
+        };
+    }
+
+    @Bean
     public WebMvcConfigurer webMvcConfigurerAdapter() {
         return new WebMvcConfigurer() {
+
+
             @Override
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
                 registry.addResourceHandler("/FlexiCore/**")
