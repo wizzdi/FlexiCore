@@ -67,7 +67,8 @@ public class BadRequestExceptionMapper implements ExceptionMapper<Exception>  {
 
 
         Response.ResponseBuilder builder=response!=null?Response.fromResponse(response):(bad?badBuilder:internalBuilder);
-        return  builder.entity(new ExceptionHolder(statusCode,errorCode, showExceptionsInHttpResponse||bad?exception.getMessage(): exceptionPlaceHolder)).build();
+        String message = showExceptionsInHttpResponse || bad ? exception.getMessage() : exceptionPlaceHolder;
+        return  builder.entity(new ExceptionHolder(statusCode,errorCode, message)).build();
     }
 
     private boolean isJsonMediaType(){
