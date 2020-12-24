@@ -1,4 +1,4 @@
-package com.flexicore.service;
+package com.flexicore.test.service;
 
 import com.flexicore.init.FlexiCoreApplication;
 import com.flexicore.service.impl.EncryptionService;

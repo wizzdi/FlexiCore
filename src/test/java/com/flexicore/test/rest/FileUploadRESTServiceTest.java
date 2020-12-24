@@ -1,4 +1,4 @@
-package com.flexicore.rest;
+package com.flexicore.test.rest;
 
 import com.flexicore.init.FlexiCoreApplication;
 import com.flexicore.model.FileResource;

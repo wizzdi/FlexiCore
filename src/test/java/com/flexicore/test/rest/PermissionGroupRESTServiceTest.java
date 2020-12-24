@@ -1,4 +1,4 @@
-package com.flexicore.rest;
+package com.flexicore.test.rest;
 
 import com.flexicore.data.jsoncontainers.CreatePermissionGroupRequest;
 import com.flexicore.data.jsoncontainers.PaginationResponse;

@@ -1,4 +1,4 @@
-package com.flexicore.rest;
+package com.flexicore.test.rest;
 
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.rest.All;

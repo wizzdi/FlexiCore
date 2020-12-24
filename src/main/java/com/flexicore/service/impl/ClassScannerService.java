@@ -408,6 +408,10 @@ public class ClassScannerService {
             return;
         }
         try {
+          /*  reflections=new org.reflections.Reflections(new org.reflections.util.ConfigurationBuilder()
+                    .filterInputsBy(new org.reflections.util.FilterBuilder().exclude("/test/java/*"))
+                    .setUrls(org.reflections.util.ClasspathHelper.forPackage("com.flexicore"))
+                    .setScanners(new org.reflections.scanners.TypeAnnotationsScanner()., new org.reflections.scanners.SubTypesScanner(false), new org.reflections.scanners.MethodAnnotationsScanner()));*/
             reflections = Reflections.collect("META-INF/reflections/", new FilterBuilder().include(".*-reflections.json"),new JsonSerializer());
 
 
