@@ -141,8 +141,8 @@ public class TotpService {
         try {
             byte[] salt = user.getId().getBytes();
             String secret = getDecryptedSecret(totpSecret, salt);
-            if (!secret.equals(finishSetupTotp.getSecret())) {
-                throw new BadRequestException("given secret does not match the one setup");
+            if (!verifier.isValidCode(secret, finishSetupTotp.getCode())) {
+                throw new BadRequestException("code is invalid , cannot finish totp setup");
             }
         } catch (GeneralSecurityException e) {
             logger.error("failed decrypting totp", e);

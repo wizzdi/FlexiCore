@@ -31,7 +31,7 @@
         <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
         <junit-jupiter.version>5.6.2</junit-jupiter.version>
 
-        <flexicore-api.version>4.2.7</flexicore-api.version>
+        <flexicore-api.version>4.2.8</flexicore-api.version>
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
     </properties>
 
