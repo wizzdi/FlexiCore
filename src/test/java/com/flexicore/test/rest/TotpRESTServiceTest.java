@@ -99,11 +99,14 @@ public class TotpRESTServiceTest {
 
     @Test
     @Order(2)
-    public void testFinishSetupTotp() {
+    public void testFinishSetupTotp() throws CodeGenerationException {
 
         ParameterizedTypeReference<FinishTotpSetupResponse> t=new ParameterizedTypeReference<>() {};
+        long currentBucket = Math.floorDiv(this.timeProvider.getTime(),30);
 
-        FinishTotpSetupRequest headers = new FinishTotpSetupRequest().setSecret(secret);
+        String code = codeGenerator.generate(secret, currentBucket);
+
+        FinishTotpSetupRequest headers = new FinishTotpSetupRequest().setCode(code);
         ResponseEntity<FinishTotpSetupResponse> userResponse = this.restTemplate.exchange("/FlexiCore/rest/totp/finishSetupTotp", HttpMethod.POST, new HttpEntity<>(headers), t);
         Assertions.assertEquals(200, userResponse.getStatusCodeValue());
         FinishTotpSetupResponse body = userResponse.getBody();
