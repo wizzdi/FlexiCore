@@ -25,7 +25,7 @@ import java.util.Arrays;
 @EnableFlexiCoreWebSocketPlugins
 @EnableFlexiCoreJAXRSPlugins
 @EnableFlexiCoreBaseServices
-public class App {
+public class FlexiCoreApplication {
 
 
 
@@ -33,7 +33,7 @@ public class App {
 	public static void main(String[] args) {
 
 
-		SpringApplication app = new SpringApplication(App.class);
+		SpringApplication app = new SpringApplication(FlexiCoreApplication.class);
 		app.addListeners(new ApplicationPidFileWriter());
 		ConfigurableApplicationContext context=app.run(args);
 

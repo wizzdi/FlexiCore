@@ -7,20 +7,18 @@ WORKDIR /app
 COPY --from=clone /app/FlexiCore /app
 RUN mvn install -DskipTests
 
-FROM adoptopenjdk/openjdk11
+FROM adoptopenjdk/openjdk11 as run
 WORKDIR /app
-COPY --from=build /app/target/FlexiCore-4.2.2-SNAPSHOT-exec.jar /app
+COPY --from=build /app/target/FlexiCore-*-SNAPSHOT-exec.jar /app/FlexiCore.jar
 
-
-RUN apt-get update && apt-get -qq -y install wget gnupg maven python2.7 python-pip
-
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
-RUN echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.6.list
+RUN apt-get update && apt-get -qq -y install wget libcurl4 openssl liblzma5  gnupg maven lsb-release
+RUN mkdir -p /var/lib/mongodb &&  mkdir -p /var/log/mongodb
+RUN cd /var/lib/mongodb&&wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.4.1.tgz&&tar -zxvf mongodb-*-4.4.1.tgz&&cd mongodb* &&cp bin/* /usr/bin/
 
 ENV TZ=Israel
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get clean &&apt-get update && apt-get -qq -y install software-properties-common postgresql-10 postgresql-client-10 postgresql-contrib-10 vim net-tools psmisc mongodb-org
+RUN apt-get clean &&apt-get update && apt-get -qq -y install postgresql postgresql-contrib vim net-tools psmisc
 # Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3`` package when it was ``apt-get installed``
 
 USER postgres
@@ -29,16 +27,13 @@ USER postgres
 # then create a database `docker` owned by the ``docker`` role.
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
-RUN    /etc/com.wizzdi.flexicore.init.d/postgresql start &&\
+RUN    /etc/init.d/postgresql start &&\
     psql --command "CREATE USER flexicore WITH SUPERUSER PASSWORD 'flexicore';" &&\
     createdb -O flexicore flexicore
 
 # Adjust PostgreSQL configuration so that remote connections to the
-# database are possible.
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/10/main/pg_hba.conf
-
-# And add ``listen_addresses`` to ``/etc/postgresql/9.3/main/postgresql.conf``
-RUN echo "listen_addresses='*'" >> /etc/postgresql/10/main/postgresql.conf
+# daitabase are possible.
+RUN cd /etc/postgresql/*/main/&&echo "host all  all    0.0.0.0/0  md5" >>pg_hba.conf && echo "listen_addresses='*'" >>postgresql.conf
 
 # Expose the PostgreSQL port
 EXPOSE 5432
@@ -50,4 +45,5 @@ EXPOSE 8080
 EXPOSE 8787
 USER root
 RUN mkdir -p /data/db
-CMD ["/bin/bash","-c","/usr/sbin/service postgresql start&&/usr/bin/mongod --fork --logpath /var/log/mongodb/mongod.log&&java -jar /app/FlexiCore-4.2.2-SNAPSHOT-exec.jar"]
+CMD ["/bin/bash","-c","/usr/sbin/service postgresql start&&/usr/bin/mongod --fork --logpath /var/log/mongodb/mongod.log --dbpath /var/lib/mongodb&&java -jar /app/FlexiCore.jar"]
+
