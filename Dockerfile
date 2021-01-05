@@ -29,7 +29,7 @@ USER postgres
 # then create a database `docker` owned by the ``docker`` role.
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
-RUN    /etc/init.d/postgresql start &&\
+RUN    /etc/com.wizzdi.flexicore.init.d/postgresql start &&\
     psql --command "CREATE USER flexicore WITH SUPERUSER PASSWORD 'flexicore';" &&\
     createdb -O flexicore flexicore
 
