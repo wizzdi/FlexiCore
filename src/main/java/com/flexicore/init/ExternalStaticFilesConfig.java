@@ -24,6 +24,11 @@ public class ExternalStaticFilesConfig {
     @Value("${flexicore.externalStaticMapping}")
     private String externalStaticMapping;
 
+    @Value("${flexicore.internalStaticLocation:classpath:/static/}")
+    private String internalStaticLocation;
+    @Value("${flexicore.internalStaticMapping:/FlexiCore/**}")
+    private String internalStaticMapping;
+
     @Bean
     public WebMvcRegistrations webMvcRegistrations(){
         return new WebMvcRegistrations() {
@@ -41,8 +46,8 @@ public class ExternalStaticFilesConfig {
 
             @Override
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                registry.addResourceHandler("/FlexiCore/**")
-                        .addResourceLocations("classpath:/static/");
+                registry.addResourceHandler(internalStaticMapping)
+                        .addResourceLocations(internalStaticLocation);
                 registry.addResourceHandler(externalStaticMapping)
                         .addResourceLocations("file:" + externalStatic);
             }
