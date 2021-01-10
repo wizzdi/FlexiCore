@@ -74,7 +74,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
     @Autowired
     private JobService jobService;
 
-    @Value("${flexicore.upload:/home/flexicore/upload}")
+    @Value("${flexicore.upload:/home/flexicore/upload/}")
     private String uploadPath;
 
     public FileResource getExistingFileResource(String md5, SecurityContext securityContext) {
@@ -88,12 +88,14 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
         if (fileResource == null) {
             String ext = filename.endsWith("tar.gz") ? "tar.gz" : FilenameUtils.getExtension(filename);
             String actualFilename = !ext.isEmpty() ? UUID.randomUUID().toString() + "." + ext : UUID.randomUUID().toString();
+            File uploadPath=new File(this.uploadPath,actualFilename);
             FileResourceCreate fileResourceCreate = new FileResourceCreate()
                     .setActualFilename(actualFilename)
-                    .setFullPath(uploadPath+ actualFilename)
+                    .setFullPath(uploadPath.getAbsolutePath())
                     .setMd5(md5)
                     .setOffset(0L)
-                    .setOriginalFilename(filename);
+                    .setOriginalFilename(filename)
+                    .setName(filename);
             fileResource=createNoMerge(fileResourceCreate, securityContext);
 
         }
@@ -346,7 +348,8 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
                 .setMd5(md5)
                 .setOffset(0L)
                 .setActualFilename(UUID.randomUUID().toString() + "." + ext)
-                .setOriginalFilename(filename);
+                .setOriginalFilename(filename)
+                .setName(filename);
         return createNoMerge(fileResourceCreate, securityContext);
     }
 

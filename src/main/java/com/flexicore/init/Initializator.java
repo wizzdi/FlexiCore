@@ -42,7 +42,7 @@ public class Initializator {
     private String entitiesPath;
     @Value("${flexicore.plugins:/home/flexicore/plugins}")
     private String pluginsPath;
-    @Value("${flexicore.upload:/home/flexicore/upload}")
+    @Value("${flexicore.upload:/home/flexicore/upload/}")
     private String uploadPath;
     @Value("${flexicore.users.rootDirPath:/home/flexicore/users/}")
     private String usersPath;
