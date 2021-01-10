@@ -7,6 +7,7 @@ import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
 import com.wizzdi.flexicore.boot.jpa.annotations.EnableFlexiCoreJPAPlugins;
 import com.wizzdi.flexicore.boot.rest.annotations.EnableFlexiCoreRESTPlugins;
 import com.wizzdi.flexicore.boot.websockets.annotations.EnableFlexiCoreWebSocketPlugins;
+import com.wizzdi.flexicore.security.annotations.EnableFlexiCoreSecurity;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 @EnableFlexiCoreWebSocketPlugins
 @EnableFlexiCoreJAXRSPlugins
 @EnableFlexiCoreBaseServices
+@EnableFlexiCoreSecurity
 public class FlexiCoreApplication {
 
 
