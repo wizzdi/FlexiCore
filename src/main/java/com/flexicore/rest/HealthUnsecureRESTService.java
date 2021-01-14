@@ -3,12 +3,10 @@ package com.flexicore.rest;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.interfaces.RESTService;
 import com.flexicore.response.HealthStatusResponse;
+import com.flexicore.service.impl.HealthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.health.HealthComponent;
-import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.stereotype.Component;
 
@@ -28,25 +26,14 @@ import javax.ws.rs.core.MediaType;
 public class HealthUnsecureRESTService implements RESTService {
 
     @Autowired
-    private HealthEndpoint healthEndpoint;
-    private HealthComponent healthComponent;
-    @Value("${flexicore.health.minInterval:30000}")
-    private long minInterval;
-    private long time;
+    private HealthService healthService;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "health", description = "health")
     public HealthStatusResponse healthCheck() {
-        return new HealthStatusResponse(getHealth());
+        return healthService.healthCheck();
 
-    }
-
-    private HealthComponent getHealth() {
-        if(healthComponent==null||System.currentTimeMillis() - time >minInterval ){
-            healthComponent= healthEndpoint.health();
-            time=System.currentTimeMillis();
-        }
-        return healthComponent;
     }
 
 
@@ -55,10 +42,12 @@ public class HealthUnsecureRESTService implements RESTService {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "healthOrFail", description = "healthOrFail")
     public boolean healthOrFail() {
-        boolean down=getHealth().getStatus()== Status.DOWN;
+        boolean down= healthService.getHealth().getStatus() == Status.DOWN;
         if(down){
             throw new ServiceUnavailableException("Health check failed");
         }
        return true;
     }
+
+
 }
