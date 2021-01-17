@@ -11,6 +11,7 @@ import com.flexicore.annotations.OperationsInside;
 import com.flexicore.interfaces.RestServicePlugin;
 import com.flexicore.request.AuthenticationRequest;
 import com.flexicore.response.AuthenticationResponse;
+import com.flexicore.response.AuthenticationResponseCompatible;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.SecurityService;
 import com.flexicore.service.impl.UserService;
@@ -56,10 +57,10 @@ public class AuthenticationNewRESTService implements RestServicePlugin {
     @Path("/login")
     @Operation(summary = "login", description = "Login to the system")
     @Audit(auditType = "Login")
-    public AuthenticationResponse login(AuthenticationRequest authenticationRequest) {
+    public AuthenticationResponseCompatible login(AuthenticationRequest authenticationRequest) {
         SecurityContext securityContext=securityService.getAdminUserSecurityContext();
        userservice.validate(authenticationRequest,securityContext);
-       return userservice.login(authenticationRequest,securityContext);
+       return new AuthenticationResponseCompatible(userservice.login(authenticationRequest,securityContext));
 
     }
 
