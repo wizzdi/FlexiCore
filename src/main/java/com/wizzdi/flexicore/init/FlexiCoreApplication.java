@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.init;
 
 import com.flexicore.annotations.EnableFlexiCoreBaseServices;
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
+import com.wizzdi.flexicore.boot.graphql.annotations.EnableFlexiCoreGraphqlPlugins;
 import com.wizzdi.flexicore.boot.health.annotations.EnableFlexiCoreHealthPlugins;
 import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
 import com.wizzdi.flexicore.boot.jpa.annotations.EnableFlexiCoreJPAPlugins;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 @EnableFlexiCoreJAXRSPlugins
 @EnableFlexiCoreBaseServices
 @EnableFlexiCoreSecurity
+@EnableFlexiCoreGraphqlPlugins
 public class FlexiCoreApplication {
 
 
