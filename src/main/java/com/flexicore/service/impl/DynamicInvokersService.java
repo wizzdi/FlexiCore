@@ -554,7 +554,18 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
         for (InvokerInfo invokerInfo : list) {
             for (InvokerMethodInfo method : invokerInfo.getMethods()) {
                 if (methodName.equals(method.getName())) {
-                    String returnType = PaginationResponse.class.getCanonicalName().equals(method.getReturnType()) ? invokerInfo.getHandlingType().getCanonicalName() : method.getReturnType();
+                    String returnType;
+                    if(method.getListType()!=null){
+                        returnType=method.getListType().getCanonicalName();
+                    }
+                    else{
+                        if(PaginationResponse.class.getCanonicalName().equals(method.getReturnType())){
+                            returnType=invokerInfo.getHandlingType().getCanonicalName();
+                        }
+                        else{
+                            returnType=method.getReturnType();
+                        }
+                    }
                     returnTypes.add(returnType);
                 }
             }
