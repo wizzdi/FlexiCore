@@ -2,20 +2,28 @@ package com.wizzdi.flexicore.init;
 
 import com.flexicore.annotations.EnableFlexiCoreBaseServices;
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
+import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.EnableDynamicInvokersPlugins;
+import com.wizzdi.flexicore.boot.flyway.annotations.EnableFlexiCoreFlyWayPlugins;
 import com.wizzdi.flexicore.boot.health.annotations.EnableFlexiCoreHealthPlugins;
 import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
 import com.wizzdi.flexicore.boot.jpa.annotations.EnableFlexiCoreJPAPlugins;
 import com.wizzdi.flexicore.boot.rest.annotations.EnableFlexiCoreRESTPlugins;
 import com.wizzdi.flexicore.boot.websockets.annotations.EnableFlexiCoreWebSocketPlugins;
 import com.wizzdi.flexicore.security.annotations.EnableFlexiCoreSecurity;
+import org.flywaydb.core.api.callback.Callback;
+import org.flywaydb.core.api.migration.JavaMigration;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import java.util.Arrays;
@@ -44,6 +52,8 @@ public class FlexiCoreApplication {
 		ConfigurableApplicationContext context=app.run(args);
 
 	}
+
+
 
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {

@@ -81,6 +81,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-starter-flyway</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
