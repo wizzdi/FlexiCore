@@ -81,6 +81,12 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>26.0-jre</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-batch</artifactId>
@@ -96,12 +102,12 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>resteasy-flexicore-boot-starter</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-websocket</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -110,7 +116,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.4-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>log4j</artifactId>
@@ -139,7 +145,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -158,7 +164,12 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-base-model</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>

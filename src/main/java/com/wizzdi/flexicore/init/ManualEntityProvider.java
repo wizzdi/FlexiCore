@@ -2,6 +2,9 @@ package com.wizzdi.flexicore.init;
 
 import com.flexicore.converters.JsonConverter;
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.User;
+import com.flexicore.model.security.SecurityPolicy;
+import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
 import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +21,6 @@ public class ManualEntityProvider {
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 
 	public EntitiesHolder manualEntityHolder(){
-		return new EntitiesHolder(new HashSet<>(Arrays.asList(Baseclass.class, JsonConverter.class)));
+		return new EntitiesHolder(new HashSet<>(Arrays.asList(Baseclass.class, DynamicExecution.class, User.class, JsonConverter.class, SecurityPolicy.class)));
 	}
 }
