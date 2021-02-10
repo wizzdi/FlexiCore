@@ -38,6 +38,7 @@ public class EncryptionService implements com.flexicore.service.EncryptionServic
         if(init.compareAndSet(false,true)){
             try {
                 HybridConfig.register();
+                AeadConfig.register();
                 File keysetFile = new File(tinkKeySetPath);
                 if (!keysetFile.exists()) {
                     // 1. Generate the private key material.
@@ -61,14 +62,22 @@ public class EncryptionService implements com.flexicore.service.EncryptionServic
     public byte[] getEncryptingKey() {
         initEncryption();
         try {
-            File keysetFile = new File(tinkKeySetPath);
-            KeysetHandle keysetHandle = CleartextKeysetHandle.read(JsonKeysetReader.withFile(keysetFile));
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            CleartextKeysetHandle.write(keysetHandle.getPublicKeysetHandle(), JsonKeysetWriter.withOutputStream(outputStream));
+            KeysetHandle publicKeysetHandle = keysetHandle.getPublicKeysetHandle();
+            CleartextKeysetHandle.write(publicKeysetHandle, JsonKeysetWriter.withOutputStream(outputStream));
             return outputStream.toByteArray();
 
         } catch (Exception e) {
-            logger.error("failed getting encrypting key", e);
+            logger.debug("failed getting encrypting key , attempting old format", e);
+            try {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                CleartextKeysetHandle.write(keysetHandle, JsonKeysetWriter.withOutputStream(outputStream));
+                return outputStream.toByteArray();
+            }
+            catch (Exception e1){
+                logger.error("failed getting encrypting key , attempting old format", e1);
+
+            }
         }
         return null;
 
@@ -86,20 +95,47 @@ public class EncryptionService implements com.flexicore.service.EncryptionServic
     @Override
     public byte[] encrypt(final byte[] plaintext, final byte[] associatedData) throws GeneralSecurityException{
         initEncryption();
-        HybridEncrypt hybridEncrypt =
-                keysetHandle.getPublicKeysetHandle().getPrimitive(HybridEncrypt.class);
+        return encryptWithFallback(keysetHandle,plaintext, associatedData);
 
         // 3. Use the primitive.
-        return hybridEncrypt.encrypt(plaintext, associatedData);
 
+    }
+
+    private static byte[] encryptWithFallback(KeysetHandle keysetHandle,byte[] plaintext, byte[] associatedData) throws GeneralSecurityException {
+        try {
+            HybridEncrypt hybridEncrypt =
+                    keysetHandle.getPublicKeysetHandle().getPrimitive(HybridEncrypt.class);
+            return hybridEncrypt.encrypt(plaintext, associatedData);
+
+        }
+        catch (GeneralSecurityException e){
+            logger.debug("failed encrypting , retrying with old key format",e);
+            Aead primitive =
+                    keysetHandle.getPrimitive(Aead.class);
+            return primitive.encrypt(plaintext, associatedData);
+        }
     }
 
     @Override
     public byte[] decrypt(final byte[] ciphertext, final byte[] associatedData) throws GeneralSecurityException{
         initEncryption();
-        HybridDecrypt hybridDecrypt =
-                keysetHandle.getPrimitive(HybridDecrypt.class);
-        return hybridDecrypt.decrypt(ciphertext,associatedData);
+        return decryptWithFallback(keysetHandle,ciphertext, associatedData);
+
+    }
+
+    private static byte[] decryptWithFallback(KeysetHandle keysetHandle,byte[] ciphertext, byte[] associatedData) throws GeneralSecurityException {
+        try {
+            HybridDecrypt hybridDecrypt =
+                    keysetHandle.getPrimitive(HybridDecrypt.class);
+            return hybridDecrypt.decrypt(ciphertext, associatedData);
+
+        }
+        catch (GeneralSecurityException e){
+            logger.debug("failed Decrypting , retrying with old key format",e);
+            Aead aead =
+                    keysetHandle.getPrimitive(Aead.class);
+            return aead.decrypt(ciphertext, associatedData);
+        }
     }
 
     static class HybridEncryptImpl implements EncryptingKey{
@@ -111,11 +147,7 @@ public class EncryptionService implements com.flexicore.service.EncryptionServic
 
         @Override
         public byte[] encrypt(byte[] plaintext, byte[] associatedData) throws GeneralSecurityException {
-            HybridEncrypt hybridEncrypt =
-                    keysetHandle.getPrimitive(HybridEncrypt.class);
-
-            // 3. Use the primitive.
-            return hybridEncrypt.encrypt(plaintext, associatedData);
+            return encryptWithFallback(keysetHandle,plaintext,associatedData);
         }
 
         @Override
