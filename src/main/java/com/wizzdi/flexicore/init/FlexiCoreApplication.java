@@ -6,6 +6,7 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.EnableDynamicInvok
 import com.wizzdi.flexicore.boot.health.annotations.EnableFlexiCoreHealthPlugins;
 import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
 import com.wizzdi.flexicore.boot.jpa.annotations.EnableFlexiCoreJPAPlugins;
+import com.wizzdi.flexicore.boot.multipart.annotations.EnableFlexiCoreMultipart;
 import com.wizzdi.flexicore.boot.rest.annotations.EnableFlexiCoreRESTPlugins;
 import com.wizzdi.flexicore.boot.websockets.annotations.EnableFlexiCoreWebSocketPlugins;
 import com.wizzdi.flexicore.security.annotations.EnableFlexiCoreSecurity;
@@ -33,6 +34,7 @@ import java.util.Arrays;
 @EnableFlexiCoreSecurity
 @EnableMongoRepositories
 @EnableDynamicInvokersPlugins
+@EnableFlexiCoreMultipart
 public class FlexiCoreApplication {
 
 
