@@ -148,23 +148,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-loader</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jta-atomikos -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jta-atomikos</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-starter-data-jpa-hibernate</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
@@ -174,7 +166,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-vintage</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
@@ -184,17 +176,17 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-base-model</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.4-HIBERNATE</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-base-service</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.0.3-HIBERNATE</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
