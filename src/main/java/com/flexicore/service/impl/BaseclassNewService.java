@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.BadRequestException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,14 +92,18 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
                 baseclass.setJsonNode(baseclassCreate.any());
                 update = true;
             } else {
+                Map<String, Object> copy=new HashMap<>(baseclassCreate.any());
                 for (Map.Entry<String, Object> entry : baseclassCreate.any().entrySet()) {
                     String key = entry.getKey();
                     Object newVal = entry.getValue();
                     Object val = jsonNode.get(key);
                     if (newVal!=null&&!newVal.equals(val)) {
-                        jsonNode.put(key, newVal);
+                        copy.put(key, newVal);
                         update = true;
                     }
+                }
+                if(update){
+                    baseclass.setJsonNode(copy);
                 }
             }
 
