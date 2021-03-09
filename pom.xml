@@ -188,6 +188,10 @@
             <artifactId>flexicore-base-service</artifactId>
             <version>1.0.3-HIBERNATE</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+
+
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
