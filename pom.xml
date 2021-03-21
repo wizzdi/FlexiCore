@@ -85,6 +85,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>com.wizzdi</groupId>
+                <artifactId>flexicore-boot-dependencies</artifactId>
+                <version>1.0.3</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
@@ -117,12 +124,10 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>resteasy-flexicore-boot-starter</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-websocket</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -131,7 +136,6 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot</artifactId>
-            <version>1.0.4-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>log4j</artifactId>
@@ -150,53 +154,37 @@
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-boot-starter-data-jpa</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-boot-starter-data-jpa-hibernate</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <artifactId>flexicore-boot-starter-data-jpa-eclipselink</artifactId>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-actuator</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-vintage</artifactId>
-            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-multipart</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-base-model</artifactId>
-            <version>1.0.4-HIBERNATE</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
-            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-base-service</artifactId>
-            <version>1.0.3-HIBERNATE</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
-
 
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.6</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -236,31 +224,14 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-web</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-jaxrs2</artifactId>
-            <version>${swagger.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>javassist</artifactId>
-                    <groupId>org.javassist</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
 
         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
-            <version>${swagger.version}</version>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-swagger</artifactId>
         </dependency>
+
+
     </dependencies>
     <build>
 

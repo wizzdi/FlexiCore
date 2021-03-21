@@ -8,6 +8,7 @@ import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
 import com.wizzdi.flexicore.boot.jpa.annotations.EnableFlexiCoreJPAPlugins;
 import com.wizzdi.flexicore.boot.multipart.annotations.EnableFlexiCoreMultipart;
 import com.wizzdi.flexicore.boot.rest.annotations.EnableFlexiCoreRESTPlugins;
+import com.wizzdi.flexicore.boot.swagger.annotations.EnableFlexiCoreSwaggerPlugins;
 import com.wizzdi.flexicore.boot.websockets.annotations.EnableFlexiCoreWebSocketPlugins;
 import com.wizzdi.flexicore.security.annotations.EnableFlexiCoreSecurity;
 import org.springframework.boot.CommandLineRunner;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 @EnableMongoRepositories
 @EnableDynamicInvokersPlugins
 @EnableFlexiCoreMultipart
+@EnableFlexiCoreSwaggerPlugins
 public class FlexiCoreApplication {
 
 
