@@ -340,11 +340,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
-                <configuration>
-                    <javadocExecutable>C:\Program Files\AdoptOpenJDK\jdk-8.0.212.03-hotspot\bin\javadoc.exe
-                    </javadocExecutable>
-                    <javadocVersion>1.8.0</javadocVersion>
-                </configuration>
             </plugin>
 
 
