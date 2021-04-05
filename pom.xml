@@ -99,8 +99,8 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-boot-starter-flyway</artifactId>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <dependency>
