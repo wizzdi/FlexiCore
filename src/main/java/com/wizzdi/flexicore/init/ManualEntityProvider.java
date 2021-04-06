@@ -6,6 +6,7 @@ import com.flexicore.model.User;
 import com.flexicore.model.security.SecurityPolicy;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
 import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
+import com.wizzdi.flexicore.file.model.FileResource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,6 @@ public class ManualEntityProvider {
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 
 	public EntitiesHolder manualEntityHolder(){
-		return new EntitiesHolder(new HashSet<>(Arrays.asList(Baseclass.class, DynamicExecution.class, User.class, JsonConverter.class, SecurityPolicy.class)));
+		return new EntitiesHolder(new HashSet<>(Arrays.asList(Baseclass.class, DynamicExecution.class, User.class, JsonConverter.class, SecurityPolicy.class, FileResource.class)));
 	}
 }
