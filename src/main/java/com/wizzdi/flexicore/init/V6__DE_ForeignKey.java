@@ -6,8 +6,7 @@ import org.flywaydb.core.api.migration.Context;
 import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 @Extension
 @Component
@@ -15,20 +14,24 @@ public class V6__DE_ForeignKey extends BaseJavaMigration implements Plugin {
 
 	@Override
 	public void migrate(Context context) throws Exception {
-		try (Statement select = context.getConnection().createStatement()) {
-			ResultSet resultSet = select.executeQuery("SELECT EXISTS (\n" +
-					"   SELECT FROM information_schema.tables \n" +
-					"   where    table_name   = 'baseclass'\n" +
-					"   );");
-			resultSet.next();
-			boolean exists= resultSet.getBoolean("exists");
-			if(exists){
+		Connection connection = context.getConnection();
+		Savepoint v6_1 = connection.setSavepoint("V6_1");
+		try (Statement select = connection.createStatement()) {
+
 				select.execute("alter table servicecanonicalname drop constraint fk_servicecanonicalname_dynamicexecution_id");
-				select.execute("alter table servicecanonicalname drop column dynamicexecution_id");
-			}
-
-
-
 		}
+		catch (SQLException e){
+			connection.rollback(v6_1);
+		}
+
+		Savepoint v6_2 = connection.setSavepoint("V6_2");
+		try (Statement select = connection.createStatement()) {
+			select.execute("alter table servicecanonicalname drop column dynamicexecution_id");
+		}
+		catch (SQLException e){
+			connection.rollback(v6_2);
+		}
+
+
 	}
 }

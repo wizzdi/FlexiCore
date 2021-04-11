@@ -20,6 +20,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.LoadTimeWeavingConfigurer;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ import java.util.Arrays;
 @EnableDynamicInvokersPlugins
 @EnableFlexiCoreMultipart
 @EnableFlexiCoreSwaggerPlugins
+@EnableTransactionManagement(proxyTargetClass = true)
 public class FlexiCoreApplication {
 
 
