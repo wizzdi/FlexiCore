@@ -24,6 +24,8 @@ public class V7__FileResourceMigration extends BaseJavaMigration {
 
 	@Override
 	public void migrate(Context context) throws Exception {
+		Connection connection = context.getConnection();
+		Savepoint v7_0 = connection.setSavepoint("V7_0");
 		try (Statement select = context.getConnection().createStatement()) {
 
 			ResultSet count = select.executeQuery("select count(*) as totalRows from baseclass where dtype='FileResource'");
@@ -34,33 +36,38 @@ public class V7__FileResourceMigration extends BaseJavaMigration {
 			migrateFileResources(oldFileResources);
 			select.executeUpdate("update baseclass set dtype='Baseclass' where dtype='FileResource'");
 
+			Savepoint v7_1 = connection.setSavepoint("V7_1");
+			try (Statement statement = connection.createStatement()) {
 
-		}
+				statement.execute("alter table baseclass drop constraint fk_baseclass_icon_id");
+				statement.execute("Alter Table baseclass Add Constraint fk_baseclass_icon_id Foreign Key (icon_id) References fileresource(id)");
 
-		Connection connection = context.getConnection();
-		Savepoint v7_1 = connection.setSavepoint("V7_1");
-		try (Statement statement = connection.createStatement()) {
+			}
+			catch (SQLException e){
+				logger.warn("failed recreating fk_baseclass_icon_id constraint",e);
+				connection.rollback(v7_1);
+			}
 
-			statement.execute("alter table baseclass drop constraint fk_baseclass_icon_id");
-			statement.execute("Alter Table baseclass Add Constraint fk_baseclass_icon_id Foreign Key (icon_id) References fileresource(id)");
+			Savepoint v7_2 = connection.setSavepoint("V7_2");
+			try (Statement statement = connection.createStatement()) {
+				statement.execute("alter table baseclass drop constraint fk_baseclass_fileresource_id");
+				statement.execute("Alter Table baseclass Add Constraint fk_baseclass_fileresource_id Foreign Key (fileresource_id) References fileresource(id)");
+
+			}
+			catch (SQLException e){
+				logger.warn("failed recreating fk_baseclass_fileresource_id constraint",e);
+
+				connection.rollback(v7_2);
+			}
+
 
 		}
 		catch (SQLException e){
-			logger.warn("failed recreating fk_baseclass_icon_id constraint",e);
-			connection.rollback(v7_1);
+			logger.warn("failed getting filersource count",e);
+			connection.rollback(v7_0);
 		}
 
-		Savepoint v7_2 = connection.setSavepoint("V7_2");
-		try (Statement statement = connection.createStatement()) {
-			statement.execute("alter table baseclass drop constraint fk_baseclass_fileresource_id");
-			statement.execute("Alter Table baseclass Add Constraint fk_baseclass_fileresource_id Foreign Key (fileresource_id) References fileresource(id)");
 
-		}
-		catch (SQLException e){
-			logger.warn("failed recreating fk_baseclass_fileresource_id constraint",e);
-
-			connection.rollback(v7_2);
-		}
 
 
 	}
