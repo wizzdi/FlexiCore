@@ -122,6 +122,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>resteasy-flexicore-boot-starter</artifactId>
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
@@ -174,6 +175,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-service</artifactId>
+            <version>1.1.1-SNAPSHOT</version>
 
         </dependency>
 
@@ -185,6 +187,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-model</artifactId>
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -203,6 +206,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>dynamic-properties-converter-postgresql</artifactId>
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
