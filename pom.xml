@@ -170,6 +170,8 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
+            <version>1.1.1-SNAPSHOT</version>
+
         </dependency>
 
         <dependency>
