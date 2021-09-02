@@ -1,7 +1,9 @@
 package com.wizzdi.flexicore.init;
 
 import com.flexicore.annotations.EnableFlexiCoreBaseServices;
+import com.wizzdi.dynamic.properties.converter.DynamicPropertiesModule;
 import com.wizzdi.dynamic.properties.converter.EnableDynamicProperties;
+import com.wizzdi.dynamic.properties.converter.postgresql.PostgresqlJsonConverter;
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.EnableDynamicInvokersPlugins;
 import com.wizzdi.flexicore.boot.health.annotations.EnableFlexiCoreHealthPlugins;
@@ -27,7 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import java.io.IOException;
 import java.util.Arrays;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackageClasses = {FlexiCoreApplication.class, PostgresqlJsonConverter.class, DynamicPropertiesModule.class})
 @EnableFlexiCorePlugins
 @EnableFlexiCoreRESTPlugins
 @EnableFlexiCoreHealthPlugins
