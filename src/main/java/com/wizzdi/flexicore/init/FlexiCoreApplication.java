@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.init;
 import com.flexicore.annotations.EnableFlexiCoreBaseServices;
 import com.wizzdi.dynamic.properties.converter.DynamicPropertiesModule;
 import com.wizzdi.dynamic.properties.converter.EnableDynamicProperties;
+import com.wizzdi.dynamic.properties.converter.JsonConverterImplementationHolder;
 import com.wizzdi.dynamic.properties.converter.postgresql.PostgresqlJsonConverter;
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.EnableDynamicInvokersPlugins;
@@ -14,6 +15,7 @@ import com.wizzdi.flexicore.boot.rest.annotations.EnableFlexiCoreRESTPlugins;
 import com.wizzdi.flexicore.boot.swagger.annotations.EnableFlexiCoreSwaggerPlugins;
 import com.wizzdi.flexicore.boot.websockets.annotations.EnableFlexiCoreWebSocketPlugins;
 import com.wizzdi.flexicore.security.annotations.EnableFlexiCoreSecurity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -54,7 +56,8 @@ public class FlexiCoreApplication {
 
 	}
 
-
+@Autowired
+private JsonConverterImplementationHolder jsonConverterImplementationHolder;
 
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
