@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>4.2.13-SNAPSHOT</version>
+    <version>5.3.3-SNAPSHOT</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -21,17 +21,16 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.eclipselink>2.7.7</version.eclipselink>
-
-        <!-- maven-compiler-plugin -->
+        <spring-boot.version>2.5.2</spring-boot.version>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
-        <swagger.version>2.1.2</swagger.version>
-        <pf4j-spring.version>0.7.0</pf4j-spring.version>
+        <pf4j-spring.version>0.6.0</pf4j-spring.version>
+        <swagger.version>2.1.6</swagger.version>
 
-        <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
         <junit-jupiter.version>5.6.2</junit-jupiter.version>
+        <spring-cloud.version>2020.0.3</spring-cloud.version>
 
-        <flexicore-api.version>4.2.11-SNAPSHOT</flexicore-api.version>
+
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
     </properties>
 
@@ -75,7 +74,21 @@
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.3.0.RELEASE</version>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.wizzdi</groupId>
+                <artifactId>flexicore-boot-dependencies</artifactId>
+                <version>2.1.6</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -83,27 +96,44 @@
 
     </dependencyManagement>
 
-
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webmvc-core -->
+
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-webmvc-core</artifactId>
-            <version>1.5.1</version>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
 
-
         <dependency>
-            <groupId>dev.samstevens.totp</groupId>
-            <artifactId>totp-spring-boot-starter</artifactId>
-            <version>1.7.1</version>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
         </dependency>
-
-
         <dependency>
-            <groupId>org.pf4j</groupId>
-            <artifactId>pf4j-spring</artifactId>
-            <version>${pf4j-spring.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-batch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>resteasy-flexicore-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-starter-websocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot</artifactId>
             <exclusions>
                 <exclusion>
                     <artifactId>log4j</artifactId>
@@ -117,319 +147,96 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.batch</groupId>
-            <artifactId>spring-batch-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-messaging</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-websocket</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-loader</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-starter-data-jpa-eclipselink</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-batch</artifactId>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-vintage</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-starter-multipart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jta-atomikos -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jta-atomikos</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-jersey2 -->
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-jersey2</artifactId>
-            <version>1.5.1</version>
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>${version.eclipselink}</version>
-        </dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-dynamic-invokers-service</artifactId>
 
+        </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.hibernate</groupId>
-                    <artifactId>hibernate-entitymanager</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.hibernate</groupId>
-                    <artifactId>hibernate-core</artifactId>
-                </exclusion>
-            </exclusions>
-
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-security-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-security-model</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-base-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-base-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>dynamic-properties-database-converter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>dynamic-properties-converter-postgresql</artifactId>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.6</version>
         </dependency>
+
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-tomcat</artifactId>
+                    <groupId>org.springframework.boot</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-undertow</artifactId>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-starter-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.6</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-spring-boot-starter -->
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-spring-boot-starter</artifactId>
-            <version>4.0.0.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-            <version>1.8</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api -->
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>javax.persistence-api</artifactId>
-            <version>2.2</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.9.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-databind</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-core</artifactId>
-            <version>1.3.1</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.joshworks.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>1.8.0</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.21.0-GA</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.lambdaworks</groupId>
-            <artifactId>scrypt</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/javax.enterprise/cdi-api -->
-
-
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-jaxrs2</artifactId>
-            <version>${swagger.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>javassist</artifactId>
-                    <groupId>org.javassist</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
-            <version>${swagger.version}</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>26.0-jre</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mongodb/mongodb-crypt -->
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-crypt</artifactId>
-            <version>1.0.0</version>
-
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/org.zeroturnaround/zt-zip -->
-        <dependency>
-            <groupId>org.zeroturnaround</groupId>
-            <artifactId>zt-zip</artifactId>
-            <version>1.13</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/com.google.crypto.tink/tink -->
-        <dependency>
-            <groupId>com.google.crypto.tink</groupId>
-            <artifactId>tink</artifactId>
-            <version>1.5.0</version>
-        </dependency>
-
 
         <dependency>
             <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-api</artifactId>
-            <version>${flexicore-api.version}</version>
+            <artifactId>flexicore-boot-swagger</artifactId>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
-
     <build>
 
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
-                <version>1.10.1</version>
-                <executions>
-                    <execution>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-
-                    </execution>
-                </executions>
-                <configuration>
-                    <scripts>
-
-                        <script><![CDATA[
-                           log.debug("The settings are " + project.properties['reflections'])
-                            if(!new File( project.properties['reflections']).getParentFile().mkdirs()){
-                            log.debug("Failed created dir at "+project.properties['reflections'])
-                            }
-
-                       new org.reflections.Reflections(new org.reflections.util.ConfigurationBuilder().filterInputsBy(new org.reflections.util.FilterBuilder().exclude("^com.flexicore.test.*")).setUrls(org.reflections.util.ClasspathHelper.forPackage("com.flexicore"))
-                    .setScanners(new org.reflections.scanners.TypeAnnotationsScanner(), new org.reflections.scanners.SubTypesScanner(false), new org.reflections.scanners.MethodAnnotationsScanner()))
-                            .save(project.properties['reflections'],new org.reflections.serializers.JsonSerializer())
-
-
-                    ]]></script>
-                    </scripts>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.reflections</groupId>
-                        <artifactId>reflections</artifactId>
-                        <!-- use latest version of Reflections -->
-                        <version>0.9.11</version>
-                    </dependency>
-                    <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all -->
-                    <dependency>
-                        <groupId>org.codehaus.groovy</groupId>
-                        <artifactId>groovy-all</artifactId>
-                        <!-- any version of Groovy \>= 1.5.0 should work here -->
-                        <version>2.4.3</version>
-                        <scope>runtime</scope>
-                    </dependency>
-
-                </dependencies>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -458,7 +265,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.flexicore.init.FlexiCoreApplication</mainClass>
+                    <mainClass>com.wizzdi.flexicore.init.FlexiCoreApplication</mainClass>
                     <layout>ZIP</layout>
                 </configuration>
             </plugin>
@@ -520,11 +327,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
-                <configuration>
-                    <javadocExecutable>C:\Program Files\AdoptOpenJDK\jdk-8.0.212.03-hotspot\bin\javadoc.exe
-                    </javadocExecutable>
-                    <javadocVersion>1.8.0</javadocVersion>
-                </configuration>
             </plugin>
 
 
