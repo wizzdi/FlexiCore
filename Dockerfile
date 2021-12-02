@@ -14,8 +14,12 @@ COPY --from=build /app/target/FlexiCore-*-SNAPSHOT-exec.jar /app/FlexiCore.jar
 RUN mkdir -p /home/flexicore/plugins
 RUN mkdir -p /home/flexicore/entities
 RUN mkdir -p /home/flexicore/swagger-ui
+RUN mkdir -p /home/flexicore/ui
 COPY --from=build /app/src/main/resources/static/* /home/flexicore/swagger-ui/
 
+VOLUME /home/flexicore
+VOLUME /home/flexicore/ui
+VOLUME /home/flexicore/swagger-ui
 
 EXPOSE 8080
 EXPOSE 8787
