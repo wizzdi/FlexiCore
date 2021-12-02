@@ -1,5 +1,6 @@
 FROM alpine/git as clone
 WORKDIR /app
+ADD https://api.github.com/repos/wizzdi/FlexiCore/git/refs/heads/master version.json
 RUN git clone https://github.com/wizzdi/FlexiCore.git
 
 FROM maven:3.6.3-openjdk-11 as build
@@ -12,6 +13,9 @@ WORKDIR /app
 COPY --from=build /app/target/FlexiCore-*-SNAPSHOT-exec.jar /app/FlexiCore.jar
 RUN mkdir -p /home/flexicore/plugins
 RUN mkdir -p /home/flexicore/entities
+RUN mkdir -p /home/flexicore/swagger-ui
+COPY --from=build /app/src/main/resources/static/* /home/flexicore/swagger-ui/
+
 
 EXPOSE 8080
 EXPOSE 8787
