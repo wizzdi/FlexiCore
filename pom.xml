@@ -194,6 +194,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-base-service</artifactId>
+            <version>2.1.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
