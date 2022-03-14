@@ -5,6 +5,8 @@ import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ public class V7__FileResourceMigration extends BaseJavaMigration {
 			ResultSet oldFileResources = select.executeQuery("select id,name,description,md5,fileoffset,actualFilename,originalFileName,done,path,dateTaken,nonDownloadable,keepUntil,onlyFrom,softDelete from baseclass where dtype='FileResource'");
 			logger.info("Starting File Resource Migration of "+totalRows +" FileResources");
 			migrateFileResources(oldFileResources);
+			em.flush();
 			select.executeUpdate("update baseclass set dtype='Baseclass' where dtype='FileResource'");
 
 			Savepoint v7_1 = connection.setSavepoint("V7_1");
@@ -85,12 +88,12 @@ public class V7__FileResourceMigration extends BaseJavaMigration {
 			fileResource.setMd5(oldFileResources.getString("md5"));
 			fileResource.setDone(oldFileResources.getBoolean("done"));
 			fileResource.setFullPath(oldFileResources.getString("path"));
-			Date dateTaken = oldFileResources.getDate("dateTaken");
+			Timestamp dateTaken = oldFileResources.getTimestamp("dateTaken");
 			if (dateTaken != null) {
 				fileResource.setDateTaken(dateTaken.toInstant().atZone(ZoneOffset.systemDefault()).toOffsetDateTime());
 
 			}
-			Date keepUntil = oldFileResources.getDate("keepUntil");
+			Timestamp keepUntil = oldFileResources.getTimestamp("keepUntil");
 			if (keepUntil != null) {
 				fileResource.setKeepUntil(keepUntil.toInstant().atZone(ZoneOffset.systemDefault()).toOffsetDateTime());
 
