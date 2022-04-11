@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>5.4.0-SNAPSHOT</version>
+    <version>5.5.0-SNAPSHOT</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -21,13 +21,12 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.eclipselink>2.7.7</version.eclipselink>
-        <spring-boot.version>2.5.2</spring-boot.version>
+        <spring-boot.version>2.6.6</spring-boot.version>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
-        <swagger.version>2.1.6</swagger.version>
+        <swagger.version>2.2.0</swagger.version>
 
-        <junit-jupiter.version>5.6.2</junit-jupiter.version>
-        <spring-cloud.version>2020.0.3</spring-cloud.version>
+        <spring-cloud.version>2021.0.1</spring-cloud.version>
 
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
@@ -87,7 +86,7 @@
             <dependency>
                 <groupId>com.wizzdi</groupId>
                 <artifactId>flexicore-boot-dependencies</artifactId>
-                <version>2.1.16</version>
+                <version>2.2.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
