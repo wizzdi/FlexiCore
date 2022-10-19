@@ -164,6 +164,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-service</artifactId>
+            <version>2.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
@@ -377,7 +378,31 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>vault</id>
+            <dependencies>
+
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-vault-config-databases</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-vault-config</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-vault-config-consul</artifactId>
+                </dependency>
+                <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            </dependency>
+            </dependencies>
+        </profile>
     </profiles>
+
 
 
 </project>
