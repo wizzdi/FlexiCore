@@ -6,6 +6,7 @@ import com.wizzdi.dynamic.properties.converter.EnableDynamicProperties;
 import com.wizzdi.dynamic.properties.converter.JsonConverterImplementationHolder;
 import com.wizzdi.dynamic.properties.converter.postgresql.PostgresqlJsonConverter;
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
+import com.wizzdi.flexicore.boot.base.init.FlexiCoreAppBeanFactory;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.EnableDynamicInvokersPlugins;
 import com.wizzdi.flexicore.boot.health.annotations.EnableFlexiCoreHealthPlugins;
 import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
@@ -20,11 +21,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.ApplicationPidFileWriter;
-import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.LoadTimeWeavingConfigurer;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -50,7 +49,9 @@ public class FlexiCoreApplication {
 
 
 	public static void main(String[] args) throws IOException {
-		SpringApplication app = new SpringApplication(FlexiCoreApplication.class);
+		com.wizzdi.flexicore.boot.base.init.FlexiCoreApplication app = new com.wizzdi.flexicore.boot.base.init.FlexiCoreApplication(FlexiCoreApplication.class);
+
+
 		app.addListeners(new ApplicationPidFileWriter());
 		ConfigurableApplicationContext context=app.run(args);
 
