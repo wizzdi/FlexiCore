@@ -3,7 +3,7 @@
 FROM maven:3.8.6-eclipse-temurin-17 as build
 WORKDIR /app
 COPY . .
-RUN --mount=type=cache,target=/root/.m2 mvn package -DskipTests
+RUN --mount=type=cache,target=/root/.m2 mvn package -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -DskipTests
 
 FROM eclipse-temurin:17-alpine as run
 WORKDIR /app
