@@ -1,11 +1,8 @@
 # syntax=docker/dockerfile:1
-FROM alpine/git as clone
-WORKDIR /app
-RUN git clone https://github.com/wizzdi/FlexiCore.git
 
 FROM maven:3.8.6-eclipse-temurin-17 as build
 WORKDIR /app
-COPY --from=clone /app/FlexiCore /app
+COPY . .
 RUN --mount=type=cache,target=/root/.m2 mvn package -DskipTests
 
 FROM eclipse-temurin:17-alpine as run
