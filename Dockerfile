@@ -17,5 +17,5 @@ VOLUME /home/flexicore/plugins
 VOLUME /home/flexicore/entities
 
 
-ENTRYPOINT exec java $JAVA_OPTS  -Dloader.main=com.wizzdi.flexicore.init.FlexiCoreApplication -Dloader.path=file:/home/flexicore/entities/ -jar /app/FlexiCore.jar
+CMD java $JAVA_OPTS  -Dloader.main=com.wizzdi.flexicore.init.FlexiCoreApplication -Dloader.path=file:/home/flexicore/entities/ -Dloader.debug=true -cp /app/FlexiCore.jar org.springframework.boot.loader.PropertiesLauncher
 
