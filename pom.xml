@@ -21,7 +21,7 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.eclipselink>2.7.7</version.eclipselink>
-        <spring-boot.version>2.7.1</spring-boot.version>
+        <spring-boot.version>2.7.4</spring-boot.version>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <swagger.version>2.2.0</swagger.version>
@@ -407,6 +407,17 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-bootstrap</artifactId>
             </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>integration</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.integration</groupId>
+                    <artifactId>spring-integration-mqtt</artifactId>
+                    <version>5.5.15</version>
+
+                </dependency>
             </dependencies>
         </profile>
     </profiles>
