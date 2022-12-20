@@ -3,18 +3,22 @@ package com.wizzdi.flexicore.init;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Configuration
 public class FlywayConfiguration {
 
-    @Autowired
-    public FlywayConfiguration(DataSource dataSource, ObjectProvider<JavaMigration> javaMigrationsProvider) {
+    @Bean
+    public FlywayObjectHolder flywayObjectHolder(DataSource dataSource, ObjectProvider<JavaMigration> javaMigrationsProvider, EntityManagerFactory entityManagerFactory) {
         JavaMigration[] javaMigrations = javaMigrationsProvider.stream().toArray(JavaMigration[]::new);
         Flyway flyway = Flyway.configure().javaMigrations(javaMigrations).baselineOnMigrate(true).dataSource(dataSource).load();
         flyway.migrate();
+        return new FlywayObjectHolder(Arrays.stream(javaMigrations).map(f->f.getClass().getCanonicalName()).collect(Collectors.toSet()));
     }
 }
