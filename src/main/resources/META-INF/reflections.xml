@@ -8,13 +8,13 @@
 <Reflections>
 	<TypeAnnotationsScanner>
 		<entry>
-			<key>javax.ejb.Stateless</key>
+			<key>jakarta.ejb.Stateless</key>
 			<values>
 				<value>com.flexicore.service.UserRegistration</value>
 			</values>
 		</entry>
 		<entry>
-			<key>javax.persistence.Entity</key>
+			<key>jakarta.persistence.Entity</key>
 			<values>
 				<value>com.flexicore.model.User</value>
 				<value>com.flexicore.model.RoleToUser</value>
@@ -24,26 +24,26 @@
 			</values>
 		</entry>
 		<entry>
-			<key>javax.persistence.MappedSuperclass</key>
+			<key>jakarta.persistence.MappedSuperclass</key>
 			<values>
 				<value>com.flexicore.model.Baseclass</value>
 			</values>
 		</entry>
 		<entry>
-			<key>javax.ws.rs.Path</key>
+			<key>jakarta.ws.rs.Path</key>
 			<values>
 				<value>com.flexicore.rest.UserRESTService</value>
 				<value>com.flexicore.rest.RoleResourceRestService</value>
 			</values>
 		</entry>
 		<entry>
-			<key>javax.ws.rs.ApplicationPath</key>
+			<key>jakarta.ws.rs.ApplicationPath</key>
 			<values>
 				<value>com.flexicore.rest.JaxRsActivator</value>
 			</values>
 		</entry>
 		<entry>
-			<key>javax.xml.bind.annotation.XmlRootElement</key>
+			<key>jakarta.xml.bind.annotation.XmlRootElement</key>
 			<values>
 				<value>com.flexicore.model.User</value>
 			</values>
@@ -56,20 +56,20 @@
 			</values>
 		</entry>
 		<entry>
-			<key>javax.persistence.Table</key>
+			<key>jakarta.persistence.Table</key>
 			<values>
 				<value>com.flexicore.model.User</value>
 				<value>com.flexicore.model.Baselink</value>
 			</values>
 		</entry>
 		<entry>
-			<key>javax.persistence.Inheritance</key>
+			<key>jakarta.persistence.Inheritance</key>
 			<values>
 				<value>com.flexicore.model.Baseclass</value>
 			</values>
 		</entry>
 		<entry>
-			<key>javax.enterprise.context.RequestScoped</key>
+			<key>jakarta.enterprise.context.RequestScoped</key>
 			<values>
 				<value>com.flexicore.rest.UserRESTService</value>
 				<value>com.flexicore.rest.RoleResourceRestService</value>
@@ -77,19 +77,19 @@
 			</values>
 		</entry>
 		<entry>
-			<key>javax.ejb.Singleton</key>
+			<key>jakarta.ejb.Singleton</key>
 			<values>
 				<value>com.flexicore.interceptors.Startup</value>
 			</values>
 		</entry>
 		<entry>
-			<key>javax.ejb.Startup</key>
+			<key>jakarta.ejb.Startup</key>
 			<values>
 				<value>com.flexicore.interceptors.Startup</value>
 			</values>
 		</entry>
 		<entry>
-			<key>javax.enterprise.context.ApplicationScoped</key>
+			<key>jakarta.enterprise.context.ApplicationScoped</key>
 			<values>
 				<value>com.flexicore.data.UserRepository</value>
 			</values>

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>6.0.3-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -20,13 +20,12 @@
     <properties>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.eclipselink>2.7.7</version.eclipselink>
-        <spring-boot.version>2.7.4</spring-boot.version>
+        <spring-boot.version>3.0.0</spring-boot.version>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
-        <swagger.version>2.2.0</swagger.version>
+        <swagger.version>2.2.7</swagger.version>
 
-        <spring-cloud.version>2021.0.3</spring-cloud.version>
+        <spring-cloud.version>2022.0.0</spring-cloud.version>
 
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
@@ -86,7 +85,7 @@
             <dependency>
                 <groupId>com.wizzdi</groupId>
                 <artifactId>flexicore-boot-dependencies</artifactId>
-                <version>3.0.5</version>
+                <version>4.0.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -151,10 +150,7 @@
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-vintage</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-boot-starter-multipart</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
@@ -182,7 +178,6 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-base-service</artifactId>
-            <version>3.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
@@ -220,10 +215,6 @@
             <artifactId>flexicore-boot-starter-web</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-boot-swagger</artifactId>
-        </dependency>
 
 
     </dependencies>

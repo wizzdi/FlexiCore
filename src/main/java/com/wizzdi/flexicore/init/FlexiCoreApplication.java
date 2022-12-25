@@ -11,7 +11,6 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.EnableDynamicInvok
 import com.wizzdi.flexicore.boot.health.annotations.EnableFlexiCoreHealthPlugins;
 import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
 import com.wizzdi.flexicore.boot.jpa.annotations.EnableFlexiCoreJPAPlugins;
-import com.wizzdi.flexicore.boot.multipart.annotations.EnableFlexiCoreMultipart;
 import com.wizzdi.flexicore.boot.rest.annotations.EnableFlexiCoreRESTPlugins;
 import com.wizzdi.flexicore.boot.swagger.annotations.EnableFlexiCoreSwaggerPlugins;
 import com.wizzdi.flexicore.boot.websockets.annotations.EnableFlexiCoreWebSocketPlugins;
@@ -41,7 +40,6 @@ import java.util.Arrays;
 @EnableFlexiCoreSecurity
 @EnableMongoRepositories
 @EnableDynamicInvokersPlugins
-@EnableFlexiCoreMultipart
 @EnableFlexiCoreSwaggerPlugins
 @EnableTransactionManagement(proxyTargetClass = true)
 @EnableDynamicProperties

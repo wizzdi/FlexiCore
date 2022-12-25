@@ -11,7 +11,7 @@
 	 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://www.oracle.com/webfolder/technetwork/jsc/xml/ns/javaee/jobXML_1_0.xsd">
 	<step id="Analyze">
 		<properties>
-			<property name="javax.transaction.global.timeout" value="43200" />
+			<property name="jakarta.transaction.global.timeout" value="43200" />
 			<property name="org.jberet.transaction.timeout.collector" value="43200" />
 		</properties>
 		<chunk item-count="1">

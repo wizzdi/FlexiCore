@@ -67,7 +67,7 @@
 
 			<property name="eclipselink.target-database" value="MySql" />
 			<property
-				name="javax.persistence.schema-generation.create-database-schemas"
+				name="jakarta.persistence.schema-generation.create-database-schemas"
 				value="true" />
 			<property name="eclipselink.ddl-generation.output-mode"
 				value="database" />
