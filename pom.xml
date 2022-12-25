@@ -29,6 +29,7 @@
 
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
+        <flexicore-boot-dependencies.version>4.0.0</flexicore-boot-dependencies.version>
     </properties>
 
     <distributionManagement>
@@ -85,7 +86,7 @@
             <dependency>
                 <groupId>com.wizzdi</groupId>
                 <artifactId>flexicore-boot-dependencies</artifactId>
-                <version>4.0.0-SNAPSHOT</version>
+                <version>${flexicore-boot-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
