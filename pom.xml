@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>7.0.0</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -62,7 +62,7 @@
         <connection>scm:git:git://wizzdi/flexicore.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore</url>
-        <tag>FlexiCore-${version}</tag>
+        <tag>FlexiCore-7.0.0</tag>
     </scm>
 
 
