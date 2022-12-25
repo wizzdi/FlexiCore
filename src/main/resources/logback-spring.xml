@@ -1,16 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <appender name="Console"
-              class="ch.qos.logback.core.ConsoleAppender">
+    <property name="LOGS" value="/home/flexicore/logs" />
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                <Pattern>${PATTERN:-%d %p %C [%t] %m%n}</Pattern>
+                %black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C): %msg%n%throwable
             </Pattern>
         </layout>
-    </appender>
 
+    </appender>
+    <appender name="FlexiCoreLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/flexicore.log</file>
+        <encoder
+                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily and when the file reaches 10 MegaBytes -->
+            <fileNamePattern>${LOGS}/flexicore-%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
     <!-- LOG everything at INFO level -->
     <root level="info">
-        <appender-ref ref="Console" />
+        <appender-ref ref="FlexiCoreLog"/>
+        <appender-ref ref="Console"/>
     </root>
 </configuration>
