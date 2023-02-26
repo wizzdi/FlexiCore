@@ -101,6 +101,7 @@ docker image is available at [Docker Hub](https://hub.docker.com/r/wizzdi/flexic
 
 ## Stay in Touch
 Contact us at our [site](http://wizzdi.com/)
+or at our [discord channel](https://discord.gg/A2MSmPcwm8)
 
 
 ### Main 3rd Party Dependencies
