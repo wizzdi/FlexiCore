@@ -1,4 +1,4 @@
-package com.wizzdi.flexicore.init;
+package com.wizzdi.flexicore.init.config;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.migration.JavaMigration;
