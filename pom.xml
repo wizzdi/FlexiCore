@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>7.0.1-SNAPSHOT</version>
+    <version>8.0.0</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -30,6 +30,7 @@
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
         <flexicore-boot-dependencies.version>5.0.0-dev</flexicore-boot-dependencies.version>
+        <springdoc-openapi-starter-webmvc-ui.version>2.1.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
     <distributionManagement>
@@ -95,6 +96,12 @@
     </dependencyManagement>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-security-bearer-jwt</artifactId>
@@ -129,10 +136,6 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.wizzdi</groupId>
-            <artifactId>resteasy-flexicore-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>

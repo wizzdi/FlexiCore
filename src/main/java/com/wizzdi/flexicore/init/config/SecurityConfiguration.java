@@ -4,6 +4,8 @@ import com.wizzdi.security.adapter.SecurityPathConfigurator;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -13,19 +15,25 @@ import java.util.Arrays;
 @Configuration
 public class SecurityConfiguration {
 
+  @Value("${api.prefix:/api}")
+  private String apiPrefix;
+
   @Bean
   @Order(99)
   public SecurityPathConfigurator loginPath() {
     return expressionInterceptUrlRegistry ->
         expressionInterceptUrlRegistry
             .requestMatchers(
-                "/login", "/register", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                    apiPrefix+"/login", apiPrefix+"/api/register", apiPrefix+"/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
             .permitAll();
   }
 
   @Bean
   public OpenAPI customOpenAPI() {
+    Server server = new Server();
+    server.setUrl("http://localhost:8080");
     return new OpenAPI()
+            .addServersItem(server)
         .components(
             new Components()
                 .addSecuritySchemes(
