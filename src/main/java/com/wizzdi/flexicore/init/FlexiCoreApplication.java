@@ -8,7 +8,6 @@ import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins
 import com.wizzdi.flexicore.boot.base.init.FlexiCoreAppBeanFactory;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.EnableDynamicInvokersPlugins;
 import com.wizzdi.flexicore.boot.health.annotations.EnableFlexiCoreHealthPlugins;
-import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
 import com.wizzdi.flexicore.boot.jpa.annotations.EnableFlexiCoreJPAPlugins;
 import com.wizzdi.flexicore.boot.rest.annotations.EnableFlexiCoreRESTPlugins;
 import com.wizzdi.flexicore.boot.swagger.annotations.EnableFlexiCoreSwaggerPlugins;
@@ -35,7 +34,6 @@ import java.util.Arrays;
 @EnableFlexiCoreHealthPlugins
 @EnableFlexiCoreJPAPlugins
 @EnableFlexiCoreWebSocketPlugins
-@EnableFlexiCoreJAXRSPlugins
 @EnableFlexiCoreSecurity
 @EnableDynamicInvokersPlugins
 @EnableFlexiCoreSwaggerPlugins

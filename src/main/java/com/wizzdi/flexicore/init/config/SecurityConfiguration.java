@@ -17,6 +17,8 @@ public class SecurityConfiguration {
 
   @Value("${api.prefix:/api}")
   private String apiPrefix;
+  @Value("${flexicore.swagger.url:#{null}}")
+  private String swaggerURL;
 
   @Bean
   @Order(99)
@@ -30,10 +32,16 @@ public class SecurityConfiguration {
 
   @Bean
   public OpenAPI customOpenAPI() {
-    Server server = new Server();
-    server.setUrl("http://localhost:8080");
-    return new OpenAPI()
-            .addServersItem(server)
+
+    OpenAPI openAPI = new OpenAPI();
+    if(swaggerURL!=null){
+      Server server = new Server();
+      server.setUrl(swaggerURL);
+      openAPI.addServersItem(server);
+    }
+
+    return openAPI
+
         .components(
             new Components()
                 .addSecuritySchemes(
