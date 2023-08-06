@@ -29,7 +29,7 @@
 
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
-        <flexicore-boot-dependencies.version>4.1.7</flexicore-boot-dependencies.version>
+        <flexicore-boot-dependencies.version>4.1.9</flexicore-boot-dependencies.version>
     </properties>
 
     <distributionManagement>
