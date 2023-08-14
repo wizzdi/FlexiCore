@@ -40,7 +40,7 @@ public class CorsConfig implements WebMvcConfigurer {
     for (String mapping : mappings) {
       registry
           .addMapping(mapping)
-          .allowedOrigins(allowedOrigins)
+          .allowedOriginPatterns(allowedOrigins)
           .allowedMethods(allowedMethods)
           .allowedHeaders(allowedHeaders)
           .exposedHeaders(exposedHeaders)
