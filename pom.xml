@@ -23,13 +23,12 @@
         <spring-boot.version>3.1.1</spring-boot.version>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
-        <swagger.version>2.2.7</swagger.version>
 
         <spring-cloud.version>2022.0.3</spring-cloud.version>
 
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
-        <flexicore-boot-dependencies.version>4.1.9</flexicore-boot-dependencies.version>
+        <flexicore-boot-dependencies.version>4.1.11</flexicore-boot-dependencies.version>
     </properties>
 
     <distributionManagement>
