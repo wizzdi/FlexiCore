@@ -7,7 +7,7 @@
 
 For comprehensive information about FlexiCore please visit our [site](http://wizzdi.com/).
 
-FlexiCore boosts [Spring Boot](https://github.com/spring-projects/spring-boot) applications with a very flexible and powerful plugins support, robust access control and an optional set of services many applications require.
+FlexiCore boosts [Spring Boot](https://github.com/spring-projects/spring-boot) applications with a very flexible and powerful plugins support, robust access control and an optional set of services many applications require, this is a specific pachaging of [FlexiCore Boot](https://github.com/wizzdi/flexicore-boot).
 
 ## Use Case
 
