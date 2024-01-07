@@ -8,6 +8,7 @@ import com.flexicore.model.QueryInformationHolder;
 import com.flexicore.model.Tenant;
 import com.flexicore.request.BaseclassCreate;
 import com.flexicore.security.SecurityContext;
+import com.flexicore.service.DynamicPropertiesUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -85,25 +86,16 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
             baseclass.setTenant(baseclassCreate.getTenant());
             update = true;
         }
-        if (baseclassCreate.supportingDynamic()&&baseclassCreate.any() != null && !baseclassCreate.any().isEmpty()) {
-            Map<String, Object> jsonNode = baseclass.getJsonNode();
-            if (jsonNode == null) {
-                baseclass.setJsonNode(baseclassCreate.any());
+        if (baseclassCreate.supportingDynamic()){
+            Map<String, Object> mergedValues = DynamicPropertiesUtils.updateDynamic(baseclassCreate.any(), baseclass.any());
+            if (mergedValues != null) {
+                baseclass.setJsonNode(mergedValues);
                 update = true;
-            } else {
-                for (Map.Entry<String, Object> entry : baseclassCreate.any().entrySet()) {
-                    String key = entry.getKey();
-                    Object newVal = entry.getValue();
-                    Object val = jsonNode.get(key);
-                    if (newVal!=null&&!newVal.equals(val)) {
-                        jsonNode.put(key, newVal);
-                        update = true;
-                    }
-                }
             }
-
-
         }
+
+
+
         return update;
     }
 
