@@ -32,27 +32,14 @@ public class SecurityConfiguration {
 
   @Bean
   public OpenAPI customOpenAPI() {
-
-    OpenAPI openAPI = new OpenAPI();
-    if(swaggerURL!=null){
-      Server server = new Server();
-      server.setUrl(swaggerURL);
-      openAPI.addServersItem(server);
-    }
-
-    return openAPI
-
-        .components(
-            new Components()
-                .addSecuritySchemes(
-                    "bearer-jwt",
-                    new io.swagger.v3.oas.models.security.SecurityScheme()
-                        .type(io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .bearerFormat("JWT")
-                        .in(io.swagger.v3.oas.models.security.SecurityScheme.In.HEADER)
-                        .name("Authorization")))
-        .addSecurityItem(
-            new SecurityRequirement().addList("bearer-jwt", Arrays.asList("read", "write")));
+    Server server = new Server();
+    server.setUrl(swaggerURL);
+    return new OpenAPI()
+            .addServersItem(server)
+            .components(new Components().addSecuritySchemes("bearer-jwt",
+                    new io.swagger.v3.oas.models.security.SecurityScheme().type(io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
+                            .in(io.swagger.v3.oas.models.security.SecurityScheme.In.HEADER).name("Authorization")))
+            .addSecurityItem(
+                    new SecurityRequirement().addList("bearer-jwt", Arrays.asList("read", "write")));
   }
 }
