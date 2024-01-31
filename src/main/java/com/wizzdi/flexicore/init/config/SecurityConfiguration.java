@@ -15,7 +15,7 @@ import java.util.Arrays;
 @Configuration
 public class SecurityConfiguration {
 
-  @Value("${api.prefix:/api}")
+  @Value("${flexicore.api.path:/api}")
   private String apiPrefix;
   @Value("${flexicore.swagger.url:#{null}}")
   private String swaggerURL;
