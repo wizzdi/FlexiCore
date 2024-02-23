@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>7.0.1-SNAPSHOT</version>
+    <version>7.0.2-SNAPSHOT</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -28,7 +28,7 @@
 
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
-        <flexicore-boot-dependencies.version>4.1.13</flexicore-boot-dependencies.version>
+        <flexicore-boot-dependencies.version>4.1.18</flexicore-boot-dependencies.version>
     </properties>
 
     <distributionManagement>
