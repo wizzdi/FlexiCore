@@ -29,7 +29,7 @@
 
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
-        <flexicore-boot-dependencies.version>5.0.3</flexicore-boot-dependencies.version>
+        <flexicore-boot-dependencies.version>5.0.8</flexicore-boot-dependencies.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.2.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
