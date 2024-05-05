@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>8.0.0</version>
+    <version>9.0.0</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -20,17 +20,17 @@
     <properties>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-boot.version>3.1.1</spring-boot.version>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
-        <swagger.version>2.2.7</swagger.version>
+        <spring-boot.version>3.2.5</spring-boot.version>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <swagger.version>2.2.21</swagger.version>
 
-        <spring-cloud.version>2022.0.3</spring-cloud.version>
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
 
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
-        <flexicore-boot-dependencies.version>5.0.9</flexicore-boot-dependencies.version>
-        <springdoc-openapi-starter-webmvc-ui.version>2.2.0</springdoc-openapi-starter-webmvc-ui.version>
+        <flexicore-boot-dependencies.version>6.0.0</flexicore-boot-dependencies.version>
+        <springdoc-openapi-starter-webmvc-ui.version>2.5.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
     <distributionManagement>
@@ -227,10 +227,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                 </configuration>
@@ -259,7 +260,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.5</version>
                 <configuration>
                     <argLine>
                         --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.reflect.annotation=ALL-UNNAMED
@@ -283,7 +284,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -296,7 +297,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.3</version>
             </plugin>
 
 
@@ -339,7 +340,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.2.4</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -382,7 +383,6 @@
                 <dependency>
                     <groupId>org.springframework.integration</groupId>
                     <artifactId>spring-integration-mqtt</artifactId>
-                    <version>5.5.15</version>
 
                 </dependency>
             </dependencies>
