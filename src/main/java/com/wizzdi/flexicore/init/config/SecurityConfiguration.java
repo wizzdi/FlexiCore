@@ -24,7 +24,7 @@ public class SecurityConfiguration {
   @Order(99)
   public SecurityPathConfigurator loginPath() {
     return f -> {
-      f.requestMatchers(apiPrefix + "/login", apiPrefix + "/api/register", apiPrefix + "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+      f.requestMatchers(apiPrefix + "/login", apiPrefix + "/register",apiPrefix+"/downloadUnsecure/*", apiPrefix + "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
       f.requestMatchers(apiPrefix + "/**").authenticated();
       f.anyRequest().permitAll();
 
