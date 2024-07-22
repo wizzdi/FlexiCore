@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>9.0.0</version>
+    <version>9.1.0</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -20,16 +20,16 @@
     <properties>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-boot.version>3.2.5</spring-boot.version>
+        <spring-boot.version>3.3.1</spring-boot.version>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.source>21</maven.compiler.source>
         <swagger.version>2.2.21</swagger.version>
 
-        <spring-cloud.version>2023.0.1</spring-cloud.version>
+        <spring-cloud.version>2023.0.2</spring-cloud.version>
 
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
-        <flexicore-boot-dependencies.version>6.0.4</flexicore-boot-dependencies.version>
+        <flexicore-boot-dependencies.version>6.1.1</flexicore-boot-dependencies.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.5.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
@@ -100,7 +100,7 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.extension</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.3</version>
             <scope>runtime</scope>
         </dependency>
 
