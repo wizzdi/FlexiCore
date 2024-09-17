@@ -15,6 +15,8 @@ public class JacksonConfiguration {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
+        mapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL)
+                .enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE);
         mapper.registerModule(new JavaTimeModule());
 
         return mapper;
