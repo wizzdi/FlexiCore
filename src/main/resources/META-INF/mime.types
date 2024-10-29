@@ -62,7 +62,7 @@ type=video/vivo                                  exts=viv,vivo
 type=video/wavelet                               exts=wv
 type=video/x-sgi-movie                           exts=movie
 type=image/svg+xml                          exts=svg
-
+type=application/pdf                             exts=pdf
 
 enc=x-gzip                                       exts=gz
 
