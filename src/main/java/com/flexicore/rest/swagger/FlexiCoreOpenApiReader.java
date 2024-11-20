@@ -69,6 +69,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 
 public class FlexiCoreOpenApiReader extends Reader {
@@ -376,7 +377,7 @@ public class FlexiCoreOpenApiReader extends Reader {
         globalParameters.addAll(ReaderUtils.collectFieldParameters(cls, components, classConsumes, null));
 
         // iterate class methods
-        Method methods[] = cls.getMethods();
+        List<Method> methods = Arrays.stream(cls.getMethods()).sorted(Comparator.comparing((Method f)->f.getName()).thenComparing(f->f.getParameterCount())).collect(Collectors.toList());
         for (Method method : methods) {
             if (isOperationHidden(method)) {
                 continue;
@@ -938,7 +939,7 @@ public class FlexiCoreOpenApiReader extends Reader {
 
         // operation id
         if (StringUtils.isBlank(operation.getOperationId())) {
-            operation.setOperationId(getOperationId(method.getName()));
+            operation.setOperationId(getOperationId(method));
         }
 
         // classResponses
@@ -1271,6 +1272,25 @@ public class FlexiCoreOpenApiReader extends Reader {
                 }
             }
         }
+    }
+
+    protected String getOperationId(Method method) {
+        String operationId=method.getName();
+        boolean operationIdUsed = existOperationId(operationId);
+        if(operationIdUsed){
+            operationId=method.getName()+"_"+method.getParameterCount();
+            operationIdUsed=existOperationId(operationId);
+        }
+        String operationIdToFind = null;
+        int counter = 0;
+        while (operationIdUsed) {
+            operationIdToFind = String.format("%s_%d", operationId, ++counter);
+            operationIdUsed = existOperationId(operationIdToFind);
+        }
+        if (operationIdToFind != null) {
+            operationId = operationIdToFind;
+        }
+        return operationId;
     }
 
     protected String getOperationId(String operationId) {

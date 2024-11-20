@@ -142,6 +142,7 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 				.openApiConfiguration(openApiConfiguration)
 				.ctxId(ctxId)
 				.buildContext(true);
+		ctx.setOpenApiReader(new FlexiCoreOpenApiReader());
 		OpenAPI oas = ctx.read();
 
 		SpringDocUtils.getConfig().removeSimpleTypesForParameterObject(SecurityContext.class);
@@ -198,6 +199,9 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 					schemas.put(entry.getKey(), composedSchema);
 
 				}
+			}
+			if(value.getRequired()!=null){
+				value.getRequired().clear();
 			}
 
 
