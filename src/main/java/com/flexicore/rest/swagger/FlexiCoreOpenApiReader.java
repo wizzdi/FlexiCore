@@ -46,6 +46,7 @@ import io.swagger.v3.oas.models.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ClassUtils;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Consumes;
@@ -133,6 +134,7 @@ public class FlexiCoreOpenApiReader extends Reader {
      * @return the generated OpenAPI definition
      */
     public OpenAPI read(Set<Class<?>> classes) {
+        List<? extends Class<?>> userClasses = classes.stream().map(f -> ClassUtils.getUserClass(f)).collect(Collectors.toList());
         Set<Class<?>> sortedClasses = new TreeSet<>(new Comparator<Class<?>>() {
             @Override
             public int compare(Class<?> class1, Class<?> class2) {
@@ -146,7 +148,7 @@ public class FlexiCoreOpenApiReader extends Reader {
                 return -1;
             }
         });
-        sortedClasses.addAll(classes);
+        sortedClasses.addAll(userClasses);
 
         Map<Class<?>, ReaderListener> listeners = new HashMap<>();
 
