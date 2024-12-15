@@ -1,5 +1,0 @@
-<!-- Required for Tomcat: https://docs.jboss.org/weld/reference/latest/en-US/html/environments.html#_tomcat -->
-<Context>
-    <Resource name="BeanManager" auth="Container"
-              type="jakarta.enterprise.inject.spi.BeanManager" factory="org.jboss.weld.resources.ManagerObjectFactory" />
-</Context>

@@ -1,4 +1,4 @@
-package com.wizzdi.flexicore.init;
+package com.wizzdi.flexicore.init.config;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.migration.JavaMigration;
@@ -15,12 +15,13 @@ import java.util.stream.Collectors;
 
 @Configuration
 public class FlywayConfiguration {
-    @Value("${flexicore.flyway.enabled:true}")
-    private boolean flywayEnabled;
+
+    @Value("${flexicore.flyway.enable:true}")
+    private boolean enabled;
 
     @Bean
     public FlywayObjectHolder flywayObjectHolder(DataSource dataSource, ObjectProvider<JavaMigration> javaMigrationsProvider, EntityManagerFactory entityManagerFactory) {
-        if(!flywayEnabled){
+        if(!enabled){
             return new FlywayObjectHolder(Collections.emptySet());
         }
         JavaMigration[] javaMigrations = javaMigrationsProvider.stream().toArray(JavaMigration[]::new);
