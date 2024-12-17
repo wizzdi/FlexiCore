@@ -16,6 +16,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.sql.*;
 import java.time.ZoneOffset;
+import java.util.Set;
 
 @Component
 @Transactional
@@ -30,6 +31,9 @@ public class V7__FileResourceMigration extends BaseJavaMigration {
 		Connection connection = context.getConnection();
 		Savepoint v7_0 = connection.setSavepoint("V7_0");
 		try (Statement select = context.getConnection().createStatement()) {
+			if(MigrationUtils.getFields(select, Set.of("baseclass")).isEmpty()){
+				return;
+			}
 
 			ResultSet count = select.executeQuery("select count(*) as totalRows from baseclass where dtype='FileResource'");
 			count.next();

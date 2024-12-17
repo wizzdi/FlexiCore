@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Connection;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -27,6 +28,9 @@ public class V9__BaseToSecurity extends BaseJavaMigration {
         Connection connection = context.getConnection();
         Savepoint v2_0 = connection.setSavepoint("v2_0");
         try (Statement select = context.getConnection().createStatement()) {
+            if(MigrationUtils.getFields(select, Collections.singleton("baseclass")).isEmpty()){
+                return;
+            }
             for (TypeNameMigration typeMigration : typeMigrations) {
                 logger.info("Starting Migration of "+typeMigration.oldName);
                 String sql = "update baseclass set dtype='"+typeMigration.newName+"' where dtype='"+typeMigration.oldName+"'";

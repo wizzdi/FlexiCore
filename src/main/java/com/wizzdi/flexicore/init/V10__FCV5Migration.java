@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Set;
 
 @Component
 
@@ -23,16 +24,19 @@ public class V10__FCV5Migration extends BaseJavaMigration {
     @Override
     public void migrate(Context context) throws Exception {
 
+
         Connection connection = context.getConnection();
         Savepoint v3_0 = connection.setSavepoint("v3_0");
         try (Statement select = context.getConnection().createStatement()) {
+            if(MigrationUtils.getFields(select,Set.of("clazz")).isEmpty()){
+                return;
+            }
             FlexiCoreV4ToV5Migration.migrateToFCV5(select, new FlexiCoreV4ToV5Migration.ExternalTypeMigration( List.of(new FlexiCoreV4ToV5Migration.FieldMigration("surName","lastName")),User.class));
 
         }
 
 
     }
-
 
 
 }
