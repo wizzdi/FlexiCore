@@ -23,7 +23,7 @@ public class V8__ClazzLinkToClazz extends BaseJavaMigration {
         Connection connection = context.getConnection();
         Savepoint v2_0 = connection.setSavepoint("v2_0");
         try (Statement select = context.getConnection().createStatement()) {
-            if(MigrationUtils.getFields(select, Set.of("clazz")).isEmpty()){
+            if(MigrationUtils.getFields(select, Set.of("baseclass")).isEmpty()){
                 return;
             }
 
