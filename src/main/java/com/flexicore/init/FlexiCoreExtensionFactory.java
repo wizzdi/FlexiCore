@@ -51,15 +51,25 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
         String pluginId = pluginWrapper!=null?pluginWrapper.getPluginId():"core-extensions";
         FlexiCoreApplicationContext applicationContext = contextCache.get(pluginId);
         if (applicationContext == null) {
-            long start=System.currentTimeMillis();
-            applicationContext = createApplicationContext(pluginWrapper);
-            contextCache.put(pluginId, applicationContext);
-            List<String> dependencies = pluginWrapper!=null?pluginWrapper.getDescriptor().getDependencies().parallelStream().map(f -> f.getPluginId()).sorted().collect(Collectors.toList()):new ArrayList<>();
-            List<ApplicationContext> dependenciesContexts=dependencies.stream().map(f->pluginManager.getPlugin(f)).filter(f->f!=null).map(this::getApplicationContext).collect(Collectors.toList());
-            applicationContext.getAutowireCapableBeanFactory().addDependenciesContext(dependenciesContexts);
-            applicationContext.refresh();
-            pluginsApplicationContexts.add(applicationContext);
-            logger.debug("creating context for "+pluginId +" took "+(System.currentTimeMillis()-start)+"ms");
+            ClassLoader current = Thread.currentThread().getContextClassLoader();
+
+            ClassLoader pluginClassLoader = pluginWrapper!=null?pluginWrapper.getPluginClassLoader():Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(pluginClassLoader);
+                long start = System.currentTimeMillis();
+                applicationContext = createApplicationContext(pluginWrapper);
+                contextCache.put(pluginId, applicationContext);
+                List<String> dependencies = pluginWrapper != null ? pluginWrapper.getDescriptor().getDependencies().parallelStream().map(f -> f.getPluginId()).sorted().collect(Collectors.toList()) : new ArrayList<>();
+                List<ApplicationContext> dependenciesContexts = dependencies.stream().map(f -> pluginManager.getPlugin(f)).filter(f -> f != null).map(this::getApplicationContext).collect(Collectors.toList());
+                applicationContext.getAutowireCapableBeanFactory().addDependenciesContext(dependenciesContexts);
+                applicationContext.refresh();
+                pluginsApplicationContexts.add(applicationContext);
+                logger.debug("creating context for " + pluginId + " took " + (System.currentTimeMillis() - start) + "ms");
+            }
+            finally {
+                Thread.currentThread().setContextClassLoader(current);
+
+            }
 
         }
         return applicationContext;

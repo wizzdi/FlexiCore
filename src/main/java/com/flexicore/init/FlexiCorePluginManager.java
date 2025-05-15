@@ -42,6 +42,12 @@ public class FlexiCorePluginManager extends SpringPluginManager {
         return pluginWrapper==null?getApplicationContext():extensionFactory.getApplicationContext(pluginWrapper);
     }
 
+    public ApplicationContext getApplicationContext(PluginWrapper pluginWrapper){
+
+        FlexiCoreExtensionFactory extensionFactory = (FlexiCoreExtensionFactory) getExtensionFactory();
+        return pluginWrapper==null?getApplicationContext():extensionFactory.getApplicationContext(pluginWrapper);
+    }
+
 
     @Override
     protected PluginDescriptorFinder createPluginDescriptorFinder() {
