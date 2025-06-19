@@ -47,6 +47,13 @@
             <url>https://artifactory.wizzdi.com/artifactory/flexicore-local</url>
         </repository>
     </distributionManagement>
+    <repositories>
+        <repository>
+            <id>flexicore-local</id>
+            <name>flexicore-local</name>
+            <url>https://artifactory.wizzdi.com/artifactory/flexicore-local</url>
+        </repository>
+    </repositories>
 
     <developers>
         <developer>
