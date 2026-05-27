@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>6.0.5-SNAPSHOT</version>
+    <version>6.0.5-PARKING</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -177,7 +177,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-service</artifactId>
-            <version>2.0.4-SNAPSHOT</version>
+            <version>2.0.4-PARKING</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
@@ -188,7 +188,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-base-service</artifactId>
-            <version>3.0.5-SNAPSHOT</version>
+            <version>3.0.5-PARKING</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
