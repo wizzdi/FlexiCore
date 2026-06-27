@@ -104,6 +104,45 @@ Contact us at our [site](http://wizzdi.com/)
 or at our [discord channel](https://discord.gg/A2MSmPcwm8)
 
 
+## Maven Profiles
+
+The following Maven profiles are available in the project:
+
+### Available Maven Profiles
+
+1.  **`release-sign-artifacts`**
+    *   **Description:** Used to sign build artifacts using GPG during the release process.
+    *   **Activation:** Automatically activated if the property `performRelease` is set to `true`.
+    *   **Build Command:**
+        ```bash
+        mvn clean install -Prelease-sign-artifacts
+        ```
+        Or:
+        ```bash
+        mvn clean install -DperformRelease=true
+        ```
+
+2.  **`vault`**
+    *   **Description:** Adds dependencies for Spring Cloud Vault (Consul and Databases) and Spring Cloud Bootstrap.
+    *   **Build Command:**
+        ```bash
+        mvn clean install -Pvault
+        ```
+
+3.  **`integration`**
+    *   **Description:** Adds the `spring-integration-mqtt` dependency for MQTT integration.
+    *   **Build Command:**
+        ```bash
+        mvn clean install -Pintegration
+        ```
+
+### How to Build
+
+To build with specific profiles, use the `-P` flag:
+
+*   **Single profile:** `mvn clean install -P[profile-id]`
+*   **Multiple profiles:** `mvn clean install -Pvault,integration`
+
 ### Main 3rd Party Dependencies
 
 [Spring Boot](https://github.com/spring-projects/spring-boot)
