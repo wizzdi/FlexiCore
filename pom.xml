@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>10.0.3</version>
+    <version>10.0.4</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
@@ -29,7 +29,7 @@
 
 
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json</reflections>
-        <flexicore-boot-dependencies.version>7.0.20</flexicore-boot-dependencies.version>
+        <flexicore-boot-dependencies.version>7.0.21</flexicore-boot-dependencies.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.5.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
