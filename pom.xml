@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>FlexiCore</artifactId>
-    <version>10.0.6</version>
+    <version>10.0.8</version>
 
     <name>FlexiCore</name>
     <description>flexicore dependency</description>
